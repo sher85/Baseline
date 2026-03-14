@@ -25,6 +25,7 @@
 ### Integration and sync
 - `GET /api/integrations/oura/status`
 - `POST /api/integrations/oura/connect`
+- `GET /api/integrations/oura/callback`
 - `POST /api/integrations/oura/disconnect`
 - `POST /api/sync/oura/run`
 - `POST /api/sync/oura/backfill`

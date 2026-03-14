@@ -262,12 +262,12 @@ Requirements:
 - [ ] Store tokens securely in local DB or local env-safe mechanism.
 - [ ] Refresh tokens as needed.
 - [ ] Handle revoked or expired access gracefully.
-- [ ] Surface current connection status in API and UI.
+- [x] Surface current connection status in API and UI.
 
 Suggested endpoints:
-- [ ] `GET /api/integrations/oura/status`
-- [ ] `POST /api/integrations/oura/connect`
-- [ ] `POST /api/integrations/oura/disconnect`
+- [x] `GET /api/integrations/oura/status`
+- [x] `POST /api/integrations/oura/connect`
+- [x] `POST /api/integrations/oura/disconnect`
 
 ---
 

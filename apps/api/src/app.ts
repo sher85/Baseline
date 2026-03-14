@@ -2,6 +2,7 @@ import cors from "cors";
 import express from "express";
 
 import { healthRouter } from "./routes/health.js";
+import { ouraIntegrationRouter } from "./routes/oura-integration.js";
 
 export const app = express();
 
@@ -17,3 +18,4 @@ app.get("/", (_request, response) => {
 });
 
 app.use("/health", healthRouter);
+app.use("/api/integrations/oura", ouraIntegrationRouter);

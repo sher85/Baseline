@@ -51,6 +51,7 @@ model OuraConnection {
   userId         String   @unique
   accessToken    String
   refreshToken   String
+  scope          String?
   tokenExpiresAt DateTime
   isActive       Boolean  @default(true)
   createdAt      DateTime @default(now())
