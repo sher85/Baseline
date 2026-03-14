@@ -1,0 +1,30 @@
+{
+  "name": "wearable-analytics",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:api": "npm run dev --workspace @wearable-analytics/api",
+    "dev:web": "npm run dev --workspace @wearable-analytics/web",
+    "build": "npm run build --workspace @wearable-analytics/shared && npm run build --workspace @wearable-analytics/api && npm run build --workspace @wearable-analytics/web",
+    "typecheck": "npm run typecheck --workspace @wearable-analytics/shared && npm run typecheck --workspace @wearable-analytics/api && npm run typecheck --workspace @wearable-analytics/web",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts",
+    "sync:oura": "npm run sync:oura --workspace @wearable-analytics/api",
+    "test": "npm run test --workspace @wearable-analytics/shared && npm run test --workspace @wearable-analytics/api && npm run test --workspace @wearable-analytics/web"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "prisma": "^6.6.0",
+    "tsx": "^4.19.0",
+    "typescript": "^5.8.0"
+  }
+}

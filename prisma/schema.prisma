@@ -1,0 +1,183 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum SyncSource {
+  oura
+}
+
+enum SyncMode {
+  manual
+  scheduled
+  backfill
+}
+
+enum SyncStatus {
+  pending
+  running
+  succeeded
+  failed
+}
+
+enum AnomalySeverity {
+  low
+  medium
+  high
+}
+
+model User {
+  id                 String               @id @default(cuid())
+  email              String?              @unique
+  externalIdentifier String?              @unique
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+  ouraConnection     OuraConnection?
+  syncRuns           SyncRun[]
+  dailySleep         DailySleep[]
+  dailyRecovery      DailyRecoveryInput[]
+  dailyActivity      DailyActivity[]
+  baselineSnapshots  BaselineSnapshot[]
+  recoveryScores     RecoveryScore[]
+  anomalyFlags       AnomalyFlag[]
+}
+
+model OuraConnection {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  accessToken    String
+  refreshToken   String
+  tokenExpiresAt DateTime
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model SyncRun {
+  id           String     @id @default(cuid())
+  userId       String
+  source       SyncSource
+  mode         SyncMode
+  status       SyncStatus
+  rangeStart   DateTime?
+  rangeEnd     DateTime?
+  startedAt    DateTime?
+  finishedAt   DateTime?
+  errorMessage String?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model DailySleep {
+  id                  String   @id @default(cuid())
+  userId              String
+  day                 DateTime
+  totalSleepSeconds   Int
+  timeInBedSeconds    Int
+  sleepEfficiency     Float?
+  sleepLatencySeconds Int?
+  averageHr           Float?
+  lowestHr            Float?
+  averageHrv          Float?
+  bedtimeStart        DateTime?
+  bedtimeEnd          DateTime?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model DailyRecoveryInput {
+  id                   String   @id @default(cuid())
+  userId               String
+  day                  DateTime
+  restingHeartRate     Float?
+  hrv                  Float?
+  temperatureDeviation Float?
+  readinessEquivalent  Float?
+  activityBalance      Float?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model DailyActivity {
+  id                        String   @id @default(cuid())
+  userId                    String
+  day                       DateTime
+  activeCalories            Int?
+  totalCalories             Int?
+  steps                     Int?
+  equivalentWalkingDistance Float?
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+  user                      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model BaselineSnapshot {
+  id                   String   @id @default(cuid())
+  userId               String
+  day                  DateTime
+  hrvBaseline          Float?
+  restingHrBaseline    Float?
+  temperatureBaseline  Float?
+  sleepDurationBaseline Float?
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model RecoveryScore {
+  id                      String   @id @default(cuid())
+  userId                  String
+  day                     DateTime
+  score                   Int
+  confidence              Float?
+  hrvContribution         Float?
+  restingHrContribution   Float?
+  temperatureContribution Float?
+  sleepContribution       Float?
+  explanationSummary      String
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, day])
+  @@index([userId, day])
+}
+
+model AnomalyFlag {
+  id          String          @id @default(cuid())
+  userId      String
+  day         DateTime
+  type        String
+  severity    AnomalySeverity
+  title       String
+  description String
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, day])
+  @@index([severity, day])
+}
