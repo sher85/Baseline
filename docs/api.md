@@ -10,6 +10,7 @@
 - `GET /api/overview/latest`
 - `GET /api/sleep/latest`
 - `GET /api/recovery/latest`
+- `GET /api/recovery/latest/detail`
 - `GET /api/trends?window=7d`
 - `GET /api/trends?window=30d`
 - `GET /api/anomalies/latest`
@@ -47,6 +48,9 @@
 
 ## Analytics behavior
 - `GET /api/overview/latest`: returns the latest dashboard-ready recovery summary, anomaly notes, sync state, and connection state
+- `GET /api/sleep/latest`: returns the latest sleep summary with baseline delta, timing, and nightly vitals
 - `GET /api/baselines/latest`: computes or returns the latest rolling baseline snapshot
 - `GET /api/recovery/latest`: computes or returns the latest recovery score and explanation
+- `GET /api/recovery/latest/detail`: returns the latest recovery score plus factor breakdowns, current values, baselines, and anomalies
+- `GET /api/trends?window=7d|30d`: returns compact historical series for recovery, sleep, HRV, resting HR, temperature deviation, steps, and anomaly counts
 - `GET /api/anomalies/latest`: returns deterministic anomaly flags for the latest day

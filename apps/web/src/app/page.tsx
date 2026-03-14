@@ -1,3 +1,6 @@
+import Link from "next/link";
+
+import { SiteHeader } from "../components/site-header";
 import { formatOverviewDate, formatSyncTime } from "../lib/format";
 import { getOverviewData } from "../services/overview";
 
@@ -7,6 +10,8 @@ export default async function HomePage() {
 
   return (
     <main className="page-shell">
+      <SiteHeader currentPath="/" />
+
       <section className="hero">
         <div className="hero-copy">
           <p className="eyebrow">Wearable Analytics MVP</p>
@@ -64,6 +69,23 @@ export default async function HomePage() {
               : "Add local Oura credentials to enable live sync."}
           </span>
         </article>
+      </section>
+
+      <section className="link-grid">
+        <Link href="/sleep" className="link-card">
+          <p className="eyebrow">Sleep Surface</p>
+          <strong className="status-title">Inspect your nightly pattern</strong>
+          <span className="metric-detail">
+            Duration, efficiency, bedtime timing, and live 7-day trend context.
+          </span>
+        </Link>
+        <Link href="/recovery" className="link-card">
+          <p className="eyebrow">Recovery Surface</p>
+          <strong className="status-title">See what moved the score</strong>
+          <span className="metric-detail">
+            Factor breakdowns, anomaly flags, and the 30-day recovery arc.
+          </span>
+        </Link>
       </section>
     </main>
   );

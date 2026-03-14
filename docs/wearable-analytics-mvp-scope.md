@@ -166,7 +166,7 @@ wearable-analytics/
 - [ ] Do **not** persist raw Oura payload blobs.
 
 ### Goal 3: Analytics engine
-- [ ] Compute last-night sleep summary.
+- [x] Compute last-night sleep summary.
 - [x] Compute HRV baseline and deviation.
 - [x] Compute resting heart rate baseline and deviation.
 - [x] Compute temperature deviation from baseline.
@@ -176,8 +176,8 @@ wearable-analytics/
 
 ### Goal 4: Dashboard
 - [x] Build overview page.
-- [ ] Build sleep page.
-- [ ] Build recovery page.
+- [x] Build sleep page.
+- [x] Build recovery page.
 - [ ] Build trends page.
 - [ ] Build anomalies page.
 - [x] Show sync status clearly.
@@ -471,10 +471,10 @@ Anomalies should be deterministic and threshold-based for v1.
 
 ### Dashboard endpoints
 - [x] `GET /api/overview/latest`
-- [ ] `GET /api/sleep/latest`
+- [x] `GET /api/sleep/latest`
 - [x] `GET /api/recovery/latest`
-- [ ] `GET /api/trends?window=7d`
-- [ ] `GET /api/trends?window=30d`
+- [x] `GET /api/trends?window=7d`
+- [x] `GET /api/trends?window=30d`
 - [x] `GET /api/anomalies/latest`
 - [x] `GET /api/baselines/latest`
 
@@ -516,17 +516,17 @@ Show:
 
 #### Sleep
 Show:
-- [ ] Sleep duration trend
-- [ ] Time in bed
-- [ ] Efficiency if available
+- [x] Sleep duration trend
+- [x] Time in bed
+- [x] Efficiency if available
 - [ ] Bedtime consistency visuals
 
 #### Recovery
 Show:
-- [ ] Recovery score trend
-- [ ] Factor contribution breakdown
-- [ ] Explanation of latest score
-- [ ] Baseline comparison cards
+- [x] Recovery score trend
+- [x] Factor contribution breakdown
+- [x] Explanation of latest score
+- [x] Baseline comparison cards
 
 #### Trends
 Show:
@@ -699,18 +699,18 @@ Deliver:
 - [x] Recovery score v1
 - [x] Anomaly rules
 - [x] Explanation generator
-- [ ] Trend aggregation helpers
+- [x] Trend aggregation helpers
 
 Done when:
-- [ ] Backend can return meaningful latest and historical analytics
+- [x] Backend can return meaningful latest and historical analytics
 
 ---
 
 ## Milestone 5 - Dashboard
 Deliver:
 - [x] Overview page
-- [ ] Sleep page
-- [ ] Recovery page
+- [x] Sleep page
+- [x] Recovery page
 - [ ] Trends page
 - [ ] Anomalies page
 - [x] Sync status UI
