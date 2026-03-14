@@ -14,4 +14,4 @@ prisma/dev.db-journal
 data-private/*
 !data-private/.gitkeep
 *.log
-docs
+*.tsbuildinfo
