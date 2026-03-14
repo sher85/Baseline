@@ -3,8 +3,23 @@ import { Router } from "express";
 import { getLatestAnomalies } from "../modules/analytics/anomaly.service.js";
 import { getLatestBaselineSnapshot } from "../modules/analytics/baseline.service.js";
 import { getLatestRecoveryScore } from "../modules/recovery/recovery-score.service.js";
+import { getLatestOverview } from "../modules/summaries/overview.service.js";
 
 export const analyticsRouter = Router();
+
+analyticsRouter.get("/overview/latest", async (_request, response) => {
+  const overview = await getLatestOverview();
+
+  if (!overview) {
+    response.status(404).json({
+      error: "No overview data is available yet."
+    });
+
+    return;
+  }
+
+  response.json(overview);
+});
 
 analyticsRouter.get("/baselines/latest", async (_request, response) => {
   const baseline = await getLatestBaselineSnapshot();

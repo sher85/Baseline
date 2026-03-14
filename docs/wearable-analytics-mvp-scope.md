@@ -175,12 +175,12 @@ wearable-analytics/
 - [x] Generate deterministic anomaly flags.
 
 ### Goal 4: Dashboard
-- [ ] Build overview page.
+- [x] Build overview page.
 - [ ] Build sleep page.
 - [ ] Build recovery page.
 - [ ] Build trends page.
 - [ ] Build anomalies page.
-- [ ] Show sync status clearly.
+- [x] Show sync status clearly.
 
 ### Goal 5: AI-friendly interface
 - [ ] Expose latest summary.
@@ -470,7 +470,7 @@ Anomalies should be deterministic and threshold-based for v1.
 ## 5. Backend API requirements
 
 ### Dashboard endpoints
-- [ ] `GET /api/overview/latest`
+- [x] `GET /api/overview/latest`
 - [ ] `GET /api/sleep/latest`
 - [x] `GET /api/recovery/latest`
 - [ ] `GET /api/trends?window=7d`
@@ -708,12 +708,12 @@ Done when:
 
 ## Milestone 5 - Dashboard
 Deliver:
-- [ ] Overview page
+- [x] Overview page
 - [ ] Sleep page
 - [ ] Recovery page
 - [ ] Trends page
 - [ ] Anomalies page
-- [ ] Sync status UI
+- [x] Sync status UI
 
 Done when:
 - [ ] A local user can inspect the data visually in browser

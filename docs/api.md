@@ -46,6 +46,7 @@
 - `GET /api/sync/history`: returns recent sync runs for the local user
 
 ## Analytics behavior
+- `GET /api/overview/latest`: returns the latest dashboard-ready recovery summary, anomaly notes, sync state, and connection state
 - `GET /api/baselines/latest`: computes or returns the latest rolling baseline snapshot
 - `GET /api/recovery/latest`: computes or returns the latest recovery score and explanation
 - `GET /api/anomalies/latest`: returns deterministic anomaly flags for the latest day
