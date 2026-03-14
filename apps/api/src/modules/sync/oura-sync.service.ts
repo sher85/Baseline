@@ -30,6 +30,11 @@ type SyncSummary = {
   sleepRecords: number;
 };
 
+type RunOuraSyncOptions = {
+  mode: SyncMode;
+  windowInput?: SyncWindowInput;
+};
+
 function asUtcDate(day: string) {
   return new Date(`${day}T00:00:00.000Z`);
 }
@@ -242,7 +247,7 @@ async function persistActivityRecords(userId: string, items: OuraDailyActivityIt
   );
 }
 
-async function createRunningSyncRun(userId: string, window: SyncWindow) {
+async function createRunningSyncRun(userId: string, mode: SyncMode, window: SyncWindow) {
   const existingRunningSync = await prisma.syncRun.findFirst({
     where: {
       userId,
@@ -262,7 +267,7 @@ async function createRunningSyncRun(userId: string, window: SyncWindow) {
     data: {
       userId,
       source: SyncSource.oura,
-      mode: SyncMode.manual,
+      mode,
       status: SyncStatus.running,
       rangeStart: asUtcDate(window.startDate),
       rangeEnd: asUtcDate(window.endDate),
@@ -271,10 +276,10 @@ async function createRunningSyncRun(userId: string, window: SyncWindow) {
   });
 }
 
-export async function runManualOuraSync(input: SyncWindowInput = {}) {
+async function runOuraSync(options: RunOuraSyncOptions) {
   const user = await getOrCreatePrimaryUser();
-  const syncWindow = await resolveSyncWindow(user.id, input);
-  const syncRun = await createRunningSyncRun(user.id, syncWindow);
+  const syncWindow = await resolveSyncWindow(user.id, options.windowInput ?? {});
+  const syncRun = await createRunningSyncRun(user.id, options.mode, syncWindow);
   const client = new OuraApiClient();
 
   try {
@@ -328,6 +333,19 @@ export async function runManualOuraSync(input: SyncWindowInput = {}) {
       syncRun: failedRun
     });
   }
+}
+
+export async function runManualOuraSync(input: SyncWindowInput = {}) {
+  return runOuraSync({
+    mode: SyncMode.manual,
+    windowInput: input
+  });
+}
+
+export async function runScheduledOuraSync() {
+  return runOuraSync({
+    mode: SyncMode.scheduled
+  });
 }
 
 export async function getOuraSyncStatus() {

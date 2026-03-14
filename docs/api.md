@@ -47,6 +47,7 @@
 - if no date range is supplied, the sync defaults to an incremental window
 - `GET /api/sync/status`: returns whether a sync is running and the latest sync run
 - `GET /api/sync/history`: returns recent sync runs for the local user
+- scheduled sync reuses the same ingestion path and records `mode: scheduled` in `SyncRun`
 
 ## Analytics behavior
 - `GET /api/overview/latest`: returns the latest dashboard-ready recovery summary, anomaly notes, sync state, and connection state

@@ -35,7 +35,9 @@ const rawEnvSchema = z.object({
     z.string().url().optional()
   ),
   OURA_SCOPES: z.string().default("daily email personal"),
-  SYNC_SCHEDULE_CRON: z.string().default("0 6 * * *")
+  SYNC_SCHEDULE_CRON: z.string().default("0 6 * * *"),
+  SYNC_SCHEDULE_ENABLED: z.coerce.boolean().default(true),
+  SYNC_SCHEDULE_RUN_ON_START: z.coerce.boolean().default(false)
 });
 
 const parsedEnv = rawEnvSchema.parse(process.env);

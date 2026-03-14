@@ -153,7 +153,7 @@ wearable-analytics/
 ### Goal 1: Oura API sync
 - [ ] Authenticate against Oura API.
 - [ ] Sync the current user’s wearable data into PostgreSQL.
-- [ ] Support manual sync and scheduled sync.
+- [x] Support manual sync and scheduled sync.
 - [x] Support incremental sync windows.
 - [x] Log sync status, timestamps, and failures.
 
@@ -198,7 +198,7 @@ wearable-analytics/
 - [ ] Single-user app
 - [ ] Local PostgreSQL database
 - [x] Oura API integration
-- [ ] Scheduled and manual sync
+- [x] Scheduled and manual sync
 - [ ] Normalized relational schema
 - [ ] Transparent custom recovery score
 - [ ] Explanation engine
@@ -671,13 +671,14 @@ Deliver:
 - [x] Oura account connect flow
 - [x] Token handling
 - [x] Manual sync trigger
-- [ ] Scheduled daily sync
+- [x] Scheduled daily sync
 - [x] Sync history model and endpoints
 
 Done when:
 - [x] User can connect Oura
 - [x] Backend can sync data into DB
 - [x] Sync history is visible
+- [ ] Local scheduled sync can run through the same pipeline
 
 ---
 

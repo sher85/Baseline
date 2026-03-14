@@ -44,7 +44,9 @@ API_PORT=4000
 WEB_PORT=3000
 WEB_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_API_BASE_URL="http://localhost:4000"
+SYNC_SCHEDULE_ENABLED="true"
 SYNC_SCHEDULE_CRON="0 6 * * *"
+SYNC_SCHEDULE_RUN_ON_START="false"
 ```
 
 Oura OAuth values:
@@ -103,6 +105,29 @@ curl http://localhost:4000/health
 curl http://localhost:4000/health/db
 curl http://localhost:4000/api/integrations/oura/status
 ```
+
+## Scheduled sync
+The API supports a daily scheduled Oura sync that reuses the same ingestion path as manual sync.
+
+Scheduler env:
+
+```env
+SYNC_SCHEDULE_ENABLED="true"
+SYNC_SCHEDULE_CRON="0 6 * * *"
+SYNC_SCHEDULE_RUN_ON_START="false"
+```
+
+Notes:
+- `SYNC_SCHEDULE_CRON` currently supports daily expressions in the form `minute hour * * *`
+- scheduled runs are stored in `SyncRun` with `mode: scheduled`
+- if Oura is not connected locally, the scheduler logs a skip instead of failing startup
+
+Local scheduler test:
+1. Set `SYNC_SCHEDULE_RUN_ON_START="true"` in `.env`
+2. Start the API with `npm run dev:api`
+3. Check `curl http://localhost:4000/api/sync/status`
+4. Check `curl http://localhost:4000/api/sync/history`
+5. Set `SYNC_SCHEDULE_RUN_ON_START` back to `false` after testing
 
 ## Notes
 - Real personal data should stay local and never be committed.
