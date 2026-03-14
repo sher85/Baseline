@@ -7,11 +7,15 @@ This repo ingests Oura data through the official API, stores normalized records 
 ## Product preview
 
 <p align="center">
-  <img src="./docs/images/readme-overview-preview.svg" alt="Baseline overview dashboard preview" width="100%" />
+  <img src="./docs/images/overview-screenshot.png" alt="Baseline overview dashboard screenshot" width="100%" />
 </p>
 
 <p align="center">
-  <img src="./docs/images/readme-sleep-preview.svg" alt="Baseline sleep surface preview" width="72%" />
+  <img src="./docs/images/sleep-screenshot.png" alt="Baseline sleep surface screenshot" width="72%" />
+</p>
+
+<p align="center">
+  <img src="./docs/images/anomalies-screenshot.png" alt="Baseline anomalies surface screenshot" width="72%" />
 </p>
 
 ## System flow

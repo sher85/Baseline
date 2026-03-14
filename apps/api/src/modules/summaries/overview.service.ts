@@ -32,32 +32,38 @@ function createMetric(label: string, value: string, detail: string) {
 export async function getLatestOverview() {
   const user = await getOrCreatePrimaryUser();
 
-  const [latestSleep, latestRecoveryInput, baseline, recovery, anomalies, syncStatus, connection] =
-    await Promise.all([
-      prisma.dailySleep.findFirst({
-        where: {
-          userId: user.id
-        },
-        orderBy: {
-          day: "desc"
-        }
-      }),
-      prisma.dailyRecoveryInput.findFirst({
-        where: {
-          userId: user.id
-        },
-        orderBy: {
-          day: "desc"
-        }
-      }),
-      getLatestBaselineSnapshot(),
-      getLatestRecoveryScore(),
-      getLatestAnomalies(),
-      getOuraSyncStatus(),
-      getOuraConnectionStatus()
-    ]);
+  const [recovery, anomalies, syncStatus, connection] = await Promise.all([
+    getLatestRecoveryScore(),
+    getLatestAnomalies(),
+    getOuraSyncStatus(),
+    getOuraConnectionStatus()
+  ]);
 
-  if (!latestSleep || !latestRecoveryInput || !baseline || !recovery) {
+  if (!recovery) {
+    return null;
+  }
+
+  const [latestSleep, latestRecoveryInput, baseline] = await Promise.all([
+    prisma.dailySleep.findUnique({
+      where: {
+        userId_day: {
+          userId: user.id,
+          day: recovery.day
+        }
+      }
+    }),
+    prisma.dailyRecoveryInput.findUnique({
+      where: {
+        userId_day: {
+          userId: user.id,
+          day: recovery.day
+        }
+      }
+    }),
+    getLatestBaselineSnapshot()
+  ]);
+
+  if (!latestSleep || !latestRecoveryInput || !baseline) {
     return null;
   }
 

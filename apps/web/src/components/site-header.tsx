@@ -17,7 +17,6 @@ export function SiteHeader({ currentPath }: SiteHeaderProps) {
     <header className="site-header">
       <Link href="/" className="brand-mark">
         <span className="brand-kicker">Baseline</span>
-        <strong>Wearable analytics</strong>
       </Link>
       <nav className="site-nav" aria-label="Primary">
         {links.map((link) => (

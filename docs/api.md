@@ -15,6 +15,8 @@
 - `GET /api/trends?window=30d`
 - `GET /api/anomalies/latest`
 - `GET /api/anomalies/recent`
+- `GET /api/anomalies/history`
+- `GET /api/anomalies/heatmap`
 - `GET /api/baselines/latest`
 
 ### AI
@@ -61,6 +63,8 @@
 - `GET /api/trends?window=7d|30d`: returns compact historical series for recovery, sleep, HRV, resting HR, temperature deviation, steps, and anomaly counts
 - `GET /api/anomalies/latest`: returns deterministic anomaly flags for the latest day
 - `GET /api/anomalies/recent?limit=20`: returns recent anomaly history ordered by day and severity
+- `GET /api/anomalies/history?limitDays=10&cursorDay=YYYY-MM-DD&targetDay=YYYY-MM-DD`: returns anomaly history grouped by flagged day for archive-style browsing and can expand enough history to include a targeted day
+- `GET /api/anomalies/heatmap?range=3m|6m|12m&type=all|sleep|hrv|resting_hr|temperature`: returns one daily record per day in range with weighted load score, anomaly count, severity breakdown, and summaries for the anomaly heatmap
 
 ## AI behavior
 - `GET /api/ai/daily-brief`: returns a compact daily status payload for an AI agent, including score, sleep, deltas, anomalies, sync state, and a summary sentence

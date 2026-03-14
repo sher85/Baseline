@@ -7,6 +7,42 @@ function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+async function getLatestRecoveryReadyDay(userId: string) {
+  const [recentRecoveryDays, recentSleepDays] = await Promise.all([
+    prisma.dailyRecoveryInput.findMany({
+      where: {
+        userId
+      },
+      orderBy: {
+        day: "desc"
+      },
+      take: 35,
+      select: {
+        day: true
+      }
+    }),
+    prisma.dailySleep.findMany({
+      where: {
+        userId
+      },
+      orderBy: {
+        day: "desc"
+      },
+      take: 35,
+      select: {
+        day: true
+      }
+    })
+  ]);
+
+  const sleepDaySet = new Set(recentSleepDays.map((entry) => formatDate(entry.day)));
+  const matchingRecoveryDay = recentRecoveryDays.find((entry) =>
+    sleepDaySet.has(formatDate(entry.day))
+  );
+
+  return matchingRecoveryDay ? formatDate(matchingRecoveryDay.day) : null;
+}
+
 function describeDirection(value: number, positiveLabel: string, negativeLabel: string) {
   if (value > 0) {
     return positiveLabel;
@@ -168,21 +204,11 @@ export async function computeRecoveryForDay(day: string) {
 export async function getLatestRecoveryScore() {
   const user = await getOrCreatePrimaryUser();
 
-  const latestRecoveryDay = await prisma.dailyRecoveryInput.findFirst({
-    where: {
-      userId: user.id
-    },
-    orderBy: {
-      day: "desc"
-    },
-    select: {
-      day: true
-    }
-  });
+  const latestRecoveryReadyDay = await getLatestRecoveryReadyDay(user.id);
 
-  if (!latestRecoveryDay) {
+  if (!latestRecoveryReadyDay) {
     return null;
   }
 
-  return computeRecoveryForDay(formatDate(latestRecoveryDay.day));
+  return computeRecoveryForDay(latestRecoveryReadyDay);
 }

@@ -17,29 +17,36 @@ function getFactorStatus(value: number | null): FactorStatus {
 export async function getLatestRecoveryDetail() {
   const user = await getOrCreatePrimaryUser();
 
-  const [recovery, baseline, anomalies, latestInput, latestSleep] = await Promise.all([
+  const [recovery, baseline, anomalies] = await Promise.all([
     getLatestRecoveryScore(),
     getLatestBaselineSnapshot(),
-    getLatestAnomalies(),
-    prisma.dailyRecoveryInput.findFirst({
+    getLatestAnomalies()
+  ]);
+
+  if (!recovery || !baseline) {
+    return null;
+  }
+
+  const [latestInput, latestSleep] = await Promise.all([
+    prisma.dailyRecoveryInput.findUnique({
       where: {
-        userId: user.id
-      },
-      orderBy: {
-        day: "desc"
+        userId_day: {
+          userId: user.id,
+          day: recovery.day
+        }
       }
     }),
-    prisma.dailySleep.findFirst({
+    prisma.dailySleep.findUnique({
       where: {
-        userId: user.id
-      },
-      orderBy: {
-        day: "desc"
+        userId_day: {
+          userId: user.id,
+          day: recovery.day
+        }
       }
     })
   ]);
 
-  if (!recovery || !baseline || !latestInput || !latestSleep) {
+  if (!latestInput || !latestSleep) {
     return null;
   }
 

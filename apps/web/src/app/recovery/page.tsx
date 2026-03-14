@@ -61,7 +61,7 @@ export default async function RecoveryPage() {
         <section className="page-intro">
           <div>
             <p className="eyebrow">Recovery</p>
-            <h1>Transparent scoring, anchored to your own baseline.</h1>
+            <h1>Understand what moved today&apos;s recovery score.</h1>
           </div>
           <p className="hero-text">
             This surface becomes meaningful only after the local analytics engine has computed recovery signals.
@@ -85,7 +85,7 @@ export default async function RecoveryPage() {
       <section className="page-intro">
         <div>
           <p className="eyebrow">Recovery</p>
-          <h1>Transparent scoring, anchored to your own baseline.</h1>
+          <h1>Understand what moved today&apos;s recovery score.</h1>
         </div>
         <p className="hero-text">
           {recovery

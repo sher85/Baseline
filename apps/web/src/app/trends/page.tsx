@@ -48,7 +48,7 @@ export default async function TrendsPage() {
         <section className="page-intro">
           <div>
             <p className="eyebrow">Trends</p>
-            <h1>Short arc, long arc, same deterministic foundation.</h1>
+            <h1>Track the short arc and the longer physiological drift.</h1>
           </div>
           <p className="hero-text">
             This view depends on enough synced history to show 7-day and 30-day movement.
@@ -74,11 +74,11 @@ export default async function TrendsPage() {
       <section className="page-intro">
         <div>
           <p className="eyebrow">Trends</p>
-          <h1>Short arc, long arc, same deterministic foundation.</h1>
+          <h1>Track the short arc and the longer physiological drift.</h1>
         </div>
         <p className="hero-text">
           {sevenDay.series.length
-            ? `Latest trend day: ${formatOverviewDate(sevenDay.range.endDay)}. Use the 7-day view for short-term recovery drift and the 30-day view for slower physiological changes.`
+            ? `Latest trend day: ${formatOverviewDate(sevenDay.range.endDay)}. Use the 7-day view for recent movement and the 30-day view for slower changes in recovery, sleep, HRV, and temperature.`
             : "Trend data will appear here once the local API has enough synced history."}
         </p>
       </section>

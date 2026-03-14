@@ -105,7 +105,7 @@ export default async function SleepPage() {
         <section className="page-intro">
           <div>
             <p className="eyebrow">Sleep</p>
-            <h1>Nightly sleep, with context instead of guesswork.</h1>
+            <h1>See last night in the context of your recent pattern.</h1>
           </div>
           <p className="hero-text">
             This surface needs synced sleep data before it can explain nightly patterns.
@@ -129,11 +129,11 @@ export default async function SleepPage() {
       <section className="page-intro">
         <div>
           <p className="eyebrow">Sleep</p>
-          <h1>Nightly sleep, with context instead of guesswork.</h1>
+          <h1>See last night in the context of your recent pattern.</h1>
         </div>
         <p className="hero-text">
           {sleep
-            ? `Latest night: ${formatOverviewDate(sleep.day)}. ${sleep.note}`
+            ? `${formatOverviewDate(sleep.day)} is the latest completed night. ${sleep.note}`
             : "Sleep data will appear here once the local API has synced at least one night."}
         </p>
       </section>

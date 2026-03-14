@@ -100,6 +100,54 @@ export type RecentAnomalyResponse = {
   }>;
 };
 
+export type AnomalyHistoryResponse = {
+  hasMore: boolean;
+  items: Array<{
+    anomalies: Array<{
+      description: string;
+      severity: "low" | "medium" | "high";
+      title: string;
+      type: string;
+    }>;
+    day: string;
+    highestSeverity: "low" | "medium" | "high";
+    severityCounts: {
+      high: number;
+      low: number;
+      medium: number;
+    };
+  }>;
+  nextCursorDay: string | null;
+};
+
+export type AnomalyHeatmapResponse = {
+  categories: Array<{
+    label: string;
+    value: "all" | "sleep" | "hrv" | "resting_hr" | "temperature";
+  }>;
+  days: Array<{
+    anomalyCount: number;
+    date: string;
+    score: number;
+    severityBreakdown: {
+      high: number;
+      low: number;
+      medium: number;
+    };
+    summaries: string[];
+    types: Array<"sleep" | "hrv" | "resting_hr" | "temperature">;
+  }>;
+  filter: {
+    category: "all" | "sleep" | "hrv" | "resting_hr" | "temperature";
+    categoryLabel: string;
+    range: "3m" | "6m" | "12m";
+  };
+  range: {
+    endDay: string | null;
+    startDay: string | null;
+  };
+};
+
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
 
 async function fetchJson<T>(path: string, fallback: T): Promise<T> {
@@ -147,5 +195,56 @@ export async function getRecoveryDetailData(): Promise<RecoveryDetailResponse | 
 export async function getRecentAnomalyData(limit = 20): Promise<RecentAnomalyResponse> {
   return fetchJson(`/api/anomalies/recent?limit=${limit}`, {
     items: []
+  });
+}
+
+export async function getAnomalyHistoryData(
+  limitDays = 10,
+  options?: {
+    cursorDay?: string;
+    targetDay?: string;
+  }
+): Promise<AnomalyHistoryResponse> {
+  const params = new URLSearchParams({
+    limitDays: String(limitDays)
+  });
+
+  if (options?.cursorDay) {
+    params.set("cursorDay", options.cursorDay);
+  }
+
+  if (options?.targetDay) {
+    params.set("targetDay", options.targetDay);
+  }
+
+  return fetchJson(`/api/anomalies/history?${params.toString()}`, {
+    hasMore: false,
+    items: [],
+    nextCursorDay: null
+  });
+}
+
+export async function getAnomalyHeatmapData(
+  range: "3m" | "6m" | "12m",
+  type: "all" | "sleep" | "hrv" | "resting_hr" | "temperature"
+): Promise<AnomalyHeatmapResponse> {
+  return fetchJson(`/api/anomalies/heatmap?range=${range}&type=${type}`, {
+    categories: [
+      { value: "all", label: "All anomalies" },
+      { value: "sleep", label: "Sleep" },
+      { value: "hrv", label: "HRV" },
+      { value: "resting_hr", label: "Resting heart rate" },
+      { value: "temperature", label: "Temperature" }
+    ],
+    days: [],
+    filter: {
+      category: type,
+      categoryLabel: type,
+      range
+    },
+    range: {
+      endDay: null,
+      startDay: null
+    }
   });
 }

@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { HelpTooltip } from "../components/help-tooltip";
 import { PageEmptyState } from "../components/page-empty-state";
 import { SiteHeader } from "../components/site-header";
 import { formatOverviewDate, formatSyncTime } from "../lib/format";
@@ -31,13 +32,11 @@ export default async function HomePage() {
 
       <section className="hero">
         <div className="hero-copy">
-          <p className="eyebrow">Wearable Analytics MVP</p>
-          <h1>Luxury calm, scientific backbone.</h1>
+          <p className="eyebrow">Overview</p>
+          <h1>Your latest recovery state, in one clear view.</h1>
           <p className="hero-text">
-            Live recovery intelligence for{" "}
-            <span className="hero-date">{formatOverviewDate(overview.day)}</span>,
-            built to feel premium while staying explicit, interpretable, and
-            engineer-grade.
+            For <span className="hero-date">{formatOverviewDate(overview.day)}</span>,
+            Baseline brings sleep, recovery, anomalies, and sync state into one readable snapshot.
           </p>
           <div className="hero-meta">
             <span className={`status-pill ${isFallback ? "warning" : "positive"}`}>
@@ -53,7 +52,6 @@ export default async function HomePage() {
             </span>
           </div>
         </div>
-        <div className="hero-orb" aria-hidden="true" />
       </section>
 
       {isFallback ? (
@@ -69,9 +67,18 @@ export default async function HomePage() {
       <section className="metric-grid">
         {overview.metrics.map((metric) => (
           <article key={metric.label} className="metric-card">
-            <span className="metric-label">{metric.label}</span>
+            {metric.label === "Recovery" ? (
+              <div className="metric-label-row">
+                <span className="metric-label">{metric.label}</span>
+                <HelpTooltip content={metric.detail} />
+              </div>
+            ) : (
+              <span className="metric-label">{metric.label}</span>
+            )}
             <strong className="metric-value">{metric.value}</strong>
-            <span className="metric-detail">{metric.detail}</span>
+            {metric.label === "Recovery" ? null : (
+              <span className="metric-detail">{metric.detail}</span>
+            )}
           </article>
         ))}
       </section>
