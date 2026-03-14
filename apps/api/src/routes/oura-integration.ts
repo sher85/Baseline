@@ -1,8 +1,6 @@
 import { Router } from "express";
 import { z } from "zod";
 
-import { env } from "../config/env.js";
-import { parseCookieHeader, serializeCookie } from "../lib/cookies.js";
 import {
   disconnectOuraConnection,
   getOuraConnectionStatus,
@@ -15,6 +13,10 @@ import {
   exchangeCodeForOuraTokens,
   isOuraConfigured
 } from "../modules/oura/oura-oauth.service.js";
+import {
+  consumeOuraOAuthState,
+  registerOuraOAuthState
+} from "../modules/oura/oura-oauth-state.service.js";
 
 const callbackQuerySchema = z.object({
   code: z.string().min(1).optional(),
@@ -23,29 +25,7 @@ const callbackQuerySchema = z.object({
   state: z.string().min(1).optional()
 });
 
-const OAUTH_STATE_COOKIE = "oura_oauth_state";
-
 export const ouraIntegrationRouter = Router();
-
-function createStateCookie(value: string) {
-  return serializeCookie(OAUTH_STATE_COOKIE, value, {
-    httpOnly: true,
-    maxAgeSeconds: 10 * 60,
-    path: "/",
-    sameSite: "Lax",
-    secure: env.WEB_APP_URL.startsWith("https://")
-  });
-}
-
-function clearStateCookie() {
-  return serializeCookie(OAUTH_STATE_COOKIE, "", {
-    expires: new Date(0),
-    httpOnly: true,
-    path: "/",
-    sameSite: "Lax",
-    secure: env.WEB_APP_URL.startsWith("https://")
-  });
-}
 
 ouraIntegrationRouter.get("/status", async (_request, response) => {
   const status = await getOuraConnectionStatus();
@@ -67,8 +47,8 @@ ouraIntegrationRouter.post("/connect", async (_request, response) => {
 
   const state = createOAuthState();
   const authorizationUrl = buildOuraAuthorizationUrl(state);
+  registerOuraOAuthState(state);
 
-  response.setHeader("Set-Cookie", createStateCookie(state));
   response.status(201).json({
     provider: "oura",
     authorizationUrl
@@ -84,19 +64,15 @@ ouraIntegrationRouter.get("/callback", async (request, response) => {
     return;
   }
 
-  const cookies = parseCookieHeader(request.headers.cookie);
-  const expectedState = cookies[OAUTH_STATE_COOKIE];
   const { code, error, scope, state } = parsedQuery.data;
 
   if (error) {
-    response.setHeader("Set-Cookie", clearStateCookie());
     response.redirect(buildPostConnectRedirect({ oura: "access_denied" }));
 
     return;
   }
 
-  if (!code || !state || !expectedState || state !== expectedState) {
-    response.setHeader("Set-Cookie", clearStateCookie());
+  if (!code || !state || !consumeOuraOAuthState(state)) {
     response.redirect(buildPostConnectRedirect({ oura: "invalid_state" }));
 
     return;
@@ -107,10 +83,8 @@ ouraIntegrationRouter.get("/callback", async (request, response) => {
 
     await storeOuraConnection(tokenResponse, scope);
 
-    response.setHeader("Set-Cookie", clearStateCookie());
     response.redirect(buildPostConnectRedirect({ oura: "connected" }));
   } catch (error) {
-    response.setHeader("Set-Cookie", clearStateCookie());
     response.redirect(
       buildPostConnectRedirect({
         oura: "token_exchange_failed",
@@ -123,7 +97,6 @@ ouraIntegrationRouter.get("/callback", async (request, response) => {
 ouraIntegrationRouter.post("/disconnect", async (_request, response) => {
   const result = await disconnectOuraConnection();
 
-  response.setHeader("Set-Cookie", clearStateCookie());
   response.json({
     ...result,
     connected: false
