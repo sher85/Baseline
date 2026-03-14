@@ -8,6 +8,7 @@ The repo now includes:
 - npm workspaces for `api`, `web`, and `shared`
 - Prisma schema and seed foundation
 - Express API shell with Oura OAuth connection flow
+- backend tests for analytics and sync window logic
 - Next.js app shell
 - shared domain types and schemas
 - starter docs and local-first environment config
@@ -104,6 +105,7 @@ Successful connection should return JSON with `connected: true`.
 curl http://localhost:4000/health
 curl http://localhost:4000/health/db
 curl http://localhost:4000/api/integrations/oura/status
+npm run test --workspace @wearable-analytics/api
 ```
 
 ## Scheduled sync

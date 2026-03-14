@@ -10,7 +10,7 @@
     "start": "node dist/server.js",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "sync:oura": "tsx src/modules/sync/cli.ts",
-    "test": "node -e \"console.log('No API tests yet')\""
+    "test": "tsx --test src/**/*.test.ts"
   },
   "dependencies": {
     "@prisma/client": "^6.6.0",

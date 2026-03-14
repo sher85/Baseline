@@ -19,7 +19,7 @@ function describeDirection(value: number, positiveLabel: string, negativeLabel: 
   return "near baseline";
 }
 
-function buildRecoveryExplanation(input: {
+export function buildRecoveryExplanation(input: {
   hrvDelta: number;
   restingHrDelta: number;
   sleepDeltaSeconds: number;
@@ -45,6 +45,36 @@ function buildRecoveryExplanation(input: {
   ];
 
   return `Recovery reflects a mix of signals: ${segments.join(", ")}.`;
+}
+
+export function calculateRecoveryMetrics(input: {
+  hrvDelta: number;
+  restingHrDelta: number;
+  sleepDeltaSeconds: number;
+  temperatureDelta: number;
+  confidenceSignals: number;
+}) {
+  const hrvContribution = clamp(input.hrvDelta / 12, -1, 1);
+  const restingHrContribution = clamp((-input.restingHrDelta) / 6, -1, 1);
+  const sleepContribution = clamp(input.sleepDeltaSeconds / (90 * 60), -1, 1);
+  const temperatureContribution = clamp((-Math.abs(input.temperatureDelta)) / 0.5, -1, 1);
+
+  const weightedScore =
+    78 +
+    hrvContribution * 10 +
+    restingHrContribution * 8 +
+    sleepContribution * 7 +
+    temperatureContribution * 5;
+
+  return {
+    score: Math.round(clamp(weightedScore, 0, 100)),
+    confidence: round(input.confidenceSignals / 4, 2),
+    hrvContribution: round(hrvContribution, 3),
+    restingHrContribution: round(restingHrContribution, 3),
+    sleepContribution: round(sleepContribution, 3),
+    temperatureContribution: round(temperatureContribution, 3),
+    explanationSummary: buildRecoveryExplanation(input)
+  };
 }
 
 export async function computeRecoveryForDay(day: string) {
@@ -91,31 +121,18 @@ export async function computeRecoveryForDay(day: string) {
       ? recoveryInput.temperatureDeviation - baseline.temperatureBaseline
       : 0;
 
-  const hrvContribution = clamp(hrvDelta / 12, -1, 1);
-  const restingHrContribution = clamp((-restingHrDelta) / 6, -1, 1);
-  const sleepContribution = clamp(sleepDeltaSeconds / (90 * 60), -1, 1);
-  const temperatureContribution = clamp((-Math.abs(temperatureDelta)) / 0.5, -1, 1);
-
-  const weightedScore =
-    78 +
-    hrvContribution * 10 +
-    restingHrContribution * 8 +
-    sleepContribution * 7 +
-    temperatureContribution * 5;
-
-  const score = Math.round(clamp(weightedScore, 0, 100));
   const confidenceSignals = [
     baseline.hrvBaseline,
     baseline.restingHrBaseline,
     baseline.sleepDurationBaseline,
     baseline.temperatureBaseline
   ].filter((value) => value !== null).length;
-  const confidence = round(confidenceSignals / 4, 2);
-  const explanationSummary = buildRecoveryExplanation({
+  const metrics = calculateRecoveryMetrics({
     hrvDelta,
     restingHrDelta,
     sleepDeltaSeconds,
-    temperatureDelta
+    temperatureDelta,
+    confidenceSignals
   });
 
   return prisma.recoveryScore.upsert({
@@ -126,24 +143,24 @@ export async function computeRecoveryForDay(day: string) {
       }
     },
     update: {
-      score,
-      confidence,
-      hrvContribution: round(hrvContribution, 3),
-      restingHrContribution: round(restingHrContribution, 3),
-      sleepContribution: round(sleepContribution, 3),
-      temperatureContribution: round(temperatureContribution, 3),
-      explanationSummary
+      score: metrics.score,
+      confidence: metrics.confidence,
+      hrvContribution: metrics.hrvContribution,
+      restingHrContribution: metrics.restingHrContribution,
+      sleepContribution: metrics.sleepContribution,
+      temperatureContribution: metrics.temperatureContribution,
+      explanationSummary: metrics.explanationSummary
     },
     create: {
       userId: user.id,
       day: new Date(`${day}T00:00:00.000Z`),
-      score,
-      confidence,
-      hrvContribution: round(hrvContribution, 3),
-      restingHrContribution: round(restingHrContribution, 3),
-      sleepContribution: round(sleepContribution, 3),
-      temperatureContribution: round(temperatureContribution, 3),
-      explanationSummary
+      score: metrics.score,
+      confidence: metrics.confidence,
+      hrvContribution: metrics.hrvContribution,
+      restingHrContribution: metrics.restingHrContribution,
+      sleepContribution: metrics.sleepContribution,
+      temperatureContribution: metrics.temperatureContribution,
+      explanationSummary: metrics.explanationSummary
     }
   });
 }

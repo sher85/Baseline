@@ -50,6 +50,49 @@ function addDays(day: string, delta: number) {
   return formatDate(date);
 }
 
+export function resolveSyncWindowFromState(input: {
+  endDate?: string;
+  latestSyncedDay?: string | null;
+  lookbackDays?: number;
+  startDate?: string;
+  today: string;
+}): SyncWindow {
+  if (input.startDate && input.endDate) {
+    return {
+      startDate: input.startDate,
+      endDate: input.endDate
+    };
+  }
+
+  const requestedEndDate = input.endDate ?? input.today;
+
+  if (input.startDate) {
+    return {
+      startDate: input.startDate,
+      endDate: requestedEndDate
+    };
+  }
+
+  if (typeof input.lookbackDays === "number" && input.lookbackDays > 0) {
+    return {
+      startDate: addDays(requestedEndDate, -Math.max(input.lookbackDays - 1, 0)),
+      endDate: requestedEndDate
+    };
+  }
+
+  if (input.latestSyncedDay) {
+    return {
+      startDate: addDays(input.latestSyncedDay, -SAFE_RESYNC_LOOKBACK_DAYS),
+      endDate: requestedEndDate
+    };
+  }
+
+  return {
+    startDate: addDays(requestedEndDate, -(DEFAULT_INITIAL_LOOKBACK_DAYS - 1)),
+    endDate: requestedEndDate
+  };
+}
+
 function truncateErrorMessage(error: unknown) {
   const message = error instanceof Error ? error.message : "Unknown sync error";
 
@@ -99,43 +142,14 @@ async function getLatestSyncedDayForUser(userId: string) {
 }
 
 async function resolveSyncWindow(userId: string, input: SyncWindowInput): Promise<SyncWindow> {
-  if (input.startDate && input.endDate) {
-    return {
-      startDate: input.startDate,
-      endDate: input.endDate
-    };
-  }
-
   const today = formatDate(new Date());
-  const requestedEndDate = input.endDate ?? today;
-
-  if (input.startDate) {
-    return {
-      startDate: input.startDate,
-      endDate: requestedEndDate
-    };
-  }
-
-  if (typeof input.lookbackDays === "number" && input.lookbackDays > 0) {
-    return {
-      startDate: addDays(requestedEndDate, -Math.max(input.lookbackDays - 1, 0)),
-      endDate: requestedEndDate
-    };
-  }
-
   const latestSyncedDay = await getLatestSyncedDayForUser(userId);
 
-  if (latestSyncedDay) {
-    return {
-      startDate: addDays(latestSyncedDay, -SAFE_RESYNC_LOOKBACK_DAYS),
-      endDate: requestedEndDate
-    };
-  }
-
-  return {
-    startDate: addDays(requestedEndDate, -(DEFAULT_INITIAL_LOOKBACK_DAYS - 1)),
-    endDate: requestedEndDate
-  };
+  return resolveSyncWindowFromState({
+    ...input,
+    today,
+    latestSyncedDay
+  });
 }
 
 async function persistSleepRecords(userId: string, items: OuraSleepItem[]) {
