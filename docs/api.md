@@ -31,3 +31,9 @@
 - `POST /api/sync/oura/backfill`
 - `GET /api/sync/history`
 - `GET /api/sync/status`
+
+## Oura auth behavior
+- `GET /api/integrations/oura/status`: returns local configuration state and whether a connection is currently stored
+- `POST /api/integrations/oura/connect`: creates a fresh stateful authorization URL for the current API process
+- `GET /api/integrations/oura/callback`: exchanges the OAuth code for tokens and stores the local Oura connection
+- `POST /api/integrations/oura/disconnect`: removes the stored local Oura connection
