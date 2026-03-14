@@ -1,6 +1,14 @@
 import { z } from "zod";
 
-import { getValidOuraConnection } from "./oura-connection.service.js";
+import {
+  deactivateOuraConnection,
+  getValidOuraConnection
+} from "./oura-connection.service.js";
+import {
+  OuraApiRequestError,
+  OuraAuthenticationError,
+  isLikelyOuraAuthenticationFailure
+} from "./oura-errors.js";
 
 const OURA_API_BASE_URL = "https://api.ouraring.com/v2";
 
@@ -86,7 +94,9 @@ export class OuraApiClient {
     const connection = await getValidOuraConnection();
 
     if (!connection?.isActive) {
-      throw new Error("No active Oura connection is available.");
+      throw new OuraAuthenticationError(
+        "No active Oura connection is available. Connect or reconnect Oura and try again."
+      );
     }
 
     const items: Array<z.infer<T>> = [];
@@ -111,9 +121,28 @@ export class OuraApiClient {
       const payload = await response.json().catch(() => null);
 
       if (!response.ok) {
-        throw new Error(
-          `Oura API request failed for ${path} with status ${response.status}`
+        const errorCode =
+          payload && typeof payload === "object" && "error" in payload
+            ? String(payload.error)
+            : undefined;
+
+        const requestError = new OuraApiRequestError(
+          `Oura API request failed for ${path} with status ${response.status}`,
+          {
+            source: "api",
+            status: response.status,
+            errorCode
+          }
         );
+
+        if (isLikelyOuraAuthenticationFailure(requestError)) {
+          await deactivateOuraConnection();
+          throw new OuraAuthenticationError(
+            "Oura rejected the stored authorization. Reconnect Oura and try again."
+          );
+        }
+
+        throw requestError;
       }
 
       const parsed = paginatedResponseSchema(itemSchema).parse(payload);

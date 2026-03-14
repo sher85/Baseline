@@ -9,6 +9,10 @@ import {
   refreshOuraTokens,
   type OuraTokenResponse
 } from "./oura-oauth.service.js";
+import {
+  OuraAuthenticationError,
+  isLikelyOuraAuthenticationFailure
+} from "./oura-errors.js";
 
 const TOKEN_REFRESH_BUFFER_MS = 5 * 60 * 1000;
 
@@ -24,12 +28,14 @@ function mapConnection(connection: OuraConnection | null) {
   if (!connection) {
     return {
       connected: false,
+      needsReconnect: false,
       connection: null
     } as const;
   }
 
   return {
-    connected: true,
+    connected: connection.isActive,
+    needsReconnect: !connection.isActive,
     connection: {
       isActive: connection.isActive,
       connectedAt: connection.createdAt.toISOString(),
@@ -97,6 +103,19 @@ export async function disconnectOuraConnection() {
   };
 }
 
+export async function deactivateOuraConnection() {
+  const user = await getOrCreatePrimaryUser();
+
+  return prisma.ouraConnection.updateMany({
+    where: {
+      userId: user.id
+    },
+    data: {
+      isActive: false
+    }
+  });
+}
+
 export async function getValidOuraConnection() {
   const user = await getOrCreatePrimaryUser();
   const connection = await prisma.ouraConnection.findUnique({
@@ -116,7 +135,21 @@ export async function getValidOuraConnection() {
     return connection;
   }
 
-  const refreshedTokens = await refreshOuraTokens(connection.refreshToken);
+  try {
+    const refreshedTokens = await refreshOuraTokens(connection.refreshToken);
 
-  return storeOuraConnection(refreshedTokens, refreshedTokens.scope ?? connection.scope ?? undefined);
+    return storeOuraConnection(
+      refreshedTokens,
+      refreshedTokens.scope ?? connection.scope ?? undefined
+    );
+  } catch (error) {
+    if (isLikelyOuraAuthenticationFailure(error)) {
+      await deactivateOuraConnection();
+      throw new OuraAuthenticationError(
+        "Stored Oura authorization is no longer valid. Reconnect Oura and try again."
+      );
+    }
+
+    throw error;
+  }
 }

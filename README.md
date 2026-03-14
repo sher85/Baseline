@@ -119,6 +119,7 @@ Important notes:
 - use the URL returned by `/api/integrations/oura/connect`, not Oura’s dashboard example URL
 - the redirect URI must match exactly
 - if you get `invalid_state`, generate a fresh auth URL from the currently running API process
+- if Oura later rejects the stored token, the app will mark the connection inactive and require a reconnect before the next sync
 
 ## Local verification tour
 Health and setup:
@@ -164,6 +165,14 @@ Tests:
 ```bash
 npm run test --workspace @wearable-analytics/api
 ```
+
+Reconnect check:
+
+```bash
+curl http://localhost:4000/api/integrations/oura/status
+```
+
+If the response shows `needsReconnect: true`, reconnect Oura locally before running the next sync.
 
 ## Scheduled sync
 The API supports a daily scheduled Oura sync that reuses the same ingestion path as manual sync.

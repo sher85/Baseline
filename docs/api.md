@@ -36,15 +36,17 @@
 - `GET /api/sync/status`
 
 ## Oura auth behavior
-- `GET /api/integrations/oura/status`: returns local configuration state and whether a connection is currently stored
+- `GET /api/integrations/oura/status`: returns local configuration state, whether a connection is currently active, and whether the local user needs to reconnect
 - `POST /api/integrations/oura/connect`: creates a fresh stateful authorization URL for the current API process
 - `GET /api/integrations/oura/callback`: exchanges the OAuth code for tokens and stores the local Oura connection
 - `POST /api/integrations/oura/disconnect`: removes the stored local Oura connection
+- if Oura rejects a stored token during refresh or API access, the connection is marked inactive so the next status check can surface `needsReconnect: true`
 
 ## Sync behavior
 - `POST /api/sync/oura/run`: runs an immediate manual sync against Oura and stores normalized sleep, readiness, and activity data
 - request body accepts optional `startDate`, `endDate`, and `lookbackDays`
 - if no date range is supplied, the sync defaults to an incremental window
+- returns `401` with `reauthenticationRequired: true` when the local Oura authorization is missing, expired, or revoked
 - `GET /api/sync/status`: returns whether a sync is running and the latest sync run
 - `GET /api/sync/history`: returns recent sync runs for the local user
 - scheduled sync reuses the same ingestion path and records `mode: scheduled` in `SyncRun`

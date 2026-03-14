@@ -135,7 +135,8 @@ export async function getLatestOverview() {
     },
     connection: {
       connected: connection.connected,
-      configured: connection.configured
+      configured: connection.configured,
+      needsReconnect: connection.needsReconnect
     }
   };
 }

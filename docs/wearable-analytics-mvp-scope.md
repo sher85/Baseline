@@ -261,7 +261,7 @@ Requirements:
 - [x] Connect Oura account.
 - [x] Store tokens securely in local DB or local env-safe mechanism.
 - [x] Refresh tokens as needed.
-- [ ] Handle revoked or expired access gracefully.
+- [x] Handle revoked or expired access gracefully.
 - [x] Surface current connection status in API and UI.
 
 Suggested endpoints:

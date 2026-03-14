@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 
+import { isOuraAuthenticationError } from "../modules/oura/oura-errors.js";
 import {
   getOuraSyncHistory,
   getOuraSyncStatus,
@@ -53,10 +54,15 @@ syncRouter.post("/oura/run", async (request, response) => {
     response.status(201).json(result);
   } catch (error) {
     const message = error instanceof Error ? error.message : "Unknown sync error";
-    const statusCode = message.includes("already running") ? 409 : 500;
+    const statusCode = isOuraAuthenticationError(error)
+      ? 401
+      : message.includes("already running")
+        ? 409
+        : 500;
 
     response.status(statusCode).json({
-      error: message
+      error: message,
+      ...(statusCode === 401 ? { reauthenticationRequired: true } : {})
     });
   }
 });

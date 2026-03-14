@@ -9,6 +9,21 @@ export default async function HomePage() {
   const overview = await getOverviewData();
   const leadAnomaly = overview.anomalies[0] ?? null;
   const isFallback = overview.source === "fallback";
+  const connectionLabel = overview.connection.needsReconnect
+    ? "Reconnect Oura"
+    : overview.connection.connected
+      ? "Oura connected"
+      : "Oura disconnected";
+  const connectionTone = overview.connection.needsReconnect
+    ? "warning"
+    : overview.connection.connected
+      ? "positive"
+      : "neutral";
+  const connectionDetail = overview.connection.needsReconnect
+    ? "The stored Oura authorization is no longer valid. Reconnect locally to resume sync."
+    : overview.connection.configured
+      ? "OAuth is configured locally."
+      : "Add local Oura credentials to enable live sync.";
 
   return (
     <main className="page-shell">
@@ -29,11 +44,9 @@ export default async function HomePage() {
               {isFallback ? "Preview mode" : "Live analytics"}
             </span>
             <span
-              className={`status-pill ${
-                overview.connection.connected ? "positive" : "neutral"
-              }`}
+              className={`status-pill ${connectionTone}`}
             >
-              {overview.connection.connected ? "Oura connected" : "Oura disconnected"}
+              {connectionLabel}
             </span>
             <span className="status-pill neutral">
               Sync {overview.sync.running ? "running" : overview.sync.latestStatus}
@@ -87,14 +100,8 @@ export default async function HomePage() {
         </article>
         <article className="status-card">
           <p className="eyebrow">Connection</p>
-          <strong className="status-title">
-            {overview.connection.connected ? "Oura connected" : "Oura not connected"}
-          </strong>
-          <span className="metric-detail">
-            {overview.connection.configured
-              ? "OAuth is configured locally."
-              : "Add local Oura credentials to enable live sync."}
-          </span>
+          <strong className="status-title">{connectionLabel}</strong>
+          <span className="metric-detail">{connectionDetail}</span>
         </article>
       </section>
 

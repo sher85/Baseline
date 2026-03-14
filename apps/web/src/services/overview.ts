@@ -15,6 +15,7 @@ export type OverviewResponse = {
   connection: {
     configured: boolean;
     connected: boolean;
+    needsReconnect?: boolean;
   };
   day: string;
   generatedAt: string;
@@ -51,7 +52,8 @@ const fallbackOverview: OverviewResponse = {
   },
   connection: {
     connected: false,
-    configured: false
+    configured: false,
+    needsReconnect: false
   }
 };
 

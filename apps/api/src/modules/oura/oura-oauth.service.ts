@@ -3,6 +3,7 @@ import { randomBytes } from "node:crypto";
 import { z } from "zod";
 
 import { env } from "../../config/env.js";
+import { OuraApiRequestError } from "./oura-errors.js";
 
 const ouraTokenResponseSchema = z.object({
   token_type: z.literal("bearer"),
@@ -82,12 +83,18 @@ async function requestOuraToken(body: URLSearchParams) {
   const payload = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(
-      `Oura token request failed with status ${response.status}${
-        payload && typeof payload === "object" && "error" in payload
-          ? `: ${String(payload.error)}`
-          : ""
-      }`
+    const errorCode =
+      payload && typeof payload === "object" && "error" in payload
+        ? String(payload.error)
+        : undefined;
+
+    throw new OuraApiRequestError(
+      `Oura token request failed with status ${response.status}${errorCode ? `: ${errorCode}` : ""}`,
+      {
+        source: "oauth",
+        status: response.status,
+        errorCode
+      }
     );
   }
 
