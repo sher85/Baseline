@@ -1,3 +1,4 @@
+import { PageEmptyState } from "../../components/page-empty-state";
 import { SiteHeader } from "../../components/site-header";
 import { TrendChart } from "../../components/trend-chart";
 import {
@@ -14,6 +15,11 @@ export default async function TrendsPage() {
     getTrendData("7d"),
     getTrendData("30d")
   ]);
+  const hasTrendData =
+    sevenDay.series.some((point) => point.recoveryScore !== null || point.sleepSeconds !== null) ||
+    thirtyDay.series.some(
+      (point) => point.hrv !== null || point.temperatureDeviation !== null
+    );
 
   const sevenDayRecovery = sevenDay.series.map((point) => ({
     label: formatShortDate(point.day),
@@ -34,6 +40,32 @@ export default async function TrendsPage() {
     label: formatShortDate(point.day),
     value: point.temperatureDeviation
   }));
+
+  if (!hasTrendData) {
+    return (
+      <main className="page-shell">
+        <SiteHeader currentPath="/trends" />
+        <section className="page-intro">
+          <div>
+            <p className="eyebrow">Trends</p>
+            <h1>Short arc, long arc, same deterministic foundation.</h1>
+          </div>
+          <p className="hero-text">
+            This view depends on enough synced history to show 7-day and 30-day movement.
+          </p>
+        </section>
+        <PageEmptyState
+          eyebrow="Trend History"
+          title="There is not enough trend data yet."
+          description="Once the local database has enough sleep and recovery history, this page will show the short-term and long-term arcs for recovery, HRV, temperature, and sleep."
+          primaryHref="/"
+          primaryLabel="Back to overview"
+          secondaryHref="/sleep"
+          secondaryLabel="Open sleep page"
+        />
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">

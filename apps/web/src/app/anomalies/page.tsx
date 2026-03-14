@@ -1,3 +1,4 @@
+import { PageEmptyState } from "../../components/page-empty-state";
 import { SiteHeader } from "../../components/site-header";
 import { formatOverviewDate, formatShortDate } from "../../lib/format";
 import { getRecentAnomalyData, getTrendData } from "../../services/analytics";
@@ -16,6 +17,33 @@ export default async function AnomaliesPage() {
     getTrendData("30d")
   ]);
   const latestAnomaly = recentAnomalies.items[0] ?? null;
+  const hasRecentHistory = recentAnomalies.items.length > 0 || recentTrends.series.length > 0;
+
+  if (!hasRecentHistory) {
+    return (
+      <main className="page-shell">
+        <SiteHeader currentPath="/anomalies" />
+        <section className="page-intro">
+          <div>
+            <p className="eyebrow">Anomalies</p>
+            <h1>Flagged days, explained without drama.</h1>
+          </div>
+          <p className="hero-text">
+            Anomaly history appears here once the analytics engine has enough recent days to evaluate.
+          </p>
+        </section>
+        <PageEmptyState
+          eyebrow="Anomaly History"
+          title="No anomaly history is available yet."
+          description="This can mean either the API is offline or the project does not yet have enough synced recovery history to evaluate the anomaly rules over time."
+          primaryHref="/"
+          primaryLabel="Back to overview"
+          secondaryHref="/recovery"
+          secondaryLabel="Open recovery page"
+        />
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">

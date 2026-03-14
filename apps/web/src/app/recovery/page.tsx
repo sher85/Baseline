@@ -1,3 +1,4 @@
+import { PageEmptyState } from "../../components/page-empty-state";
 import { SiteHeader } from "../../components/site-header";
 import { TrendChart } from "../../components/trend-chart";
 import {
@@ -46,11 +47,36 @@ export default async function RecoveryPage() {
     getRecoveryDetailData(),
     getTrendData("30d")
   ]);
+  const hasTrendData = trends.series.some((point) => point.recoveryScore !== null);
 
   const chartData = trends.series.map((point) => ({
     label: formatShortDate(point.day),
     score: point.recoveryScore
   }));
+
+  if (!recovery && !hasTrendData) {
+    return (
+      <main className="page-shell">
+        <SiteHeader currentPath="/recovery" />
+        <section className="page-intro">
+          <div>
+            <p className="eyebrow">Recovery</p>
+            <h1>Transparent scoring, anchored to your own baseline.</h1>
+          </div>
+          <p className="hero-text">
+            This surface becomes meaningful only after the local analytics engine has computed recovery signals.
+          </p>
+        </section>
+        <PageEmptyState
+          eyebrow="Recovery Data"
+          title="No recovery analytics are available yet."
+          description="Run a sync and let the API compute baselines, factor contributions, and anomaly rules. Once that pipeline has data, this page will show the full recovery explanation."
+          primaryHref="/"
+          primaryLabel="Back to overview"
+        />
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">

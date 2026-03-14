@@ -20,6 +20,7 @@ export type OverviewResponse = {
   generatedAt: string;
   metrics: OverviewMetric[];
   notes: string[];
+  source: "fallback" | "live";
   sync: {
     lastSyncedAt: string | null;
     latestStatus: string;
@@ -42,6 +43,7 @@ const fallbackOverview: OverviewResponse = {
     "Once connected, this dashboard will render live recovery analytics."
   ],
   anomalies: [],
+  source: "fallback",
   sync: {
     running: false,
     latestStatus: "offline",
@@ -66,7 +68,10 @@ export async function getOverviewData(): Promise<OverviewResponse> {
       return fallbackOverview;
     }
 
-    return (await response.json()) as OverviewResponse;
+    return {
+      ...(await response.json()),
+      source: "live"
+    } as OverviewResponse;
   } catch {
     return fallbackOverview;
   }

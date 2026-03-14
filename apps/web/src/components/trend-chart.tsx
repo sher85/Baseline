@@ -35,6 +35,23 @@ export function TrendChart({
   decimals = 0,
   suffix = ""
 }: TrendChartProps) {
+  const hasData = data.some((item) => {
+    const value = item[dataKey];
+
+    return typeof value === "number" && Number.isFinite(value);
+  });
+
+  if (!hasData) {
+    return (
+      <div className="chart-empty">
+        <strong>{label} will appear after more sync history accumulates.</strong>
+        <span className="metric-detail">
+          Once the local API has enough data for this surface, the trend chart will render here.
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div className="chart-frame">
       <ResponsiveContainer width="100%" height={280}>

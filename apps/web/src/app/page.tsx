@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PageEmptyState } from "../components/page-empty-state";
 import { SiteHeader } from "../components/site-header";
 import { formatOverviewDate, formatSyncTime } from "../lib/format";
 import { getOverviewData } from "../services/overview";
@@ -7,6 +8,7 @@ import { getOverviewData } from "../services/overview";
 export default async function HomePage() {
   const overview = await getOverviewData();
   const leadAnomaly = overview.anomalies[0] ?? null;
+  const isFallback = overview.source === "fallback";
 
   return (
     <main className="page-shell">
@@ -22,9 +24,34 @@ export default async function HomePage() {
             built to feel premium while staying explicit, interpretable, and
             engineer-grade.
           </p>
+          <div className="hero-meta">
+            <span className={`status-pill ${isFallback ? "warning" : "positive"}`}>
+              {isFallback ? "Preview mode" : "Live analytics"}
+            </span>
+            <span
+              className={`status-pill ${
+                overview.connection.connected ? "positive" : "neutral"
+              }`}
+            >
+              {overview.connection.connected ? "Oura connected" : "Oura disconnected"}
+            </span>
+            <span className="status-pill neutral">
+              Sync {overview.sync.running ? "running" : overview.sync.latestStatus}
+            </span>
+          </div>
         </div>
         <div className="hero-orb" aria-hidden="true" />
       </section>
+
+      {isFallback ? (
+        <PageEmptyState
+          eyebrow="API Status"
+          title="The dashboard is in local fallback mode."
+          description="The web app is running, but the live API data is not available yet. Start the backend or reconnect Oura to replace these placeholders with real analytics."
+          primaryHref="/sleep"
+          primaryLabel="View product surfaces"
+        />
+      ) : null}
 
       <section className="metric-grid">
         {overview.metrics.map((metric) => (

@@ -1,3 +1,4 @@
+import { PageEmptyState } from "../../components/page-empty-state";
 import { SiteHeader } from "../../components/site-header";
 import { TrendChart } from "../../components/trend-chart";
 import {
@@ -30,6 +31,31 @@ export default async function SleepPage() {
         ? null
         : Number((point.sleepSeconds / 3600).toFixed(2))
   }));
+  const hasTrendData = trends.series.some((point) => point.sleepSeconds !== null);
+
+  if (!sleep && !hasTrendData) {
+    return (
+      <main className="page-shell">
+        <SiteHeader currentPath="/sleep" />
+        <section className="page-intro">
+          <div>
+            <p className="eyebrow">Sleep</p>
+            <h1>Nightly sleep, with context instead of guesswork.</h1>
+          </div>
+          <p className="hero-text">
+            This surface needs synced sleep data before it can explain nightly patterns.
+          </p>
+        </section>
+        <PageEmptyState
+          eyebrow="Sleep Data"
+          title="No sleep data is available yet."
+          description="Connect Oura and run a sync, or start the local API if it is offline. Once sleep data lands, this page will render trend charts, nightly timing, and baseline-aware context."
+          primaryHref="/"
+          primaryLabel="Back to overview"
+        />
+      </main>
+    );
+  }
 
   return (
     <main className="page-shell">
