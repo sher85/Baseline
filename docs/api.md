@@ -1,6 +1,6 @@
 # API
 
-## Planned surface
+## Implemented surface
 
 ### Health
 - `GET /health`

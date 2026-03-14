@@ -8,6 +8,19 @@ Build a **TypeScript-first, local-first, single-user wearable analytics platform
 
 This document is the execution brief for the repository.
 
+## Current status
+MVP status: **complete**
+
+What remains after MVP:
+- screenshots or demo GIFs for repo presentation
+- optional README polish
+- stretch goals such as CSV import, cloud deployment, additional vendors, and multi-user support
+
+Unchecked items in this document are now either:
+- stretch goals
+- optional presentation work
+- subjective quality-bar statements rather than binary feature gates
+
 ---
 
 ## Product summary
@@ -802,6 +815,12 @@ The MVP is complete when all of the following are true:
 - [x] Add AI endpoints
 - [x] Add scheduled sync
 - [ ] Add stretch goals
+
+---
+
+## Remaining non-MVP work
+- [ ] Add screenshots or demo GIFs
+- [ ] Add stretch goals when desired
 
 ---
 

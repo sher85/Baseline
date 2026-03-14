@@ -36,6 +36,8 @@ flowchart LR
   API --> AI
 ```
 
+GitHub renders the Mermaid diagram cleanly. Some local Markdown previewers may not.
+
 ## Why this exists
 - prove a principal-engineer-grade backend for wearable data
 - show product taste on the frontend without losing scientific clarity
