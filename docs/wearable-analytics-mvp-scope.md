@@ -167,12 +167,12 @@ wearable-analytics/
 
 ### Goal 3: Analytics engine
 - [ ] Compute last-night sleep summary.
-- [ ] Compute HRV baseline and deviation.
-- [ ] Compute resting heart rate baseline and deviation.
-- [ ] Compute temperature deviation from baseline.
-- [ ] Compute recovery score v1.
-- [ ] Generate explanation for the recovery score.
-- [ ] Generate deterministic anomaly flags.
+- [x] Compute HRV baseline and deviation.
+- [x] Compute resting heart rate baseline and deviation.
+- [x] Compute temperature deviation from baseline.
+- [x] Compute recovery score v1.
+- [x] Generate explanation for the recovery score.
+- [x] Generate deterministic anomaly flags.
 
 ### Goal 4: Dashboard
 - [ ] Build overview page.
@@ -425,10 +425,10 @@ Fields:
 
 ### Baselines
 Compute rolling personal baselines for:
-- [ ] HRV
-- [ ] Resting heart rate
-- [ ] Temperature deviation
-- [ ] Sleep duration
+- [x] HRV
+- [x] Resting heart rate
+- [x] Temperature deviation
+- [x] Sleep duration
 
 Suggested default approach:
 - 21-day rolling baseline for HRV and resting HR
@@ -447,10 +447,10 @@ Inputs:
 - [ ] Temperature deviation from baseline
 
 Requirements:
-- [ ] Keep formula explainable.
-- [ ] Return a numerical score.
-- [ ] Return factor breakdowns.
-- [ ] Return a short human-readable explanation.
+- [x] Keep formula explainable.
+- [x] Return a numerical score.
+- [x] Return factor breakdowns.
+- [x] Return a short human-readable explanation.
 - [ ] Do not claim clinical accuracy.
 
 Example explanation:
@@ -458,10 +458,10 @@ Example explanation:
 
 ### Anomaly detection
 Flag notable conditions such as:
-- [ ] HRV significantly below baseline
-- [ ] Resting HR significantly above baseline
-- [ ] Temperature deviation beyond threshold
-- [ ] Very short sleep compared with baseline
+- [x] HRV significantly below baseline
+- [x] Resting HR significantly above baseline
+- [x] Temperature deviation beyond threshold
+- [x] Very short sleep compared with baseline
 
 Anomalies should be deterministic and threshold-based for v1.
 
@@ -472,11 +472,11 @@ Anomalies should be deterministic and threshold-based for v1.
 ### Dashboard endpoints
 - [ ] `GET /api/overview/latest`
 - [ ] `GET /api/sleep/latest`
-- [ ] `GET /api/recovery/latest`
+- [x] `GET /api/recovery/latest`
 - [ ] `GET /api/trends?window=7d`
 - [ ] `GET /api/trends?window=30d`
-- [ ] `GET /api/anomalies/latest`
-- [ ] `GET /api/baselines/latest`
+- [x] `GET /api/anomalies/latest`
+- [x] `GET /api/baselines/latest`
 
 ### AI-facing endpoints
 - [ ] `GET /api/ai/daily-brief`
@@ -695,10 +695,10 @@ Done when:
 
 ## Milestone 4 - Analytics engine
 Deliver:
-- [ ] Baseline calculations
-- [ ] Recovery score v1
-- [ ] Anomaly rules
-- [ ] Explanation generator
+- [x] Baseline calculations
+- [x] Recovery score v1
+- [x] Anomaly rules
+- [x] Explanation generator
 - [ ] Trend aggregation helpers
 
 Done when:

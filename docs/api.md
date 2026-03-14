@@ -44,3 +44,8 @@
 - if no date range is supplied, the sync defaults to an incremental window
 - `GET /api/sync/status`: returns whether a sync is running and the latest sync run
 - `GET /api/sync/history`: returns recent sync runs for the local user
+
+## Analytics behavior
+- `GET /api/baselines/latest`: computes or returns the latest rolling baseline snapshot
+- `GET /api/recovery/latest`: computes or returns the latest recovery score and explanation
+- `GET /api/anomalies/latest`: returns deterministic anomaly flags for the latest day
