@@ -13,14 +13,14 @@ This document is the execution brief for the repository.
 ## Product summary
 The system should:
 
-- [ ] Sync wearable data from **Oura API** into a **local PostgreSQL** database.
-- [ ] Normalize vendor data into app-owned tables.
-- [ ] Compute baseline-aware analytics for sleep, HRV, resting HR, temperature deviation, and recovery.
-- [ ] Expose deterministic backend endpoints that an AI health-coach agent can read.
-- [ ] Render the analytics in a **Next.js** dashboard.
-- [ ] Support **manual sync** and **scheduled sync**.
+- [x] Sync wearable data from **Oura API** into a **local PostgreSQL** database.
+- [x] Normalize vendor data into app-owned tables.
+- [x] Compute baseline-aware analytics for sleep, HRV, resting HR, temperature deviation, and recovery.
+- [x] Expose deterministic backend endpoints that an AI health-coach agent can read.
+- [x] Render the analytics in a **Next.js** dashboard.
+- [x] Support **manual sync** and **scheduled sync**.
 - [ ] Support **CSV fallback ingestion** later as a stretch goal.
-- [ ] Stay **public-repo-safe**, with real personal data stored only locally.
+- [x] Stay **public-repo-safe**, with real personal data stored only locally.
 
 ---
 
@@ -151,19 +151,19 @@ wearable-analytics/
 ## MVP goals
 
 ### Goal 1: Oura API sync
-- [ ] Authenticate against Oura API.
-- [ ] Sync the current user’s wearable data into PostgreSQL.
+- [x] Authenticate against Oura API.
+- [x] Sync the current user’s wearable data into PostgreSQL.
 - [x] Support manual sync and scheduled sync.
 - [x] Support incremental sync windows.
 - [x] Log sync status, timestamps, and failures.
 
 ### Goal 2: Normalized data model
-- [ ] Store app-owned normalized records for daily sleep summary.
-- [ ] Store app-owned normalized records for daily readiness and recovery inputs.
-- [ ] Store app-owned normalized records for daily activity summary.
-- [ ] Store trends and computed metrics.
-- [ ] Store sync metadata.
-- [ ] Do **not** persist raw Oura payload blobs.
+- [x] Store app-owned normalized records for daily sleep summary.
+- [x] Store app-owned normalized records for daily readiness and recovery inputs.
+- [x] Store app-owned normalized records for daily activity summary.
+- [x] Store trends and computed metrics.
+- [x] Store sync metadata.
+- [x] Do **not** persist raw Oura payload blobs.
 
 ### Goal 3: Analytics engine
 - [x] Compute last-night sleep summary.
@@ -195,17 +195,17 @@ wearable-analytics/
 ## Scope boundaries
 
 ### In scope for MVP
-- [ ] Single-user app
-- [ ] Local PostgreSQL database
+- [x] Single-user app
+- [x] Local PostgreSQL database
 - [x] Oura API integration
 - [x] Scheduled and manual sync
-- [ ] Normalized relational schema
-- [ ] Transparent custom recovery score
-- [ ] Explanation engine
-- [ ] Browser dashboard
-- [ ] Seeded demo data
-- [ ] Public-repo-safe structure
-- [ ] AI-facing summary endpoints
+- [x] Normalized relational schema
+- [x] Transparent custom recovery score
+- [x] Explanation engine
+- [x] Browser dashboard
+- [x] Seeded demo data
+- [x] Public-repo-safe structure
+- [x] AI-facing summary endpoints
 
 ### Out of scope for MVP
 - Bluetooth or device-level communication
@@ -258,9 +258,9 @@ The backend should remain the deterministic truth layer.
 The backend must support connecting a single Oura account and storing whatever credentials or tokens are needed for future syncs.
 
 Requirements:
-- [ ] Connect Oura account.
-- [ ] Store tokens securely in local DB or local env-safe mechanism.
-- [ ] Refresh tokens as needed.
+- [x] Connect Oura account.
+- [x] Store tokens securely in local DB or local env-safe mechanism.
+- [x] Refresh tokens as needed.
 - [ ] Handle revoked or expired access gracefully.
 - [x] Surface current connection status in API and UI.
 
@@ -274,7 +274,7 @@ Suggested endpoints:
 ## 2. Sync engine
 The system must support:
 - [x] Manual sync initiation
-- [ ] Scheduled daily sync
+- [x] Scheduled daily sync
 - [x] Incremental sync by time window
 - [ ] Manual backfill action
 - [x] Sync history visibility
@@ -417,7 +417,7 @@ Fields:
 - `updatedAt`
 
 ### Seed data
-- [ ] Provide fake demo records so the app can run without a real Oura account.
+- [x] Provide fake demo records so the app can run without a real Oura account.
 
 ---
 
@@ -441,10 +441,10 @@ The exact windows can be configuration values.
 Create a transparent app-owned score from 0 to 100.
 
 Inputs:
-- [ ] HRV deviation from baseline
-- [ ] Resting HR deviation from baseline
-- [ ] Sleep duration deviation from baseline
-- [ ] Temperature deviation from baseline
+- [x] HRV deviation from baseline
+- [x] Resting HR deviation from baseline
+- [x] Sleep duration deviation from baseline
+- [x] Temperature deviation from baseline
 
 Requirements:
 - [x] Keep formula explainable.
@@ -506,13 +506,13 @@ At minimum:
 
 #### Overview
 Show:
-- [ ] Last-night sleep total
-- [ ] HRV versus baseline
-- [ ] Resting HR versus baseline
-- [ ] Temperature deviation
-- [ ] Current recovery score
-- [ ] Latest anomaly cards
-- [ ] Sync status card
+- [x] Last-night sleep total
+- [x] HRV versus baseline
+- [x] Resting HR versus baseline
+- [x] Temperature deviation
+- [x] Current recovery score
+- [x] Latest anomaly cards
+- [x] Sync status card
 
 #### Sleep
 Show:
@@ -559,11 +559,11 @@ For MVP, a lightweight scheduler is acceptable.
 No queueing system is required unless implementation clearly benefits from one.
 
 Required:
-- [ ] Manual sync route
-- [ ] Scheduled daily sync
-- [ ] Sync history
-- [ ] Duplicate-run protection
-- [ ] Basic retry or rerun support
+- [x] Manual sync route
+- [x] Scheduled daily sync
+- [x] Sync history
+- [x] Duplicate-run protection
+- [x] Basic retry or rerun support
 
 Possible implementation options:
 - cron-based scheduler inside backend
@@ -576,22 +576,22 @@ Possible implementation options:
 
 ### The app must run locally
 Requirements:
-- [ ] Local PostgreSQL
-- [ ] Local API server
-- [ ] Local Next.js frontend
-- [ ] Local environment variables
-- [ ] Seed script for demo data
-- [ ] Dev scripts that are easy to run
+- [x] Local PostgreSQL
+- [x] Local API server
+- [x] Local Next.js frontend
+- [x] Local environment variables
+- [x] Seed script for demo data
+- [x] Dev scripts that are easy to run
 
 Suggested npm scripts:
-- [ ] `dev:api`
-- [ ] `dev:web`
-- [ ] `dev`
-- [ ] `db:migrate`
-- [ ] `db:seed`
-- [ ] `sync:oura`
-- [ ] `build`
-- [ ] `test`
+- [x] `dev:api`
+- [x] `dev:web`
+- [x] `dev`
+- [x] `db:migrate`
+- [x] `db:seed`
+- [x] `sync:oura`
+- [x] `build`
+- [x] `test`
 
 ### Local private data
 Create a gitignored folder such as:
@@ -634,15 +634,15 @@ Minimum docs to create:
 - [x] `docs/api.md`
 
 ### README should cover
-- [ ] What the project is
-- [ ] Why it exists
-- [ ] Stack
-- [ ] Local setup
-- [ ] Environment variables
-- [ ] Demo data mode
-- [ ] Oura integration setup
-- [ ] Roadmap
-- [ ] Privacy note
+- [x] What the project is
+- [x] Why it exists
+- [x] Stack
+- [x] Local setup
+- [x] Environment variables
+- [x] Demo data mode
+- [x] Oura integration setup
+- [x] Roadmap
+- [x] Privacy note
 
 ---
 
@@ -662,7 +662,7 @@ Done when:
 - [x] Repo installs cleanly
 - [x] DB migrates
 - [x] Seed data loads
-- [ ] Frontend and backend both run locally
+- [x] Frontend and backend both run locally
 
 ---
 
@@ -684,13 +684,13 @@ Done when:
 
 ## Milestone 3 - Normalized storage
 Deliver:
-- [ ] Normalized schema implementation
-- [ ] Mappers from Oura responses to app-owned records
-- [ ] Upsert and update behavior
-- [ ] No raw payload persistence
+- [x] Normalized schema implementation
+- [x] Mappers from Oura responses to app-owned records
+- [x] Upsert and update behavior
+- [x] No raw payload persistence
 
 Done when:
-- [ ] Daily sleep, recovery inputs, and activity rows are populated correctly
+- [x] Daily sleep, recovery inputs, and activity rows are populated correctly
 
 ---
 
@@ -747,20 +747,20 @@ Possible stretch items:
 ## Acceptance criteria for MVP
 The MVP is complete when all of the following are true:
 
-- [ ] The project runs locally from a fresh clone using seed data.
-- [ ] The backend and frontend run successfully.
-- [ ] The database schema is stable and normalized.
-- [ ] A real local user can connect an Oura account.
-- [ ] Manual sync works.
+- [x] The project runs locally from a fresh clone using seed data.
+- [x] The backend and frontend run successfully.
+- [x] The database schema is stable and normalized.
+- [x] A real local user can connect an Oura account.
+- [x] Manual sync works.
 - [ ] Daily scheduled sync works.
-- [ ] Oura data is mapped into normalized tables.
-- [ ] The app computes baseline-aware analytics.
-- [ ] The app computes a transparent custom recovery score.
-- [ ] The app shows overview, recovery, sleep, trends, and anomalies in the browser.
-- [ ] The backend exposes AI-friendly summary endpoints.
-- [ ] No real personal data is committed.
-- [ ] No raw payloads are stored.
-- [ ] Documentation is clear enough for another engineer to run the project.
+- [x] Oura data is mapped into normalized tables.
+- [x] The app computes baseline-aware analytics.
+- [x] The app computes a transparent custom recovery score.
+- [x] The app shows overview, recovery, sleep, trends, and anomalies in the browser.
+- [x] The backend exposes AI-friendly summary endpoints.
+- [x] No real personal data is committed.
+- [x] No raw payloads are stored.
+- [x] Documentation is clear enough for another engineer to run the project.
 
 ---
 
@@ -790,17 +790,17 @@ The MVP is complete when all of the following are true:
 
 ## Recommended implementation order
 - [x] Scaffold monorepo
-- [ ] Add Prisma schema and migrations
+- [x] Add Prisma schema and migrations
 - [x] Add seed data
 - [x] Build backend health check and DB check endpoints
 - [x] Build frontend shell
-- [ ] Add Oura connection flow
-- [ ] Add manual sync
-- [ ] Add normalized storage
-- [ ] Add baselines and recovery score
-- [ ] Add overview dashboard
-- [ ] Add AI endpoints
-- [ ] Add scheduled sync
+- [x] Add Oura connection flow
+- [x] Add manual sync
+- [x] Add normalized storage
+- [x] Add baselines and recovery score
+- [x] Add overview dashboard
+- [x] Add AI endpoints
+- [x] Add scheduled sync
 - [ ] Add stretch goals
 
 ---
