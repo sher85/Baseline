@@ -22,6 +22,71 @@ function formatClockTime(isoDate: string | null) {
   }).format(new Date(isoDate));
 }
 
+function formatClockMinutes(clockMinutes: number | null) {
+  if (clockMinutes === null) {
+    return "--";
+  }
+
+  const hours24 = Math.floor(clockMinutes / 60);
+  const minutes = clockMinutes % 60;
+  const suffix = hours24 >= 12 ? "PM" : "AM";
+  const hours12 = ((hours24 + 11) % 12) + 1;
+
+  return `${hours12}:${minutes.toString().padStart(2, "0")} ${suffix}`;
+}
+
+function formatSignedClockOffset(minutes: number | null) {
+  if (minutes === null) {
+    return "--";
+  }
+
+  if (minutes === 0) {
+    return "On your recent midpoint";
+  }
+
+  const sign = minutes > 0 ? "+" : "-";
+
+  return `${sign}${Math.abs(minutes)} min from your 7-night midpoint`;
+}
+
+function getConsistencyTone(status: "mixed" | "steady" | "variable" | "warming_up") {
+  if (status === "steady") {
+    return "positive";
+  }
+
+  if (status === "mixed") {
+    return "neutral";
+  }
+
+  if (status === "warming_up") {
+    return "neutral";
+  }
+
+  return "negative";
+}
+
+function getConsistencyLabel(status: "mixed" | "steady" | "variable" | "warming_up") {
+  switch (status) {
+    case "steady":
+      return "Steady window";
+    case "mixed":
+      return "Some drift";
+    case "warming_up":
+      return "Warming up";
+    default:
+      return "Variable timing";
+  }
+}
+
+function bedtimeTrackPercent(clockMinutes: number) {
+  const normalized = clockMinutes < 12 * 60 ? clockMinutes + 24 * 60 : clockMinutes;
+  const windowStart = 20 * 60;
+  const windowEnd = 28 * 60;
+  const clamped = Math.min(Math.max(normalized, windowStart), windowEnd);
+
+  return ((clamped - windowStart) / (windowEnd - windowStart)) * 100;
+}
+
 export default async function SleepPage() {
   const [sleep, trends] = await Promise.all([getSleepData(), getTrendData("7d")]);
   const chartData = trends.series.map((point) => ({
@@ -163,6 +228,92 @@ export default async function SleepPage() {
             </div>
           </dl>
         </article>
+      </section>
+
+      <section className="list-panel">
+        <div className="card-header">
+          <div>
+            <p className="eyebrow">Bedtime Consistency</p>
+            <h2>How tightly your sleep timing holds</h2>
+          </div>
+          {sleep?.consistency ? (
+            <span className={`data-badge ${getConsistencyTone(sleep.consistency.status)}`}>
+              {getConsistencyLabel(sleep.consistency.status)}
+            </span>
+          ) : null}
+        </div>
+
+        {sleep?.consistency ? (
+          <>
+            <div className="metric-grid consistency-metrics">
+              <article className="metric-card">
+                <span className="metric-label">7-night midpoint</span>
+                <strong className="metric-value">
+                  {formatClockMinutes(sleep.consistency.averageClockMinutes)}
+                </strong>
+                <span className="metric-detail">Your recent center of gravity for bedtime.</span>
+              </article>
+              <article className="metric-card">
+                <span className="metric-label">Average nightly drift</span>
+                <strong className="metric-value">
+                  {sleep.consistency.averageDeviationMinutes} min
+                </strong>
+                <span className="metric-detail">
+                  Smaller values mean your nightly timing is more repeatable.
+                </span>
+              </article>
+              <article className="metric-card">
+                <span className="metric-label">Latest night</span>
+                <strong className="metric-value">
+                  {formatSignedClockOffset(sleep.consistency.latestOffsetMinutes)}
+                </strong>
+                <span className="metric-detail">
+                  Relative to your recent bedtime midpoint.
+                </span>
+              </article>
+            </div>
+
+            <div className="bedtime-visual">
+              <div className="bedtime-axis">
+                <span>8 PM</span>
+                <span>10 PM</span>
+                <span>12 AM</span>
+                <span>2 AM</span>
+                <span>4 AM</span>
+              </div>
+              <div className="bedtime-list">
+                {sleep.consistency.recent.map((entry) => (
+                  <div key={entry.day} className="bedtime-row">
+                    <span className="bedtime-day">{formatShortDate(entry.day)}</span>
+                    <div className="bedtime-track">
+                      <span
+                        className="bedtime-midpoint"
+                        style={{
+                          left: `${bedtimeTrackPercent(sleep.consistency!.averageClockMinutes)}%`
+                        }}
+                      />
+                      <span
+                        className="bedtime-dot"
+                        style={{
+                          left: `${bedtimeTrackPercent(entry.clockMinutes)}%`
+                        }}
+                      />
+                    </div>
+                    <span className="bedtime-time">{formatClockTime(entry.bedtimeStart)}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </>
+        ) : (
+          <PageEmptyState
+            eyebrow="Bedtime"
+            title="Bedtime consistency will appear after a few nights of data."
+            description="Once Baseline has several nights with bedtime timestamps, this section will show your midpoint, drift, and nightly sleep-timing spread."
+            primaryHref="/"
+            primaryLabel="Back to overview"
+          />
+        )}
       </section>
     </main>
   );

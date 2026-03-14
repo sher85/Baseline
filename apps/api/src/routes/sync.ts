@@ -5,6 +5,7 @@ import { isOuraAuthenticationError } from "../modules/oura/oura-errors.js";
 import {
   getOuraSyncHistory,
   getOuraSyncStatus,
+  runBackfillOuraSync,
   runManualOuraSync
 } from "../modules/sync/oura-sync.service.js";
 
@@ -27,6 +28,33 @@ const manualSyncBodySchema = z
       path: ["startDate"]
     }
   );
+
+const backfillSyncBodySchema = z
+  .object({
+    startDate: z.string().date(),
+    endDate: z.string().date()
+  })
+  .refine((value) => value.startDate <= value.endDate, {
+    message: "startDate must be earlier than or equal to endDate",
+    path: ["startDate"]
+  });
+
+function buildSyncErrorResponse(error: unknown) {
+  const message = error instanceof Error ? error.message : "Unknown sync error";
+  const statusCode = isOuraAuthenticationError(error)
+    ? 401
+    : message.includes("already running")
+      ? 409
+      : 500;
+
+  return {
+    statusCode,
+    body: {
+      error: message,
+      ...(statusCode === 401 ? { reauthenticationRequired: true } : {})
+    }
+  };
+}
 
 export const syncRouter = Router();
 
@@ -53,17 +81,32 @@ syncRouter.post("/oura/run", async (request, response) => {
 
     response.status(201).json(result);
   } catch (error) {
-    const message = error instanceof Error ? error.message : "Unknown sync error";
-    const statusCode = isOuraAuthenticationError(error)
-      ? 401
-      : message.includes("already running")
-        ? 409
-        : 500;
+    const errorResponse = buildSyncErrorResponse(error);
 
-    response.status(statusCode).json({
-      error: message,
-      ...(statusCode === 401 ? { reauthenticationRequired: true } : {})
+    response.status(errorResponse.statusCode).json(errorResponse.body);
+  }
+});
+
+syncRouter.post("/oura/backfill", async (request, response) => {
+  const parsedBody = backfillSyncBodySchema.safeParse(request.body ?? {});
+
+  if (!parsedBody.success) {
+    response.status(400).json({
+      error: "Invalid backfill request payload",
+      issues: parsedBody.error.flatten()
     });
+
+    return;
+  }
+
+  try {
+    const result = await runBackfillOuraSync(parsedBody.data);
+
+    response.status(201).json(result);
+  } catch (error) {
+    const errorResponse = buildSyncErrorResponse(error);
+
+    response.status(errorResponse.statusCode).json(errorResponse.body);
   }
 });
 

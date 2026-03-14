@@ -276,7 +276,7 @@ The system must support:
 - [x] Manual sync initiation
 - [x] Scheduled daily sync
 - [x] Incremental sync by time window
-- [ ] Manual backfill action
+- [x] Manual backfill action
 - [x] Sync history visibility
 
 Requirements:
@@ -288,7 +288,7 @@ Requirements:
 
 Suggested endpoints:
 - [x] `POST /api/sync/oura/run`
-- [ ] `POST /api/sync/oura/backfill`
+- [x] `POST /api/sync/oura/backfill`
 - [x] `GET /api/sync/history`
 - [x] `GET /api/sync/status`
 
@@ -451,7 +451,7 @@ Requirements:
 - [x] Return a numerical score.
 - [x] Return factor breakdowns.
 - [x] Return a short human-readable explanation.
-- [ ] Do not claim clinical accuracy.
+- [x] Do not claim clinical accuracy.
 
 Example explanation:
 > Recovery is lower today because HRV is below your baseline and resting heart rate is elevated. Sleep was near normal. Temperature showed a mild positive deviation.
@@ -519,7 +519,7 @@ Show:
 - [x] Sleep duration trend
 - [x] Time in bed
 - [x] Efficiency if available
-- [ ] Bedtime consistency visuals
+- [x] Bedtime consistency visuals
 
 #### Recovery
 Show:
@@ -678,7 +678,7 @@ Done when:
 - [x] User can connect Oura
 - [x] Backend can sync data into DB
 - [x] Sync history is visible
-- [ ] Local scheduled sync can run through the same pipeline
+- [x] Local scheduled sync can run through the same pipeline
 
 ---
 
@@ -752,7 +752,7 @@ The MVP is complete when all of the following are true:
 - [x] The database schema is stable and normalized.
 - [x] A real local user can connect an Oura account.
 - [x] Manual sync works.
-- [ ] Daily scheduled sync works.
+- [x] Daily scheduled sync works.
 - [x] Oura data is mapped into normalized tables.
 - [x] The app computes baseline-aware analytics.
 - [x] The app computes a transparent custom recovery score.

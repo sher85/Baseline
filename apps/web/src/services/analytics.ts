@@ -31,6 +31,18 @@ export type SleepResponse = {
     durationDeltaSeconds: number | null;
     sleepDurationSeconds: number | null;
   };
+  consistency: {
+    averageClockMinutes: number;
+    averageDeviationMinutes: number;
+    latestOffsetMinutes: number;
+    recent: Array<{
+      bedtimeStart: string;
+      clockMinutes: number;
+      day: string;
+      offsetMinutes: number;
+    }>;
+    status: "mixed" | "steady" | "variable" | "warming_up";
+  } | null;
   day: string;
   note: string;
   timing: {

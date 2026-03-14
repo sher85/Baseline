@@ -46,6 +46,7 @@
 - `POST /api/sync/oura/run`: runs an immediate manual sync against Oura and stores normalized sleep, readiness, and activity data
 - request body accepts optional `startDate`, `endDate`, and `lookbackDays`
 - if no date range is supplied, the sync defaults to an incremental window
+- `POST /api/sync/oura/backfill`: runs an explicit historical backfill and requires `startDate` plus `endDate`
 - returns `401` with `reauthenticationRequired: true` when the local Oura authorization is missing, expired, or revoked
 - `GET /api/sync/status`: returns whether a sync is running and the latest sync run
 - `GET /api/sync/history`: returns recent sync runs for the local user
@@ -53,7 +54,7 @@
 
 ## Analytics behavior
 - `GET /api/overview/latest`: returns the latest dashboard-ready recovery summary, anomaly notes, sync state, and connection state
-- `GET /api/sleep/latest`: returns the latest sleep summary with baseline delta, timing, and nightly vitals
+- `GET /api/sleep/latest`: returns the latest sleep summary with baseline delta, timing, nightly vitals, and bedtime consistency metrics
 - `GET /api/baselines/latest`: computes or returns the latest rolling baseline snapshot
 - `GET /api/recovery/latest`: computes or returns the latest recovery score and explanation
 - `GET /api/recovery/latest/detail`: returns the latest recovery score plus factor breakdowns, current values, baselines, and anomalies

@@ -150,6 +150,14 @@ curl "http://localhost:4000/api/trends?window=30d"
 curl http://localhost:4000/api/anomalies/recent
 ```
 
+Backfill route:
+
+```bash
+curl -X POST http://localhost:4000/api/sync/oura/backfill \
+  -H "Content-Type: application/json" \
+  -d '{"startDate":"2026-03-01","endDate":"2026-03-03"}'
+```
+
 AI routes:
 
 ```bash
@@ -194,6 +202,10 @@ curl http://localhost:4000/api/sync/history
 
 4. Confirm you see a run with `mode: "scheduled"`
 5. Set `SYNC_SCHEDULE_RUN_ON_START` back to `false`
+
+Verified locally in development:
+- startup scheduled sync reuses the same pipeline as manual sync
+- sync history records `mode: "scheduled"`
 
 ## Demo script
 If you want to show the project to another engineer, this is the clean path:

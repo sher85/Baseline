@@ -356,6 +356,16 @@ export async function runManualOuraSync(input: SyncWindowInput = {}) {
   });
 }
 
+export async function runBackfillOuraSync(input: {
+  endDate: string;
+  startDate: string;
+}) {
+  return runOuraSync({
+    mode: SyncMode.backfill,
+    windowInput: input
+  });
+}
+
 export async function runScheduledOuraSync() {
   return runOuraSync({
     mode: SyncMode.scheduled
