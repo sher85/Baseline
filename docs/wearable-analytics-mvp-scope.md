@@ -183,12 +183,12 @@ wearable-analytics/
 - [x] Show sync status clearly.
 
 ### Goal 5: AI-friendly interface
-- [ ] Expose latest summary.
-- [ ] Expose last-night summary.
-- [ ] Expose baseline snapshot.
-- [ ] Expose latest recovery explanation.
-- [ ] Expose anomalies.
-- [ ] Expose 7-day and 30-day trend summaries.
+- [x] Expose latest summary.
+- [x] Expose last-night summary.
+- [x] Expose baseline snapshot.
+- [x] Expose latest recovery explanation.
+- [x] Expose anomalies.
+- [x] Expose 7-day and 30-day trend summaries.
 
 ---
 
@@ -479,20 +479,20 @@ Anomalies should be deterministic and threshold-based for v1.
 - [x] `GET /api/baselines/latest`
 
 ### AI-facing endpoints
-- [ ] `GET /api/ai/daily-brief`
-- [ ] `GET /api/ai/last-night`
-- [ ] `GET /api/ai/recovery`
-- [ ] `GET /api/ai/anomalies`
-- [ ] `GET /api/ai/context?window=7d`
+- [x] `GET /api/ai/daily-brief`
+- [x] `GET /api/ai/last-night`
+- [x] `GET /api/ai/recovery`
+- [x] `GET /api/ai/anomalies`
+- [x] `GET /api/ai/context?window=7d`
 
 These endpoints should return compact, structured JSON optimized for AI consumption.
 
 Suggested characteristics:
-- [ ] Minimal nesting
-- [ ] Deterministic field names
-- [ ] No raw vendor payload structures
-- [ ] Include dates and units clearly
-- [ ] Include short explanation text where useful
+- [x] Minimal nesting
+- [x] Deterministic field names
+- [x] No raw vendor payload structures
+- [x] Include dates and units clearly
+- [x] Include short explanation text where useful
 
 ---
 
@@ -722,14 +722,14 @@ Done when:
 
 ## Milestone 6 - AI interface
 Deliver:
-- [ ] AI-friendly JSON endpoints
-- [ ] Concise daily brief payload
-- [ ] Anomaly summary payload
-- [ ] Baseline snapshot payload
-- [ ] Latest recovery explanation payload
+- [x] AI-friendly JSON endpoints
+- [x] Concise daily brief payload
+- [x] Anomaly summary payload
+- [x] Baseline snapshot payload
+- [x] Latest recovery explanation payload
 
 Done when:
-- [ ] An external AI agent can pull structured analytics without reading raw tables
+- [x] An external AI agent can pull structured analytics without reading raw tables
 
 ---
 

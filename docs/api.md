@@ -23,6 +23,7 @@
 - `GET /api/ai/recovery`
 - `GET /api/ai/anomalies`
 - `GET /api/ai/context?window=7d`
+- `GET /api/ai/context?window=30d`
 
 ### Integration and sync
 - `GET /api/integrations/oura/status`
@@ -56,3 +57,10 @@
 - `GET /api/trends?window=7d|30d`: returns compact historical series for recovery, sleep, HRV, resting HR, temperature deviation, steps, and anomaly counts
 - `GET /api/anomalies/latest`: returns deterministic anomaly flags for the latest day
 - `GET /api/anomalies/recent?limit=20`: returns recent anomaly history ordered by day and severity
+
+## AI behavior
+- `GET /api/ai/daily-brief`: returns a compact daily status payload for an AI agent, including score, sleep, deltas, anomalies, sync state, and a summary sentence
+- `GET /api/ai/last-night`: returns the latest sleep summary in flat, AI-friendly fields
+- `GET /api/ai/recovery`: returns the latest recovery score, baselines, contributions, factor breakdowns, and explanation
+- `GET /api/ai/anomalies`: returns latest anomaly counts plus recent anomaly history
+- `GET /api/ai/context?window=7d|30d`: returns compact historical context for recent days with deterministic series fields

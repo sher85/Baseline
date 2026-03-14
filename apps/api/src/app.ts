@@ -1,6 +1,7 @@
 import cors from "cors";
 import express from "express";
 
+import { aiRouter } from "./routes/ai.js";
 import { analyticsRouter } from "./routes/analytics.js";
 import { healthRouter } from "./routes/health.js";
 import { ouraIntegrationRouter } from "./routes/oura-integration.js";
@@ -22,4 +23,5 @@ app.get("/", (_request, response) => {
 app.use("/health", healthRouter);
 app.use("/api/integrations/oura", ouraIntegrationRouter);
 app.use("/api/sync", syncRouter);
+app.use("/api/ai", aiRouter);
 app.use("/api", analyticsRouter);
