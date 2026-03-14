@@ -1,17 +1,25 @@
 # wearable-analytics
 
-Local-first wearable analytics platform focused on transparent recovery insights, seeded demo data, and a premium recruiter-friendly dashboard.
+Local-first wearable analytics platform for transparent recovery intelligence.
 
-## Status
-The repo now includes:
+This repo ingests Oura data through the official API, stores normalized records in PostgreSQL, computes deterministic recovery analytics, exposes AI-friendly endpoints, and renders the results in a premium Next.js dashboard.
 
-- npm workspaces for `api`, `web`, and `shared`
-- Prisma schema and seed foundation
-- Express API shell with Oura OAuth connection flow
-- backend tests for analytics and sync window logic
-- Next.js app shell
-- shared domain types and schemas
-- starter docs and local-first environment config
+## Why this exists
+- prove a principal-engineer-grade backend for wearable data
+- show product taste on the frontend without losing scientific clarity
+- keep the analytics explicit, inspectable, and app-owned
+- stay public-repo-safe while supporting real local personal data
+
+## What is working
+- Oura OAuth connect and disconnect
+- manual Oura sync into normalized PostgreSQL tables
+- scheduled Oura sync orchestration
+- rolling baselines for HRV, resting HR, sleep duration, and temperature deviation
+- recovery score v1 with factor breakdowns
+- deterministic anomaly detection
+- overview, sleep, recovery, trends, and anomalies dashboard pages
+- AI-facing summary endpoints
+- backend tests for analytics math, anomaly rules, recovery scoring, and sync window logic
 
 ## Stack
 - TypeScript
@@ -20,23 +28,43 @@ The repo now includes:
 - Prisma
 - PostgreSQL
 - Recharts
+- Node `node:test` with `tsx`
 
-## Product direction
-- local-first and privacy-respecting
-- deterministic backend truth
-- transparent, baseline-aware recovery analytics
-- elegant premium dashboard with a scientific edge
+## Architecture at a glance
+- `apps/api`
+  Oura integration, sync orchestration, analytics engine, AI-facing JSON
+- `apps/web`
+  premium dashboard surface built on backend contracts only
+- `packages/shared`
+  shared types and schemas
+- `prisma`
+  schema, migrations, seed script
+- `docs`
+  architecture, API, analytics, and scoped build brief
 
-## Local setup
-1. Copy `.env.example` to `.env`.
-2. Install dependencies with `npm install`.
-3. Run `npm run db:generate`.
-4. Run `npm run db:migrate`.
-5. Run `npm run db:seed`.
-6. Run `npm run dev:api`.
-7. Run `npm run dev:web`.
+More detail:
+- [architecture.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/architecture.md)
+- [api.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/api.md)
+- [analytics.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/analytics.md)
 
-## Environment variables
+## Quick start
+1. Copy `.env.example` to `.env`
+2. Install dependencies
+3. Generate Prisma client
+4. Run migrations
+5. Seed demo data
+6. Start API and web
+
+```bash
+npm install
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run dev:api
+npm run dev:web
+```
+
+## Environment
 Core local values:
 
 ```env
@@ -59,80 +87,126 @@ OURA_REDIRECT_URI="http://localhost:4000/api/integrations/oura/callback"
 OURA_SCOPES="daily email personal"
 ```
 
-## Oura integration setup
-This repo supports seeded demo data without Oura, but a real local connection requires an Oura OAuth application.
+## Oura setup
+This project works with seeded demo data, but the real product flow is local Oura connection plus sync.
 
-1. Create an Oura API application in the Oura developer dashboard.
-2. Use the server-side flow.
-3. Add this exact redirect URI in the Oura app settings:
+1. Create an Oura OAuth application in the Oura developer dashboard
+2. Use the server-side flow
+3. Register this exact redirect URI:
 
 ```text
 http://localhost:4000/api/integrations/oura/callback
 ```
 
-4. Copy the Oura client ID and client secret into `.env`.
-5. Start the local servers:
-
-```bash
-npm run dev:api
-npm run dev:web
-```
-
-6. Generate a fresh authorization URL from the local API:
+4. Add your client ID and client secret to `.env`
+5. Start the API and web
+6. Generate an auth URL:
 
 ```bash
 curl -s -X POST http://localhost:4000/api/integrations/oura/connect
 ```
 
-7. Open the returned `authorizationUrl` in your browser and approve access.
-8. Verify the connection:
+7. Open the returned `authorizationUrl` in your browser
+8. Confirm connection:
 
 ```bash
 curl http://localhost:4000/api/integrations/oura/status
 ```
 
-Successful connection should return JSON with `connected: true`.
+Expected result: `connected: true`
 
-### Important Oura auth notes
-- Use the authorization URL returned by `/api/integrations/oura/connect`, not the example URL shown in the Oura dashboard.
-- The redirect URI must match exactly.
-- The auth URL is stateful and short-lived. If you restart the API or wait too long, generate a fresh URL.
-- If the browser lands on `?oura=invalid_state`, generate a new authorization URL and retry with the currently running API process.
+Important notes:
+- use the URL returned by `/api/integrations/oura/connect`, not Oura’s dashboard example URL
+- the redirect URI must match exactly
+- if you get `invalid_state`, generate a fresh auth URL from the currently running API process
 
-## Useful local checks
+## Local verification tour
+Health and setup:
 
 ```bash
 curl http://localhost:4000/health
 curl http://localhost:4000/health/db
 curl http://localhost:4000/api/integrations/oura/status
+curl http://localhost:4000/api/sync/status
+```
+
+Dashboard routes:
+- `http://localhost:3000/`
+- `http://localhost:3000/sleep`
+- `http://localhost:3000/recovery`
+- `http://localhost:3000/trends`
+- `http://localhost:3000/anomalies`
+
+Analytics routes:
+
+```bash
+curl http://localhost:4000/api/overview/latest
+curl http://localhost:4000/api/sleep/latest
+curl http://localhost:4000/api/recovery/latest
+curl http://localhost:4000/api/recovery/latest/detail
+curl "http://localhost:4000/api/trends?window=7d"
+curl "http://localhost:4000/api/trends?window=30d"
+curl http://localhost:4000/api/anomalies/recent
+```
+
+AI routes:
+
+```bash
+curl http://localhost:4000/api/ai/daily-brief
+curl http://localhost:4000/api/ai/last-night
+curl http://localhost:4000/api/ai/recovery
+curl http://localhost:4000/api/ai/anomalies
+curl "http://localhost:4000/api/ai/context?window=7d"
+```
+
+Tests:
+
+```bash
 npm run test --workspace @wearable-analytics/api
 ```
 
 ## Scheduled sync
 The API supports a daily scheduled Oura sync that reuses the same ingestion path as manual sync.
 
-Scheduler env:
-
-```env
-SYNC_SCHEDULE_ENABLED="true"
-SYNC_SCHEDULE_CRON="0 6 * * *"
-SYNC_SCHEDULE_RUN_ON_START="false"
-```
-
 Notes:
 - `SYNC_SCHEDULE_CRON` currently supports daily expressions in the form `minute hour * * *`
 - scheduled runs are stored in `SyncRun` with `mode: scheduled`
 - if Oura is not connected locally, the scheduler logs a skip instead of failing startup
 
-Local scheduler test:
-1. Set `SYNC_SCHEDULE_RUN_ON_START="true"` in `.env`
-2. Start the API with `npm run dev:api`
-3. Check `curl http://localhost:4000/api/sync/status`
-4. Check `curl http://localhost:4000/api/sync/history`
-5. Set `SYNC_SCHEDULE_RUN_ON_START` back to `false` after testing
+To test it locally:
+1. Temporarily set `SYNC_SCHEDULE_RUN_ON_START="true"` in `.env`
+2. Start the API
+3. Check:
 
-## Notes
-- Real personal data should stay local and never be committed.
-- The public repo should remain usable with seeded demo data only.
-- `.env` must stay out of Git.
-- If secrets were ever exposed publicly, rotate them immediately.
+```bash
+curl http://localhost:4000/api/sync/status
+curl http://localhost:4000/api/sync/history
+```
+
+4. Confirm you see a run with `mode: "scheduled"`
+5. Set `SYNC_SCHEDULE_RUN_ON_START` back to `false`
+
+## Demo script
+If you want to show the project to another engineer, this is the clean path:
+1. Open the dashboard overview
+2. Show the real recovery, sleep, and anomaly pages
+3. Trigger `POST /api/sync/oura/run`
+4. Show normalized sync history
+5. Show `GET /api/ai/daily-brief`
+6. Explain that the AI reads structured facts from the backend rather than raw vendor payloads
+
+## Testing philosophy
+The backend uses Node’s built-in test runner through `tsx`.
+
+That gives us:
+- lightweight TypeScript-native unit tests
+- no Jest/Vitest overhead for the backend
+- straightforward expansion into integration coverage later
+
+## Privacy
+- real personal data stays local
+- `.env` stays out of Git
+- no raw vendor payloads are stored
+- the public repo remains usable with seeded demo data
+
+If a secret was ever exposed publicly, rotate it immediately.
