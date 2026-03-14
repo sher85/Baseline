@@ -3,6 +3,7 @@ import express from "express";
 
 import { healthRouter } from "./routes/health.js";
 import { ouraIntegrationRouter } from "./routes/oura-integration.js";
+import { syncRouter } from "./routes/sync.js";
 
 export const app = express();
 
@@ -19,3 +20,4 @@ app.get("/", (_request, response) => {
 
 app.use("/health", healthRouter);
 app.use("/api/integrations/oura", ouraIntegrationRouter);
+app.use("/api/sync", syncRouter);

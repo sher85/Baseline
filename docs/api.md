@@ -37,3 +37,10 @@
 - `POST /api/integrations/oura/connect`: creates a fresh stateful authorization URL for the current API process
 - `GET /api/integrations/oura/callback`: exchanges the OAuth code for tokens and stores the local Oura connection
 - `POST /api/integrations/oura/disconnect`: removes the stored local Oura connection
+
+## Sync behavior
+- `POST /api/sync/oura/run`: runs an immediate manual sync against Oura and stores normalized sleep, readiness, and activity data
+- request body accepts optional `startDate`, `endDate`, and `lookbackDays`
+- if no date range is supplied, the sync defaults to an incremental window
+- `GET /api/sync/status`: returns whether a sync is running and the latest sync run
+- `GET /api/sync/history`: returns recent sync runs for the local user

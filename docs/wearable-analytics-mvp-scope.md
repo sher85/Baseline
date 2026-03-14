@@ -154,8 +154,8 @@ wearable-analytics/
 - [ ] Authenticate against Oura API.
 - [ ] Sync the current user’s wearable data into PostgreSQL.
 - [ ] Support manual sync and scheduled sync.
-- [ ] Support incremental sync windows.
-- [ ] Log sync status, timestamps, and failures.
+- [x] Support incremental sync windows.
+- [x] Log sync status, timestamps, and failures.
 
 ### Goal 2: Normalized data model
 - [ ] Store app-owned normalized records for daily sleep summary.
@@ -197,7 +197,7 @@ wearable-analytics/
 ### In scope for MVP
 - [ ] Single-user app
 - [ ] Local PostgreSQL database
-- [ ] Oura API integration
+- [x] Oura API integration
 - [ ] Scheduled and manual sync
 - [ ] Normalized relational schema
 - [ ] Transparent custom recovery score
@@ -273,24 +273,24 @@ Suggested endpoints:
 
 ## 2. Sync engine
 The system must support:
-- [ ] Manual sync initiation
+- [x] Manual sync initiation
 - [ ] Scheduled daily sync
-- [ ] Incremental sync by time window
+- [x] Incremental sync by time window
 - [ ] Manual backfill action
-- [ ] Sync history visibility
+- [x] Sync history visibility
 
 Requirements:
-- [ ] Prevent duplicate overlapping syncs.
-- [ ] Log success and failure.
-- [ ] Log sync start and end timestamps.
-- [ ] Track which data ranges were synced.
-- [ ] Allow re-sync of a selected date range later.
+- [x] Prevent duplicate overlapping syncs.
+- [x] Log success and failure.
+- [x] Log sync start and end timestamps.
+- [x] Track which data ranges were synced.
+- [x] Allow re-sync of a selected date range later.
 
 Suggested endpoints:
-- [ ] `POST /api/sync/oura/run`
+- [x] `POST /api/sync/oura/run`
 - [ ] `POST /api/sync/oura/backfill`
-- [ ] `GET /api/sync/history`
-- [ ] `GET /api/sync/status`
+- [x] `GET /api/sync/history`
+- [x] `GET /api/sync/status`
 
 ---
 
@@ -668,16 +668,16 @@ Done when:
 
 ## Milestone 2 - Oura integration and sync
 Deliver:
-- [ ] Oura account connect flow
-- [ ] Token handling
-- [ ] Manual sync trigger
+- [x] Oura account connect flow
+- [x] Token handling
+- [x] Manual sync trigger
 - [ ] Scheduled daily sync
-- [ ] Sync history model and endpoints
+- [x] Sync history model and endpoints
 
 Done when:
-- [ ] User can connect Oura
-- [ ] Backend can sync data into DB
-- [ ] Sync history is visible
+- [x] User can connect Oura
+- [x] Backend can sync data into DB
+- [x] Sync history is visible
 
 ---
 
