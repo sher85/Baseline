@@ -1,13 +1,15 @@
 import Link from "next/link";
 
 type SiteHeaderProps = {
-  currentPath: "/" | "/sleep" | "/recovery";
+  currentPath: "/" | "/sleep" | "/recovery" | "/trends" | "/anomalies";
 };
 
 const links: Array<{ href: SiteHeaderProps["currentPath"]; label: string }> = [
   { href: "/", label: "Overview" },
   { href: "/sleep", label: "Sleep" },
-  { href: "/recovery", label: "Recovery" }
+  { href: "/recovery", label: "Recovery" },
+  { href: "/trends", label: "Trends" },
+  { href: "/anomalies", label: "Anomalies" }
 ];
 
 export function SiteHeader({ currentPath }: SiteHeaderProps) {

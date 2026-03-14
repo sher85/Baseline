@@ -78,6 +78,16 @@ export type RecoveryDetailResponse = {
   };
 };
 
+export type RecentAnomalyResponse = {
+  items: Array<{
+    day: string;
+    description: string;
+    severity: "low" | "medium" | "high";
+    title: string;
+    type: string;
+  }>;
+};
+
 const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
 
 async function fetchJson<T>(path: string, fallback: T): Promise<T> {
@@ -120,4 +130,10 @@ export async function getSleepData(): Promise<SleepResponse | null> {
 
 export async function getRecoveryDetailData(): Promise<RecoveryDetailResponse | null> {
   return fetchJson("/api/recovery/latest/detail", null);
+}
+
+export async function getRecentAnomalyData(limit = 20): Promise<RecentAnomalyResponse> {
+  return fetchJson(`/api/anomalies/recent?limit=${limit}`, {
+    items: []
+  });
 }

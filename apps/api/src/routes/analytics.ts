@@ -1,6 +1,6 @@
 import { Router } from "express";
 
-import { getLatestAnomalies } from "../modules/analytics/anomaly.service.js";
+import { getLatestAnomalies, getRecentAnomalies } from "../modules/analytics/anomaly.service.js";
 import { getLatestBaselineSnapshot } from "../modules/analytics/baseline.service.js";
 import { getLatestRecoveryScore } from "../modules/recovery/recovery-score.service.js";
 import { getLatestOverview } from "../modules/summaries/overview.service.js";
@@ -107,6 +107,18 @@ analyticsRouter.get("/trends", async (request, response) => {
 
 analyticsRouter.get("/anomalies/latest", async (_request, response) => {
   const anomalies = await getLatestAnomalies();
+
+  response.json({
+    items: anomalies
+  });
+});
+
+analyticsRouter.get("/anomalies/recent", async (request, response) => {
+  const requestedLimit = Number(request.query.limit ?? 20);
+  const limit = Number.isFinite(requestedLimit)
+    ? Math.min(Math.max(Math.trunc(requestedLimit), 1), 60)
+    : 20;
+  const anomalies = await getRecentAnomalies(limit);
 
   response.json({
     items: anomalies

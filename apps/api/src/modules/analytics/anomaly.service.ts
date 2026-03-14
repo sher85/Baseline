@@ -8,6 +8,13 @@ function formatDate(date: Date) {
   return date.toISOString().slice(0, 10);
 }
 
+function addDays(day: string, delta: number) {
+  const date = new Date(`${day}T00:00:00.000Z`);
+  date.setUTCDate(date.getUTCDate() + delta);
+
+  return formatDate(date);
+}
+
 export async function computeAnomaliesForDay(day: string) {
   const user = await getOrCreatePrimaryUser();
 
@@ -139,4 +146,63 @@ export async function getLatestAnomalies() {
   }
 
   return computeAnomaliesForDay(formatDate(latestRecoveryDay.day));
+}
+
+export async function getRecentAnomalies(limit = 30) {
+  const user = await getOrCreatePrimaryUser();
+
+  const latestRecoveryDay = await prisma.dailyRecoveryInput.findFirst({
+    where: {
+      userId: user.id
+    },
+    orderBy: {
+      day: "desc"
+    },
+    select: {
+      day: true
+    }
+  });
+
+  if (!latestRecoveryDay) {
+    return [];
+  }
+
+  const latestDay = formatDate(latestRecoveryDay.day);
+  const lookbackStart = new Date(`${addDays(latestDay, -29)}T00:00:00.000Z`);
+
+  const recoveryDays = await prisma.dailyRecoveryInput.findMany({
+    where: {
+      userId: user.id,
+      day: {
+        gte: lookbackStart,
+        lte: latestRecoveryDay.day
+      }
+    },
+    select: {
+      day: true
+    },
+    orderBy: {
+      day: "asc"
+    }
+  });
+
+  await Promise.all(
+    recoveryDays.map((row) => computeAnomaliesForDay(formatDate(row.day)))
+  );
+
+  return prisma.anomalyFlag.findMany({
+    where: {
+      userId: user.id,
+      day: {
+        gte: lookbackStart,
+        lte: latestRecoveryDay.day
+      }
+    },
+    orderBy: [
+      { day: "desc" },
+      { severity: "desc" },
+      { createdAt: "asc" }
+    ],
+    take: limit
+  });
 }

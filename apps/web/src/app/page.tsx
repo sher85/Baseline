@@ -86,6 +86,20 @@ export default async function HomePage() {
             Factor breakdowns, anomaly flags, and the 30-day recovery arc.
           </span>
         </Link>
+        <Link href="/trends" className="link-card">
+          <p className="eyebrow">Trend Surface</p>
+          <strong className="status-title">Read the longer arc</strong>
+          <span className="metric-detail">
+            Compare 7-day and 30-day shifts in sleep, recovery, HRV, temperature, and activity.
+          </span>
+        </Link>
+        <Link href="/anomalies" className="link-card">
+          <p className="eyebrow">Anomaly Surface</p>
+          <strong className="status-title">Review the flagged days</strong>
+          <span className="metric-detail">
+            Recent anomaly history with severity, dates, and deterministic explanations.
+          </span>
+        </Link>
       </section>
     </main>
   );

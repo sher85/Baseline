@@ -14,6 +14,7 @@
 - `GET /api/trends?window=7d`
 - `GET /api/trends?window=30d`
 - `GET /api/anomalies/latest`
+- `GET /api/anomalies/recent`
 - `GET /api/baselines/latest`
 
 ### AI
@@ -54,3 +55,4 @@
 - `GET /api/recovery/latest/detail`: returns the latest recovery score plus factor breakdowns, current values, baselines, and anomalies
 - `GET /api/trends?window=7d|30d`: returns compact historical series for recovery, sleep, HRV, resting HR, temperature deviation, steps, and anomaly counts
 - `GET /api/anomalies/latest`: returns deterministic anomaly flags for the latest day
+- `GET /api/anomalies/recent?limit=20`: returns recent anomaly history ordered by day and severity

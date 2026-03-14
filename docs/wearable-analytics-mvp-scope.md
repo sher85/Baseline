@@ -178,8 +178,8 @@ wearable-analytics/
 - [x] Build overview page.
 - [x] Build sleep page.
 - [x] Build recovery page.
-- [ ] Build trends page.
-- [ ] Build anomalies page.
+- [x] Build trends page.
+- [x] Build anomalies page.
 - [x] Show sync status clearly.
 
 ### Goal 5: AI-friendly interface
@@ -530,15 +530,15 @@ Show:
 
 #### Trends
 Show:
-- [ ] 7-day and 30-day trend charts
-- [ ] HRV, resting HR, sleep, temperature
+- [x] 7-day and 30-day trend charts
+- [x] HRV, resting HR, sleep, temperature
 
 #### Anomalies
 Show:
-- [ ] Recent anomaly list
-- [ ] Severity
-- [ ] Dates
-- [ ] Descriptions
+- [x] Recent anomaly list
+- [x] Severity
+- [x] Dates
+- [x] Descriptions
 
 ### UI style
 - simple, professional dashboard
@@ -711,12 +711,12 @@ Deliver:
 - [x] Overview page
 - [x] Sleep page
 - [x] Recovery page
-- [ ] Trends page
-- [ ] Anomalies page
+- [x] Trends page
+- [x] Anomalies page
 - [x] Sync status UI
 
 Done when:
-- [ ] A local user can inspect the data visually in browser
+- [x] A local user can inspect the data visually in browser
 
 ---
 
