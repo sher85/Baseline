@@ -1,0 +1,99 @@
+<svg width="1600" height="920" viewBox="0 0 1600 920" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="160" y1="60" x2="1440" y2="860" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFF8F0"/>
+      <stop offset="1" stop-color="#F0E7D8"/>
+    </linearGradient>
+    <radialGradient id="orbA" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1270 160) rotate(90) scale(250 250)">
+      <stop stop-color="#49B8AB" stop-opacity="0.42"/>
+      <stop offset="1" stop-color="#49B8AB" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="orbB" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(280 120) rotate(90) scale(220 220)">
+      <stop stop-color="#D7B26B" stop-opacity="0.36"/>
+      <stop offset="1" stop-color="#D7B26B" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="panel" x1="300" y1="120" x2="1310" y2="760" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF8" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#FFF9F0" stop-opacity="0.84"/>
+    </linearGradient>
+    <linearGradient id="hero" x1="260" y1="186" x2="1340" y2="470" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFFDF8"/>
+      <stop offset="1" stop-color="#FBF5EA"/>
+    </linearGradient>
+    <linearGradient id="orbCore" x1="0" y1="0" x2="1" y2="1">
+      <stop stop-color="#FFF5D8"/>
+      <stop offset="0.5" stop-color="#B6C87B"/>
+      <stop offset="1" stop-color="#168377"/>
+    </linearGradient>
+    <filter id="shadow" x="190" y="90" width="1220" height="740" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="28" stdDeviation="28" flood-color="#7E6140" flood-opacity="0.14"/>
+    </filter>
+  </defs>
+
+  <rect width="1600" height="920" rx="40" fill="url(#bg)"/>
+  <rect width="1600" height="920" rx="40" fill="url(#orbA)"/>
+  <rect width="1600" height="920" rx="40" fill="url(#orbB)"/>
+
+  <g filter="url(#shadow)">
+    <rect x="210" y="108" width="1180" height="704" rx="34" fill="url(#panel)" stroke="#E6DCCB"/>
+  </g>
+
+  <rect x="250" y="142" width="1100" height="68" rx="34" fill="#FFF8EE" stroke="#E8DDCC"/>
+  <rect x="280" y="161" width="74" height="30" rx="15" fill="#DFF2EC"/>
+  <text x="317" y="181" text-anchor="middle" fill="#0F766E" font-size="14" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="2">BASELINE</text>
+
+  <rect x="939" y="158" width="132" height="36" rx="18" fill="#DFF2EC"/>
+  <text x="1005" y="181" text-anchor="middle" fill="#0F766E" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1">LIVE ANALYTICS</text>
+
+  <rect x="1083" y="158" width="156" height="36" rx="18" fill="#F2EEE6"/>
+  <text x="1161" y="181" text-anchor="middle" fill="#6A6259" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1">OURA CONNECTED</text>
+
+  <rect x="1251" y="158" width="96" height="36" rx="18" fill="#F2EEE6"/>
+  <text x="1299" y="181" text-anchor="middle" fill="#6A6259" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1">SYNC OK</text>
+
+  <rect x="250" y="240" width="1100" height="216" rx="30" fill="url(#hero)" stroke="#E8DDCC"/>
+  <text x="302" y="290" fill="#0F766E" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="2.8">WEARABLE ANALYTICS MVP</text>
+  <text x="302" y="368" fill="#1F1D1A" font-size="64" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Luxury calm,</text>
+  <text x="302" y="430" fill="#1F1D1A" font-size="64" font-family="Georgia, 'Times New Roman', serif" font-weight="700">scientific backbone.</text>
+  <text x="304" y="474" fill="#6A6259" font-size="22" font-family="Arial, Helvetica, sans-serif">Real Oura data, normalized locally,</text>
+  <text x="304" y="504" fill="#6A6259" font-size="22" font-family="Arial, Helvetica, sans-serif">scored with transparent logic,</text>
+  <text x="304" y="534" fill="#6A6259" font-size="22" font-family="Arial, Helvetica, sans-serif">and surfaced in a calm premium dashboard.</text>
+
+  <circle cx="1172" cy="348" r="120" fill="url(#orbCore)" opacity="0.96"/>
+  <circle cx="1122" cy="302" r="34" fill="#FFFDF7" opacity="0.72"/>
+
+  <rect x="250" y="484" width="262" height="150" rx="24" fill="#FFFAF2" stroke="#E8DDCC"/>
+  <text x="282" y="528" fill="#6A6259" font-size="18" font-family="Arial, Helvetica, sans-serif">Recovery</text>
+  <text x="282" y="590" fill="#191815" font-size="60" font-family="Arial, Helvetica, sans-serif" font-weight="700">66</text>
+  <text x="282" y="618" fill="#6A6259" font-size="16" font-family="Arial, Helvetica, sans-serif">HRV below baseline today</text>
+
+  <rect x="532" y="484" width="262" height="150" rx="24" fill="#FFFAF2" stroke="#E8DDCC"/>
+  <text x="564" y="528" fill="#6A6259" font-size="18" font-family="Arial, Helvetica, sans-serif">HRV</text>
+  <text x="564" y="590" fill="#191815" font-size="52" font-family="Arial, Helvetica, sans-serif" font-weight="700">38 ms</text>
+  <text x="564" y="618" fill="#6A6259" font-size="17" font-family="Arial, Helvetica, sans-serif">-6 ms vs 21-day baseline</text>
+
+  <rect x="814" y="484" width="262" height="150" rx="24" fill="#FFFAF2" stroke="#E8DDCC"/>
+  <text x="846" y="528" fill="#6A6259" font-size="18" font-family="Arial, Helvetica, sans-serif">Resting HR</text>
+  <text x="846" y="590" fill="#191815" font-size="52" font-family="Arial, Helvetica, sans-serif" font-weight="700">52 bpm</text>
+  <text x="846" y="618" fill="#6A6259" font-size="17" font-family="Arial, Helvetica, sans-serif">+3 bpm vs baseline</text>
+
+  <rect x="1096" y="484" width="254" height="150" rx="24" fill="#FFFAF2" stroke="#E8DDCC"/>
+  <text x="1128" y="528" fill="#6A6259" font-size="18" font-family="Arial, Helvetica, sans-serif">Sleep</text>
+  <text x="1128" y="590" fill="#191815" font-size="52" font-family="Arial, Helvetica, sans-serif" font-weight="700">7h 14m</text>
+  <text x="1128" y="618" fill="#6A6259" font-size="17" font-family="Arial, Helvetica, sans-serif">+18 min vs baseline</text>
+
+  <rect x="250" y="658" width="528" height="126" rx="24" fill="#FFFAF2" stroke="#E8DDCC"/>
+  <text x="282" y="700" fill="#0F766E" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="2.4">LATEST INTERPRETATION</text>
+  <text x="282" y="736" fill="#1F1D1A" font-size="32" font-family="Georgia, 'Times New Roman', serif" font-weight="700">Temperature shift flagged.</text>
+  <text x="282" y="764" fill="#6A6259" font-size="16" font-family="Arial, Helvetica, sans-serif">A mild positive deviation stands out</text>
+  <text x="282" y="788" fill="#6A6259" font-size="16" font-family="Arial, Helvetica, sans-serif">against your recent baseline.</text>
+
+  <rect x="798" y="658" width="552" height="126" rx="24" fill="#FFFAF2" stroke="#E8DDCC"/>
+  <text x="830" y="700" fill="#0F766E" font-size="16" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="2.4">ANOMALIES AND STATUS</text>
+  <rect x="830" y="722" width="164" height="30" rx="15" fill="#F3E3C1"/>
+  <text x="912" y="741" text-anchor="middle" fill="#8B5E11" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1">TEMP SHIFT</text>
+  <rect x="1012" y="722" width="120" height="30" rx="15" fill="#DFF2EC"/>
+  <text x="1072" y="741" text-anchor="middle" fill="#0F766E" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1">SYNCED 8:24</text>
+  <rect x="1150" y="722" width="140" height="30" rx="15" fill="#F2EEE6"/>
+  <text x="1220" y="741" text-anchor="middle" fill="#6A6259" font-size="12" font-family="Arial, Helvetica, sans-serif" font-weight="700" letter-spacing="1">AI READY</text>
+</svg>

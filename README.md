@@ -4,6 +4,17 @@ Local-first wearable analytics platform for transparent recovery intelligence.
 
 This repo ingests Oura data through the official API, stores normalized records in PostgreSQL, computes deterministic recovery analytics, exposes AI-friendly endpoints, and renders the results in a premium Next.js dashboard.
 
+## Product preview
+
+<p align="center">
+  <img src="./docs/images/readme-overview-preview.svg" alt="Baseline overview dashboard preview" width="100%" />
+</p>
+
+<p align="center">
+  <img src="./docs/images/readme-sleep-preview.svg" alt="Baseline sleep surface preview" width="49%" />
+  <img src="./docs/images/readme-system-preview.svg" alt="Baseline system architecture preview" width="49%" />
+</p>
+
 ## Why this exists
 - prove a principal-engineer-grade backend for wearable data
 - show product taste on the frontend without losing scientific clarity
