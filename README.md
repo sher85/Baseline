@@ -11,9 +11,30 @@ This repo ingests Oura data through the official API, stores normalized records 
 </p>
 
 <p align="center">
-  <img src="./docs/images/readme-sleep-preview.svg" alt="Baseline sleep surface preview" width="49%" />
-  <img src="./docs/images/readme-system-preview.svg" alt="Baseline system architecture preview" width="49%" />
+  <img src="./docs/images/readme-sleep-preview.svg" alt="Baseline sleep surface preview" width="72%" />
 </p>
+
+## System flow
+
+```mermaid
+flowchart LR
+  Oura[Oura API]
+  OAuth[OAuth + token refresh]
+  Sync[Sync engine<br/>manual / scheduled / backfill]
+  DB[(PostgreSQL<br/>normalized tables)]
+  Analytics[Analytics engine<br/>baselines / recovery / anomalies]
+  API[Express API<br/>dashboard + AI endpoints]
+  Web[Next.js dashboard]
+  AI[AI consumer]
+
+  Oura --> OAuth
+  OAuth --> Sync
+  Sync --> DB
+  DB --> Analytics
+  Analytics --> API
+  API --> Web
+  API --> AI
+```
 
 ## Why this exists
 - prove a principal-engineer-grade backend for wearable data
