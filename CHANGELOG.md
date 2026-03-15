@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/sher85/Baseline/compare/v0.2.1...v0.2.2) (2026-03-15)
+
+
+### Bug Fixes
+
+* add rate limiting to Oura integration auth endpoints ([b016447](https://github.com/sher85/Baseline/commit/b016447e811c4df898818ef274b0b471834215b4))
+
 ## [0.2.1](https://github.com/sher85/Baseline/compare/v0.2.0...v0.2.1) (2026-03-15)
 
 
