@@ -83,8 +83,16 @@ export function TrendChart({
               color: "var(--foreground)",
               boxShadow: "var(--shadow)"
             }}
-            formatter={(value: number | string) =>
-              defaultFormatter(Number(value), decimals, suffix)
+            formatter={(value) =>
+              defaultFormatter(
+                typeof value === "number"
+                  ? value
+                  : value === null || value === undefined
+                    ? null
+                    : Number(value),
+                decimals,
+                suffix
+              )
             }
             labelFormatter={(value) => `${label} • ${value}`}
           />

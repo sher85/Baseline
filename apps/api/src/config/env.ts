@@ -1,6 +1,23 @@
-import "dotenv/config";
+import { existsSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
+
+import { config as loadDotenv } from "dotenv";
 
 import { z } from "zod";
+
+const envDir = dirname(fileURLToPath(import.meta.url));
+const candidateEnvPaths = [
+  resolve(process.cwd(), ".env"),
+  resolve(envDir, "../../../../.env")
+];
+
+for (const envPath of candidateEnvPaths) {
+  if (existsSync(envPath)) {
+    loadDotenv({ path: envPath });
+    break;
+  }
+}
 
 const optionalNonEmptyString = z.preprocess(
   (value) => {

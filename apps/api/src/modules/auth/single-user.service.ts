@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import type { User } from "../../lib/prisma-client.js";
 
 import { prisma } from "../../lib/prisma.js";
 

@@ -6,16 +6,16 @@
     "dev": "next dev --port 3000",
     "build": "next build",
     "start": "next start",
-    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "typecheck": "next typegen && tsc -p tsconfig.json --noEmit",
     "test": "node -e \"console.log('No web tests yet')\""
   },
   "dependencies": {
     "@radix-ui/react-tooltip": "^1.2.8",
     "@wearable-analytics/shared": "0.1.0",
-    "next": "^15.2.0",
+    "next": "^16.1.6",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "recharts": "^2.15.1"
+    "recharts": "^3.8.0"
   },
   "devDependencies": {
     "@types/react": "^19.0.10",
