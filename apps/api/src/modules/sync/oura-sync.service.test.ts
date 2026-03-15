@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { resolveSyncWindowFromState } from "./oura-sync.service.js";
+import { resolveSyncWindowFromState } from "./sync-window.js";
 
 test("resolveSyncWindowFromState respects explicit ranges", () => {
   const window = resolveSyncWindowFromState({
