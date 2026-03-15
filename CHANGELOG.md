@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.2.1](https://github.com/sher85/Baseline/compare/v0.2.0...v0.2.1) (2026-03-15)
+
+
+### Bug Fixes
+
+* complete Prisma 7, Next 16, and Recharts 3 upgrade migration ([b453ae5](https://github.com/sher85/Baseline/commit/b453ae5f8615db47a0474976efa281b5d9794ebf))
+* make Prisma use the shared API env loader at runtime ([6458d3d](https://github.com/sher85/Baseline/commit/6458d3dd8b8e467e13cb217d4bf96813253610da))
+
 ## [0.2.0](https://github.com/sher85/Baseline/compare/v0.1.0...v0.2.0) (2026-03-15)
 
 
