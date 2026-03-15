@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { z } from "zod";
 
+import { createRateLimitMiddleware } from "../lib/rate-limit.js";
 import {
   disconnectOuraConnection,
   getOuraConnectionStatus,
@@ -27,13 +28,34 @@ const callbackQuerySchema = z.object({
 
 export const ouraIntegrationRouter = Router();
 
+const ouraConnectRateLimit = createRateLimitMiddleware({
+  keyPrefix: "oura-connect",
+  windowMs: 60_000,
+  maxRequests: 10,
+  message: "Too many Oura connect attempts. Please wait a minute and try again."
+});
+
+const ouraCallbackRateLimit = createRateLimitMiddleware({
+  keyPrefix: "oura-callback",
+  windowMs: 60_000,
+  maxRequests: 20,
+  message: "Too many Oura callback requests. Please wait a minute and try again."
+});
+
+const ouraDisconnectRateLimit = createRateLimitMiddleware({
+  keyPrefix: "oura-disconnect",
+  windowMs: 60_000,
+  maxRequests: 10,
+  message: "Too many Oura disconnect attempts. Please wait a minute and try again."
+});
+
 ouraIntegrationRouter.get("/status", async (_request, response) => {
   const status = await getOuraConnectionStatus();
 
   response.json(status);
 });
 
-ouraIntegrationRouter.post("/connect", async (_request, response) => {
+ouraIntegrationRouter.post("/connect", ouraConnectRateLimit, async (_request, response) => {
   if (!isOuraConfigured()) {
     const status = await getOuraConnectionStatus();
 
@@ -55,7 +77,7 @@ ouraIntegrationRouter.post("/connect", async (_request, response) => {
   });
 });
 
-ouraIntegrationRouter.get("/callback", async (request, response) => {
+ouraIntegrationRouter.get("/callback", ouraCallbackRateLimit, async (request, response) => {
   const parsedQuery = callbackQuerySchema.safeParse(request.query);
 
   if (!parsedQuery.success) {
@@ -94,7 +116,7 @@ ouraIntegrationRouter.get("/callback", async (request, response) => {
   }
 });
 
-ouraIntegrationRouter.post("/disconnect", async (_request, response) => {
+ouraIntegrationRouter.post("/disconnect", ouraDisconnectRateLimit, async (_request, response) => {
   const result = await disconnectOuraConnection();
 
   response.json({
