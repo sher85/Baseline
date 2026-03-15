@@ -1,6 +1,7 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { Pool } from "pg";
 
+import { env } from "../config/env.js";
 import { PrismaClient } from "./prisma-client.js";
 
 declare global {
@@ -11,7 +12,7 @@ declare global {
 const pool =
   globalThis.__wearableAnalyticsPgPool__ ??
   new Pool({
-    connectionString: process.env.DATABASE_URL
+    connectionString: env.DATABASE_URL
   });
 
 export const prisma =
