@@ -1,4 +1,4 @@
-import type { OuraConnection } from "@prisma/client";
+import type { OuraConnection } from "../../lib/prisma-client.js";
 
 import { prisma } from "../../lib/prisma.js";
 import { getOrCreatePrimaryUser } from "../auth/single-user.service.js";

@@ -1,4 +1,4 @@
-import { AnomalySeverity } from "@prisma/client";
+import { AnomalySeverity } from "../../lib/prisma-client.js";
 
 import { prisma } from "../../lib/prisma.js";
 import { getOrCreatePrimaryUser } from "../auth/single-user.service.js";

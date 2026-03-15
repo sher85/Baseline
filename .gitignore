@@ -11,6 +11,7 @@ coverage
 .env.production.local
 prisma/dev.db
 prisma/dev.db-journal
+prisma/generated
 data-private/*
 !data-private/.gitkeep
 *.log

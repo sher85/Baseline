@@ -1,4 +1,13 @@
-import { AnomalySeverity, PrismaClient, SyncMode, SyncSource, SyncStatus } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+import { Pool } from "pg";
+
+import {
+  AnomalySeverity,
+  PrismaClient,
+  SyncMode,
+  SyncSource,
+  SyncStatus
+} from "./generated/client/index.js";
 
 type SeedDay = {
   day: string;
@@ -10,7 +19,13 @@ type SeedDay = {
   recoveryScore: number;
 };
 
-const prisma = new PrismaClient();
+const prisma = new PrismaClient({
+  adapter: new PrismaPg(
+    new Pool({
+      connectionString: process.env.DATABASE_URL
+    })
+  )
+});
 
 const demoSeries: SeedDay[] = [
   {
