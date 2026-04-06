@@ -22,9 +22,9 @@
     "test": "npm run test --workspace @wearable-analytics/shared && npm run test --workspace @wearable-analytics/api && npm run test --workspace @wearable-analytics/web"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "prisma": "^7.5.0",
+    "@types/node": "^25.5.2",
+    "prisma": "^7.6.0",
     "tsx": "^4.19.0",
-    "typescript": "^5.8.0"
+    "typescript": "^6.0.2"
   }
 }
