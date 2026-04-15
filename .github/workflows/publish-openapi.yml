@@ -49,18 +49,18 @@ jobs:
 
           git clone --depth 1 "https://x-access-token:${API_CATALOG_TOKEN}@github.com/sher85/openclaw-api-catalog.git" "${catalog_dir}"
 
-          mkdir -p "${catalog_dir}/services/event-scout"
-          cp openapi/openapi.json "${catalog_dir}/services/event-scout/openapi.json"
+          mkdir -p "${catalog_dir}/services/baseline"
+          cp openapi/openapi.json "${catalog_dir}/services/baseline/openapi.json"
 
           cd "${catalog_dir}"
 
-          if [ -z "$(git status --porcelain -- services/event-scout/openapi.json)" ]; then
+          if [ -z "$(git status --porcelain -- services/baseline/openapi.json)" ]; then
             echo "No OpenAPI catalog changes to publish."
             exit 0
           fi
 
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add services/event-scout/openapi.json
-          git commit -m "Update event-scout OpenAPI spec"
+          git add services/baseline/openapi.json
+          git commit -m "Update baseline OpenAPI spec"
           git push
