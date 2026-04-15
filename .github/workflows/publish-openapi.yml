@@ -4,12 +4,20 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 jobs:
   publish:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Guard manual publish ref
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.ref }}" != "refs/heads/main" ]; then
+            echo "Manual catalog publishing is only allowed from main."
+            exit 1
+          fi
+
       - name: Checkout
         uses: actions/checkout@v6
 
