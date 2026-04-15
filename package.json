@@ -15,13 +15,18 @@
     "dev:web": "npm run dev --workspace @wearable-analytics/web",
     "build": "npm run build --workspace @wearable-analytics/shared && npm run build --workspace @wearable-analytics/api && npm run build --workspace @wearable-analytics/web",
     "typecheck": "npm run typecheck --workspace @wearable-analytics/shared && npm run typecheck --workspace @wearable-analytics/api && npm run typecheck --workspace @wearable-analytics/web",
+    "openapi:generate": "node --import tsx apps/api/src/openapi/generate.ts",
+    "openapi:validate": "redocly lint openapi/openapi.json",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "db:seed": "tsx prisma/seed.ts",
     "sync:oura": "npm run sync:oura --workspace @wearable-analytics/api",
     "test": "npm run test --workspace @wearable-analytics/shared && npm run test --workspace @wearable-analytics/api && npm run test --workspace @wearable-analytics/web"
   },
   "devDependencies": {
+    "@asteasolutions/zod-to-openapi": "^8.5.0",
+    "@redocly/cli": "^2.27.1",
     "@types/node": "^25.5.0",
     "prisma": "^7.5.0",
     "tsx": "^4.19.0",

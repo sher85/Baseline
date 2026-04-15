@@ -1,0 +1,58 @@
+name: Publish OpenAPI Catalog Entry
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate OpenAPI spec
+        run: npm run openapi:generate
+
+      - name: Validate OpenAPI spec
+        run: npm run openapi:validate
+
+      - name: Publish to API catalog
+        env:
+          API_CATALOG_TOKEN: ${{ secrets.API_CATALOG_TOKEN }}
+        run: |
+          if [ -z "${API_CATALOG_TOKEN}" ]; then
+            echo "API_CATALOG_TOKEN is not configured."
+            exit 1
+          fi
+
+          catalog_dir="${RUNNER_TEMP}/openclaw-api-catalog"
+
+          git clone --depth 1 "https://x-access-token:${API_CATALOG_TOKEN}@github.com/sher85/openclaw-api-catalog.git" "${catalog_dir}"
+
+          mkdir -p "${catalog_dir}/services/event-scout"
+          cp openapi/openapi.json "${catalog_dir}/services/event-scout/openapi.json"
+
+          cd "${catalog_dir}"
+
+          if [ -z "$(git status --porcelain -- services/event-scout/openapi.json)" ]; then
+            echo "No OpenAPI catalog changes to publish."
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add services/event-scout/openapi.json
+          git commit -m "Update event-scout OpenAPI spec"
+          git push

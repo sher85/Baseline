@@ -102,6 +102,24 @@ npm run dev:api
 npm run dev:web
 ```
 
+## Local app run
+For the normal local app flow, run both services and use the web app as the public entrypoint:
+
+```bash
+cp .env.example .env
+npm install
+npm run db:generate
+npm run db:migrate
+npm run db:seed
+npm run dev
+```
+
+Recommended local URLs:
+- app: `http://localhost:3000`
+- API docs: `http://localhost:3000/docs`
+- OpenAPI JSON: `http://localhost:3000/openapi/openapi.json`
+- direct API health: `http://localhost:4000/health`
+
 ## Environment
 Core local values:
 
@@ -111,6 +129,8 @@ API_PORT=4000
 WEB_PORT=3000
 WEB_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_API_BASE_URL="http://localhost:4000"
+API_INTERNAL_BASE_URL="http://localhost:4000"
+API_PROXY_TARGET="http://localhost:4000"
 SYNC_SCHEDULE_ENABLED="true"
 SYNC_SCHEDULE_CRON="0 6 * * *"
 SYNC_SCHEDULE_RUN_ON_START="false"
@@ -121,7 +141,7 @@ Oura OAuth values:
 ```env
 OURA_CLIENT_ID="your_oura_client_id"
 OURA_CLIENT_SECRET="your_oura_client_secret"
-OURA_REDIRECT_URI="http://localhost:4000/api/integrations/oura/callback"
+OURA_REDIRECT_URI="http://localhost:3000/api/integrations/oura/callback"
 OURA_SCOPES="daily email personal"
 ```
 
@@ -133,7 +153,7 @@ This project works with seeded demo data, but the real product flow is local Our
 3. Register this exact redirect URI:
 
 ```text
-http://localhost:4000/api/integrations/oura/callback
+http://localhost:3000/api/integrations/oura/callback
 ```
 
 4. Add your client ID and client secret to `.env`
@@ -244,6 +264,89 @@ curl http://localhost:4000/api/sync/history
 Verified locally in development:
 - startup scheduled sync reuses the same pipeline as manual sync
 - sync history records `mode: "scheduled"`
+
+## OpenAPI
+This repo generates its OpenAPI spec from [apps/api/src/openapi/spec.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/openapi/spec.ts), backed by shared Zod contracts in [apps/api/src/contracts/api-contract.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/contracts/api-contract.ts). The generated artifact always lives at [openapi/openapi.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/openapi/openapi.json).
+
+The app now exposes the spec and docs in two convenient ways:
+- web host: `http://localhost:3000/docs` and `http://localhost:3000/openapi/openapi.json`
+- direct API host: `http://localhost:4000/docs` and `http://localhost:4000/openapi/openapi.json`
+
+Regenerate the spec with:
+
+```bash
+npm run openapi:generate
+```
+
+Validate the generated file with:
+
+```bash
+npm run openapi:validate
+```
+
+GitHub Actions now runs generation and validation on pushes to `main` and pull requests targeting `main`. A separate publish workflow also runs on pushes to `main`, regenerates and validates the spec, then copies `openapi/openapi.json` into `services/event-scout/openapi.json` in `sher85/openclaw-api-catalog` using the `API_CATALOG_TOKEN` repository secret and only commits when that file changed.
+
+## Docker
+The repo is containerized as a small app stack:
+- `web`: Next.js app on port `3000`
+- `api`: Express API on port `4000`
+- `db`: PostgreSQL on port `5432`
+
+Build the images manually:
+
+```bash
+docker build -f apps/api/Dockerfile -t baseline-api .
+docker build -f apps/web/Dockerfile -t baseline-web .
+```
+
+Run them manually if you already have PostgreSQL available:
+
+```bash
+docker run --rm -p 4000:4000 \
+  -e DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/wearable_analytics" \
+  -e WEB_APP_URL="http://localhost:3000" \
+  -e OURA_REDIRECT_URI="http://localhost:3000/api/integrations/oura/callback" \
+  baseline-api
+
+docker run --rm -p 3000:3000 \
+  -e API_INTERNAL_BASE_URL="http://host.docker.internal:4000" \
+  -e API_PROXY_TARGET="http://host.docker.internal:4000" \
+  baseline-web
+```
+
+## Docker Compose
+`docker-compose.yml` is the easiest local container flow because it brings up PostgreSQL, applies Prisma migrations, then starts the API and web app with healthchecks.
+
+```bash
+docker compose up --build
+```
+
+Compose URLs:
+- app: `http://localhost:3000`
+- docs: `http://localhost:3000/docs`
+- direct API: `http://localhost:4000`
+
+If you want live Oura OAuth through Compose, set `OURA_CLIENT_ID` and `OURA_CLIENT_SECRET` in your shell or `.env` before starting the stack.
+
+## Kong
+Recommended public host:
+
+```text
+baseline.localhost
+```
+
+Recommended deployment shape:
+- expose only the `web` service through Kong
+- let the Next.js app proxy `/api/*` and `/openapi/*` to the internal API service
+- keep the API container private to the app network unless you have a separate reason to expose it
+
+Why host-based routing is preferred here:
+- the web app expects to live at the root of a host, not under a prefixed subpath
+- Oura OAuth callback URLs are cleaner and safer as `https://baseline.example.com/api/...`
+- Redoc and OpenAPI assets work cleanly from root-relative URLs
+- host-based routing avoids extra path-prefix rewrite rules for Next.js pages, API calls, and docs assets
+
+Do not configure this app behind Kong as a path route like `/baseline`. Use a dedicated host or subdomain instead.
 
 ## Demo script
 If you want to show the project to another engineer, this is the clean path:

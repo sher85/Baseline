@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { z } from "zod";
 
+import { callbackQuerySchema } from "../contracts/api-contract.js";
 import { createRateLimitMiddleware } from "../lib/rate-limit.js";
 import {
   disconnectOuraConnection,
@@ -18,13 +18,6 @@ import {
   consumeOuraOAuthState,
   registerOuraOAuthState
 } from "../modules/oura/oura-oauth-state.service.js";
-
-const callbackQuerySchema = z.object({
-  code: z.string().min(1).optional(),
-  error: z.string().min(1).optional(),
-  scope: z.string().optional(),
-  state: z.string().min(1).optional()
-});
 
 export const ouraIntegrationRouter = Router();
 

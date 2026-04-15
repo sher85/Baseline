@@ -1,6 +1,9 @@
 import { Router } from "express";
-import { z } from "zod";
 
+import {
+  backfillSyncBodySchema,
+  manualSyncBodySchema
+} from "../contracts/api-contract.js";
 import { isOuraAuthenticationError } from "../modules/oura/oura-errors.js";
 import {
   getOuraSyncHistory,
@@ -8,36 +11,6 @@ import {
   runBackfillOuraSync,
   runManualOuraSync
 } from "../modules/sync/oura-sync.service.js";
-
-const manualSyncBodySchema = z
-  .object({
-    startDate: z.string().date().optional(),
-    endDate: z.string().date().optional(),
-    lookbackDays: z.coerce.number().int().positive().max(365).optional()
-  })
-  .refine(
-    (value) => {
-      if (value.startDate && value.endDate) {
-        return value.startDate <= value.endDate;
-      }
-
-      return true;
-    },
-    {
-      message: "startDate must be earlier than or equal to endDate",
-      path: ["startDate"]
-    }
-  );
-
-const backfillSyncBodySchema = z
-  .object({
-    startDate: z.string().date(),
-    endDate: z.string().date()
-  })
-  .refine((value) => value.startDate <= value.endDate, {
-    message: "startDate must be earlier than or equal to endDate",
-    path: ["startDate"]
-  });
 
 function buildSyncErrorResponse(error: unknown) {
   const message = error instanceof Error ? error.message : "Unknown sync error";

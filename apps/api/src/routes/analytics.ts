@@ -1,8 +1,11 @@
 import { Router } from "express";
 
 import {
+  anomalyHeatmapQuerySchema,
+  trendWindowQuerySchema
+} from "../contracts/api-contract.js";
+import {
   type AnomalyCategory,
-  anomalyCategoryOptions,
   getAnomalyHeatmap,
   getAnomalyHistoryPage,
   getLatestAnomalies,
@@ -16,10 +19,6 @@ import { getLatestSleepSummary } from "../modules/summaries/sleep.service.js";
 import { getTrendSummary } from "../modules/summaries/trends.service.js";
 
 export const analyticsRouter = Router();
-
-function isAnomalyCategory(value: string): value is AnomalyCategory {
-  return anomalyCategoryOptions.some((option) => option.value === value);
-}
 
 analyticsRouter.get("/overview/latest", async (_request, response) => {
   const overview = await getLatestOverview();
@@ -92,10 +91,9 @@ analyticsRouter.get("/sleep/latest", async (_request, response) => {
 });
 
 analyticsRouter.get("/trends", async (request, response) => {
-  const requestedWindow = request.query.window;
-  const window = requestedWindow === "30d" ? "30d" : requestedWindow === "7d" ? "7d" : null;
+  const parsedQuery = trendWindowQuerySchema.safeParse(request.query);
 
-  if (!window) {
+  if (!parsedQuery.success) {
     response.status(400).json({
       error: "Query parameter 'window' must be either '7d' or '30d'."
     });
@@ -103,7 +101,7 @@ analyticsRouter.get("/trends", async (request, response) => {
     return;
   }
 
-  const trends = await getTrendSummary(window);
+  const trends = await getTrendSummary(parsedQuery.data.window);
 
   if (!trends) {
     response.status(404).json({
@@ -156,34 +154,21 @@ analyticsRouter.get("/anomalies/history", async (request, response) => {
 });
 
 analyticsRouter.get("/anomalies/heatmap", async (request, response) => {
-  const requestedRange = request.query.range;
-  const range =
-    requestedRange === "3m" || requestedRange === "6m" || requestedRange === "12m"
-      ? requestedRange
-      : null;
-  const requestedCategory = request.query.type;
-  const category =
-    typeof requestedCategory === "string" && isAnomalyCategory(requestedCategory)
-      ? requestedCategory
-      : null;
+  const parsedQuery = anomalyHeatmapQuerySchema.safeParse(request.query);
 
-  if (!range) {
+  if (!parsedQuery.success) {
     response.status(400).json({
-      error: "Query parameter 'range' must be one of '3m', '6m', or '12m'."
+      error:
+        "Query parameters 'range' and 'type' must describe a supported heatmap request."
     });
 
     return;
   }
 
-  if (!category) {
-    response.status(400).json({
-      error: "Query parameter 'type' must be a supported anomaly category."
-    });
-
-    return;
-  }
-
-  const heatmap = await getAnomalyHeatmap(range, category);
+  const heatmap = await getAnomalyHeatmap(
+    parsedQuery.data.range,
+    parsedQuery.data.type as AnomalyCategory
+  );
 
   response.json(heatmap);
 });

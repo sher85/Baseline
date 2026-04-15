@@ -1,0 +1,3281 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "wearable-analytics-api",
+    "version": "0.1.0",
+    "description": "OpenAPI specification for the wearable analytics API service.",
+    "license": {
+      "name": "MIT",
+      "url": "https://opensource.org/licenses/MIT"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Local development server"
+    }
+  ],
+  "security": [],
+  "components": {
+    "schemas": {
+      "RootStatus": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "docs": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "status",
+          "docs"
+        ]
+      },
+      "HealthResponse": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean"
+          },
+          "service": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "ok",
+          "service",
+          "timestamp"
+        ]
+      },
+      "HealthDbSuccess": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "reachable"
+            ]
+          }
+        },
+        "required": [
+          "ok",
+          "database"
+        ]
+      },
+      "HealthDbFailure": {
+        "type": "object",
+        "properties": {
+          "ok": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          },
+          "database": {
+            "type": "string",
+            "enum": [
+              "unreachable"
+            ]
+          },
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "ok",
+          "database",
+          "error"
+        ]
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "ValidationErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "issues": {
+            "type": "object",
+            "properties": {
+              "formErrors": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "fieldErrors": {
+                "type": "object",
+                "additionalProperties": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            },
+            "required": [
+              "formErrors",
+              "fieldErrors"
+            ]
+          }
+        },
+        "required": [
+          "error",
+          "issues"
+        ]
+      },
+      "SyncErrorResponse": {
+        "type": "object",
+        "properties": {
+          "error": {
+            "type": "string"
+          },
+          "reauthenticationRequired": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          }
+        },
+        "required": [
+          "error"
+        ]
+      },
+      "OverviewResponse": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "metrics": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "label": {
+                  "type": "string"
+                },
+                "value": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "label",
+                "value",
+                "detail"
+              ]
+            }
+          },
+          "notes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "anomalies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "severity",
+                "title",
+                "description"
+              ]
+            }
+          },
+          "sync": {
+            "type": "object",
+            "properties": {
+              "running": {
+                "type": "boolean"
+              },
+              "latestStatus": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "running",
+                      "succeeded",
+                      "failed"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "idle"
+                    ]
+                  }
+                ]
+              },
+              "lastSyncedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "running",
+              "latestStatus",
+              "lastSyncedAt"
+            ]
+          },
+          "connection": {
+            "type": "object",
+            "properties": {
+              "connected": {
+                "type": "boolean"
+              },
+              "configured": {
+                "type": "boolean"
+              },
+              "needsReconnect": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "connected",
+              "configured",
+              "needsReconnect"
+            ]
+          }
+        },
+        "required": [
+          "generatedAt",
+          "day",
+          "metrics",
+          "notes",
+          "anomalies",
+          "sync",
+          "connection"
+        ]
+      },
+      "BaselineSnapshotResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "hrvBaseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "restingHrBaseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperatureBaseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleepDurationBaseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "day",
+          "hrvBaseline",
+          "restingHrBaseline",
+          "temperatureBaseline",
+          "sleepDurationBaseline",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RecoveryScoreResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "userId": {
+            "type": "string"
+          },
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "score": {
+            "type": "integer"
+          },
+          "confidence": {
+            "type": "number",
+            "nullable": true
+          },
+          "hrvContribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "restingHrContribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperatureContribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleepContribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "explanationSummary": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "updatedAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "userId",
+          "day",
+          "score",
+          "confidence",
+          "hrvContribution",
+          "restingHrContribution",
+          "temperatureContribution",
+          "sleepContribution",
+          "explanationSummary",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "RecoveryDetailResponse": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "score": {
+            "type": "integer"
+          },
+          "confidence": {
+            "type": "number",
+            "nullable": true
+          },
+          "explanationSummary": {
+            "type": "string"
+          },
+          "vitals": {
+            "type": "object",
+            "properties": {
+              "hrv": {
+                "type": "number",
+                "nullable": true
+              },
+              "restingHeartRate": {
+                "type": "number",
+                "nullable": true
+              },
+              "temperatureDeviation": {
+                "type": "number",
+                "nullable": true
+              },
+              "sleepSeconds": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "hrv",
+              "restingHeartRate",
+              "temperatureDeviation",
+              "sleepSeconds"
+            ]
+          },
+          "factors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "hrv",
+                    "restingHeartRate",
+                    "sleepDuration",
+                    "temperature"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "contribution": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "positive",
+                    "negative",
+                    "neutral"
+                  ]
+                },
+                "currentValue": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "baselineValue": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "label",
+                "contribution",
+                "status",
+                "currentValue",
+                "baselineValue",
+                "unit",
+                "detail"
+              ]
+            }
+          },
+          "anomalies": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "severity",
+                "title",
+                "description"
+              ]
+            }
+          }
+        },
+        "required": [
+          "day",
+          "score",
+          "confidence",
+          "explanationSummary",
+          "vitals",
+          "factors",
+          "anomalies"
+        ]
+      },
+      "SleepSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "sleepSeconds": {
+                "type": "integer"
+              },
+              "timeInBedSeconds": {
+                "type": "integer"
+              },
+              "efficiency": {
+                "type": "number",
+                "nullable": true
+              },
+              "latencySeconds": {
+                "type": "integer",
+                "nullable": true
+              }
+            },
+            "required": [
+              "sleepSeconds",
+              "timeInBedSeconds",
+              "efficiency",
+              "latencySeconds"
+            ]
+          },
+          "vitals": {
+            "type": "object",
+            "properties": {
+              "averageHr": {
+                "type": "number",
+                "nullable": true
+              },
+              "lowestHr": {
+                "type": "number",
+                "nullable": true
+              },
+              "averageHrv": {
+                "type": "number",
+                "nullable": true
+              }
+            },
+            "required": [
+              "averageHr",
+              "lowestHr",
+              "averageHrv"
+            ]
+          },
+          "timing": {
+            "type": "object",
+            "properties": {
+              "bedtimeStart": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "bedtimeEnd": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "bedtimeStart",
+              "bedtimeEnd"
+            ]
+          },
+          "baseline": {
+            "type": "object",
+            "properties": {
+              "sleepDurationSeconds": {
+                "type": "number",
+                "nullable": true
+              },
+              "durationDeltaSeconds": {
+                "type": "number",
+                "nullable": true
+              }
+            },
+            "required": [
+              "sleepDurationSeconds",
+              "durationDeltaSeconds"
+            ]
+          },
+          "consistency": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "averageClockMinutes": {
+                "type": "integer"
+              },
+              "averageDeviationMinutes": {
+                "type": "integer"
+              },
+              "latestOffsetMinutes": {
+                "type": "integer"
+              },
+              "recent": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "day": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "bedtimeStart": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "clockMinutes": {
+                      "type": "integer"
+                    },
+                    "offsetMinutes": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "day",
+                    "bedtimeStart",
+                    "clockMinutes",
+                    "offsetMinutes"
+                  ]
+                }
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "mixed",
+                  "steady",
+                  "variable",
+                  "warming_up"
+                ]
+              }
+            },
+            "required": [
+              "averageClockMinutes",
+              "averageDeviationMinutes",
+              "latestOffsetMinutes",
+              "recent",
+              "status"
+            ]
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "day",
+          "totals",
+          "vitals",
+          "timing",
+          "baseline",
+          "consistency",
+          "note"
+        ]
+      },
+      "TrendSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "window": {
+            "type": "string",
+            "enum": [
+              "7d",
+              "30d"
+            ]
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "startDay": {
+                "type": "string",
+                "format": "date"
+              },
+              "endDay": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            "required": [
+              "startDay",
+              "endDay"
+            ]
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "averageRecoveryScore": {
+                "type": "number",
+                "nullable": true
+              },
+              "averageSleepSeconds": {
+                "type": "number",
+                "nullable": true
+              },
+              "averageHrv": {
+                "type": "number",
+                "nullable": true
+              },
+              "daysWithAnomalies": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "averageRecoveryScore",
+              "averageSleepSeconds",
+              "averageHrv",
+              "daysWithAnomalies"
+            ]
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "recoveryScore": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "sleepSeconds": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "sleepEfficiency": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "hrv": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "restingHeartRate": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "temperatureDeviation": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "steps": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "anomalyCount": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "day",
+                "recoveryScore",
+                "sleepSeconds",
+                "sleepEfficiency",
+                "hrv",
+                "restingHeartRate",
+                "temperatureDeviation",
+                "steps",
+                "anomalyCount"
+              ]
+            }
+          }
+        },
+        "required": [
+          "generatedAt",
+          "window",
+          "range",
+          "summary",
+          "series"
+        ]
+      },
+      "AnomaliesCollectionResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "userId": {
+                  "type": "string"
+                },
+                "day": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "userId",
+                "day",
+                "type",
+                "severity",
+                "title",
+                "description",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "items"
+        ]
+      },
+      "AnomalyHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "anomalies": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "type": {
+                        "type": "string"
+                      },
+                      "title": {
+                        "type": "string"
+                      },
+                      "description": {
+                        "type": "string"
+                      },
+                      "severity": {
+                        "type": "string",
+                        "enum": [
+                          "low",
+                          "medium",
+                          "high"
+                        ]
+                      }
+                    },
+                    "required": [
+                      "type",
+                      "title",
+                      "description",
+                      "severity"
+                    ]
+                  }
+                },
+                "highestSeverity": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "severityCounts": {
+                  "type": "object",
+                  "properties": {
+                    "high": {
+                      "type": "integer"
+                    },
+                    "medium": {
+                      "type": "integer"
+                    },
+                    "low": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "high",
+                    "medium",
+                    "low"
+                  ]
+                }
+              },
+              "required": [
+                "day",
+                "anomalies",
+                "highestSeverity",
+                "severityCounts"
+              ]
+            }
+          },
+          "hasMore": {
+            "type": "boolean"
+          },
+          "nextCursorDay": {
+            "type": "string",
+            "nullable": true,
+            "format": "date"
+          }
+        },
+        "required": [
+          "items",
+          "hasMore",
+          "nextCursorDay"
+        ]
+      },
+      "AnomalyHeatmapResponse": {
+        "type": "object",
+        "properties": {
+          "categories": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "enum": [
+                    "all",
+                    "sleep",
+                    "hrv",
+                    "resting_hr",
+                    "temperature"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "value",
+                "label"
+              ]
+            }
+          },
+          "days": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "date": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "score": {
+                  "type": "integer"
+                },
+                "anomalyCount": {
+                  "type": "integer"
+                },
+                "severityBreakdown": {
+                  "type": "object",
+                  "properties": {
+                    "high": {
+                      "type": "integer"
+                    },
+                    "medium": {
+                      "type": "integer"
+                    },
+                    "low": {
+                      "type": "integer"
+                    }
+                  },
+                  "required": [
+                    "high",
+                    "medium",
+                    "low"
+                  ]
+                },
+                "types": {
+                  "type": "array",
+                  "items": {
+                    "type": "string",
+                    "enum": [
+                      "sleep",
+                      "hrv",
+                      "resting_hr",
+                      "temperature"
+                    ]
+                  }
+                },
+                "summaries": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              },
+              "required": [
+                "date",
+                "score",
+                "anomalyCount",
+                "severityBreakdown",
+                "types",
+                "summaries"
+              ]
+            }
+          },
+          "filter": {
+            "type": "object",
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": [
+                  "all",
+                  "sleep",
+                  "hrv",
+                  "resting_hr",
+                  "temperature"
+                ]
+              },
+              "categoryLabel": {
+                "type": "string"
+              },
+              "range": {
+                "type": "string",
+                "enum": [
+                  "3m",
+                  "6m",
+                  "12m"
+                ]
+              }
+            },
+            "required": [
+              "category",
+              "categoryLabel",
+              "range"
+            ]
+          },
+          "range": {
+            "type": "object",
+            "properties": {
+              "endDay": {
+                "type": "string",
+                "nullable": true,
+                "format": "date"
+              },
+              "startDay": {
+                "type": "string",
+                "nullable": true,
+                "format": "date"
+              }
+            },
+            "required": [
+              "endDay",
+              "startDay"
+            ]
+          }
+        },
+        "required": [
+          "categories",
+          "days",
+          "filter",
+          "range"
+        ]
+      },
+      "AiDailyBriefResponse": {
+        "type": "object",
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recovery_score": {
+            "type": "integer"
+          },
+          "recovery_confidence": {
+            "type": "number",
+            "nullable": true
+          },
+          "explanation_summary": {
+            "type": "string"
+          },
+          "sleep_seconds": {
+            "type": "integer"
+          },
+          "sleep_human": {
+            "type": "string",
+            "nullable": true
+          },
+          "sleep_delta_seconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "hrv": {
+            "type": "number",
+            "nullable": true
+          },
+          "hrv_baseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "resting_heart_rate": {
+            "type": "number",
+            "nullable": true
+          },
+          "resting_heart_rate_baseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperature_deviation": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperature_baseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "anomaly_count": {
+            "type": "integer"
+          },
+          "anomaly_titles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "sync_status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "running",
+                  "succeeded",
+                  "failed"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "idle"
+                ]
+              }
+            ]
+          },
+          "last_synced_at": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "summary_text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "generated_at",
+          "day",
+          "recovery_score",
+          "recovery_confidence",
+          "explanation_summary",
+          "sleep_seconds",
+          "sleep_human",
+          "sleep_delta_seconds",
+          "hrv",
+          "hrv_baseline",
+          "resting_heart_rate",
+          "resting_heart_rate_baseline",
+          "temperature_deviation",
+          "temperature_baseline",
+          "anomaly_count",
+          "anomaly_titles",
+          "sync_status",
+          "last_synced_at",
+          "summary_text"
+        ]
+      },
+      "AiLastNightResponse": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sleep_total_seconds": {
+            "type": "integer"
+          },
+          "sleep_total_human": {
+            "type": "string",
+            "nullable": true
+          },
+          "time_in_bed_seconds": {
+            "type": "integer"
+          },
+          "time_in_bed_human": {
+            "type": "string",
+            "nullable": true
+          },
+          "sleep_efficiency": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleep_latency_seconds": {
+            "type": "integer",
+            "nullable": true
+          },
+          "sleep_latency_human": {
+            "type": "string",
+            "nullable": true
+          },
+          "bedtime_start": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "bedtime_end": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "average_sleep_hr": {
+            "type": "number",
+            "nullable": true
+          },
+          "lowest_sleep_hr": {
+            "type": "number",
+            "nullable": true
+          },
+          "average_sleep_hrv": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleep_baseline_seconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleep_delta_seconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "day",
+          "sleep_total_seconds",
+          "sleep_total_human",
+          "time_in_bed_seconds",
+          "time_in_bed_human",
+          "sleep_efficiency",
+          "sleep_latency_seconds",
+          "sleep_latency_human",
+          "bedtime_start",
+          "bedtime_end",
+          "average_sleep_hr",
+          "lowest_sleep_hr",
+          "average_sleep_hrv",
+          "sleep_baseline_seconds",
+          "sleep_delta_seconds",
+          "note"
+        ]
+      },
+      "AiRecoveryResponse": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recovery_score": {
+            "type": "integer"
+          },
+          "confidence": {
+            "type": "number",
+            "nullable": true
+          },
+          "explanation_summary": {
+            "type": "string"
+          },
+          "hrv": {
+            "type": "number",
+            "nullable": true
+          },
+          "hrv_baseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "resting_heart_rate": {
+            "type": "number",
+            "nullable": true
+          },
+          "resting_heart_rate_baseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperature_deviation": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperature_baseline": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleep_seconds": {
+            "type": "integer"
+          },
+          "sleep_baseline_seconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "hrv_contribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "resting_heart_rate_contribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "sleep_contribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "temperature_contribution": {
+            "type": "number",
+            "nullable": true
+          },
+          "factors": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string",
+                  "enum": [
+                    "hrv",
+                    "restingHeartRate",
+                    "sleepDuration",
+                    "temperature"
+                  ]
+                },
+                "label": {
+                  "type": "string"
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "positive",
+                    "negative",
+                    "neutral"
+                  ]
+                },
+                "current_value": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "baseline_value": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "contribution": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "unit": {
+                  "type": "string"
+                },
+                "detail": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "key",
+                "label",
+                "status",
+                "current_value",
+                "baseline_value",
+                "contribution",
+                "unit",
+                "detail"
+              ]
+            }
+          },
+          "anomaly_count": {
+            "type": "integer"
+          },
+          "anomaly_titles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "day",
+          "recovery_score",
+          "confidence",
+          "explanation_summary",
+          "hrv",
+          "hrv_baseline",
+          "resting_heart_rate",
+          "resting_heart_rate_baseline",
+          "temperature_deviation",
+          "temperature_baseline",
+          "sleep_seconds",
+          "sleep_baseline_seconds",
+          "hrv_contribution",
+          "resting_heart_rate_contribution",
+          "sleep_contribution",
+          "temperature_contribution",
+          "factors",
+          "anomaly_count",
+          "anomaly_titles"
+        ]
+      },
+      "AiAnomalySummaryResponse": {
+        "type": "object",
+        "properties": {
+          "day": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "latest_flag_count": {
+            "type": "integer"
+          },
+          "recent_flag_count": {
+            "type": "integer"
+          },
+          "latest_titles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "type": {
+                  "type": "string"
+                },
+                "severity": {
+                  "type": "string",
+                  "enum": [
+                    "low",
+                    "medium",
+                    "high"
+                  ]
+                },
+                "title": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "day",
+                "type",
+                "severity",
+                "title",
+                "description"
+              ]
+            }
+          },
+          "summary_text": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "day",
+          "latest_flag_count",
+          "recent_flag_count",
+          "latest_titles",
+          "items",
+          "summary_text"
+        ]
+      },
+      "AiContextResponse": {
+        "type": "object",
+        "properties": {
+          "generated_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "window": {
+            "type": "string",
+            "enum": [
+              "7d",
+              "30d"
+            ]
+          },
+          "start_day": {
+            "type": "string",
+            "format": "date"
+          },
+          "end_day": {
+            "type": "string",
+            "format": "date"
+          },
+          "average_recovery_score": {
+            "type": "number",
+            "nullable": true
+          },
+          "average_sleep_seconds": {
+            "type": "number",
+            "nullable": true
+          },
+          "average_sleep_human": {
+            "type": "string",
+            "nullable": true
+          },
+          "average_hrv": {
+            "type": "number",
+            "nullable": true
+          },
+          "days_with_anomalies": {
+            "type": "integer"
+          },
+          "series": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "recovery_score": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "sleep_seconds": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "hrv": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "resting_heart_rate": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "temperature_deviation": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "steps": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "anomaly_count": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "day",
+                "recovery_score",
+                "sleep_seconds",
+                "hrv",
+                "resting_heart_rate",
+                "temperature_deviation",
+                "steps",
+                "anomaly_count"
+              ]
+            }
+          }
+        },
+        "required": [
+          "generated_at",
+          "window",
+          "start_day",
+          "end_day",
+          "average_recovery_score",
+          "average_sleep_seconds",
+          "average_sleep_human",
+          "average_hrv",
+          "days_with_anomalies",
+          "series"
+        ]
+      },
+      "OuraConnectionStatusResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "oura"
+            ]
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "missingConfiguration": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requestedScopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "connected": {
+            "type": "boolean"
+          },
+          "needsReconnect": {
+            "type": "boolean"
+          },
+          "connection": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "isActive": {
+                "type": "boolean"
+              },
+              "connectedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tokenExpired": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "isActive",
+              "connectedAt",
+              "expiresAt",
+              "scopes",
+              "tokenExpired"
+            ]
+          }
+        },
+        "required": [
+          "provider",
+          "configured",
+          "missingConfiguration",
+          "requestedScopes",
+          "connected",
+          "needsReconnect",
+          "connection"
+        ]
+      },
+      "OuraConnectResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "oura"
+            ]
+          },
+          "authorizationUrl": {
+            "type": "string",
+            "format": "uri"
+          }
+        },
+        "required": [
+          "provider",
+          "authorizationUrl"
+        ]
+      },
+      "OuraConnectUnavailableResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "oura"
+            ]
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "missingConfiguration": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "requestedScopes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "connected": {
+            "type": "boolean"
+          },
+          "needsReconnect": {
+            "type": "boolean"
+          },
+          "connection": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "isActive": {
+                "type": "boolean"
+              },
+              "connectedAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "expiresAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "scopes": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "tokenExpired": {
+                "type": "boolean"
+              }
+            },
+            "required": [
+              "isActive",
+              "connectedAt",
+              "expiresAt",
+              "scopes",
+              "tokenExpired"
+            ]
+          },
+          "message": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "provider",
+          "configured",
+          "missingConfiguration",
+          "requestedScopes",
+          "connected",
+          "needsReconnect",
+          "connection",
+          "message"
+        ]
+      },
+      "OuraDisconnectResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "oura"
+            ]
+          },
+          "disconnected": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "connected": {
+            "type": "boolean",
+            "enum": [
+              false
+            ]
+          }
+        },
+        "required": [
+          "provider",
+          "disconnected",
+          "connected"
+        ]
+      },
+      "RunSyncResponse": {
+        "type": "object",
+        "properties": {
+          "syncRun": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "oura"
+                ]
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "scheduled",
+                  "backfill"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "running",
+                  "succeeded",
+                  "failed"
+                ]
+              },
+              "rangeStart": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "rangeEnd": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "startedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "finishedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "errorMessage": {
+                "type": "string",
+                "nullable": true
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "userId",
+              "source",
+              "mode",
+              "status",
+              "rangeStart",
+              "rangeEnd",
+              "startedAt",
+              "finishedAt",
+              "errorMessage",
+              "createdAt",
+              "updatedAt"
+            ]
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "sleepRecords": {
+                "type": "integer"
+              },
+              "readinessRecords": {
+                "type": "integer"
+              },
+              "activityRecords": {
+                "type": "integer"
+              }
+            },
+            "required": [
+              "sleepRecords",
+              "readinessRecords",
+              "activityRecords"
+            ]
+          },
+          "window": {
+            "type": "object",
+            "properties": {
+              "startDate": {
+                "type": "string",
+                "format": "date"
+              },
+              "endDate": {
+                "type": "string",
+                "format": "date"
+              }
+            },
+            "required": [
+              "startDate",
+              "endDate"
+            ]
+          }
+        },
+        "required": [
+          "syncRun",
+          "summary",
+          "window"
+        ]
+      },
+      "SyncStatusResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "oura"
+            ]
+          },
+          "running": {
+            "type": "boolean"
+          },
+          "currentRun": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "oura"
+                ]
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "scheduled",
+                  "backfill"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "running",
+                  "succeeded",
+                  "failed"
+                ]
+              },
+              "rangeStart": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "rangeEnd": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "startedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "finishedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "errorMessage": {
+                "type": "string",
+                "nullable": true
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "userId",
+              "source",
+              "mode",
+              "status",
+              "rangeStart",
+              "rangeEnd",
+              "startedAt",
+              "finishedAt",
+              "errorMessage",
+              "createdAt",
+              "updatedAt"
+            ]
+          },
+          "latestRun": {
+            "type": "object",
+            "nullable": true,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "userId": {
+                "type": "string"
+              },
+              "source": {
+                "type": "string",
+                "enum": [
+                  "oura"
+                ]
+              },
+              "mode": {
+                "type": "string",
+                "enum": [
+                  "manual",
+                  "scheduled",
+                  "backfill"
+                ]
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "running",
+                  "succeeded",
+                  "failed"
+                ]
+              },
+              "rangeStart": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "rangeEnd": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "startedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "finishedAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "errorMessage": {
+                "type": "string",
+                "nullable": true
+              },
+              "createdAt": {
+                "type": "string",
+                "format": "date-time"
+              },
+              "updatedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            },
+            "required": [
+              "id",
+              "userId",
+              "source",
+              "mode",
+              "status",
+              "rangeStart",
+              "rangeEnd",
+              "startedAt",
+              "finishedAt",
+              "errorMessage",
+              "createdAt",
+              "updatedAt"
+            ]
+          }
+        },
+        "required": [
+          "provider",
+          "running",
+          "currentRun",
+          "latestRun"
+        ]
+      },
+      "SyncHistoryResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "oura"
+            ]
+          },
+          "runs": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "userId": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "oura"
+                  ]
+                },
+                "mode": {
+                  "type": "string",
+                  "enum": [
+                    "manual",
+                    "scheduled",
+                    "backfill"
+                  ]
+                },
+                "status": {
+                  "type": "string",
+                  "enum": [
+                    "pending",
+                    "running",
+                    "succeeded",
+                    "failed"
+                  ]
+                },
+                "rangeStart": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date-time"
+                },
+                "rangeEnd": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date-time"
+                },
+                "startedAt": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date-time"
+                },
+                "finishedAt": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date-time"
+                },
+                "errorMessage": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "createdAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "updatedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              },
+              "required": [
+                "id",
+                "userId",
+                "source",
+                "mode",
+                "status",
+                "rangeStart",
+                "rangeEnd",
+                "startedAt",
+                "finishedAt",
+                "errorMessage",
+                "createdAt",
+                "updatedAt"
+              ]
+            }
+          }
+        },
+        "required": [
+          "provider",
+          "runs"
+        ]
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "operationId": "getApiRoot",
+        "summary": "Get service status",
+        "responses": {
+          "200": {
+            "description": "Basic API status response.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RootStatus"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "operationId": "getHealth",
+        "summary": "Get application health",
+        "responses": {
+          "200": {
+            "description": "Application health information.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health/db": {
+      "get": {
+        "tags": [
+          "Health"
+        ],
+        "operationId": "getDatabaseHealth",
+        "summary": "Check database connectivity",
+        "responses": {
+          "200": {
+            "description": "Database is reachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDbSuccess"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Database is unreachable.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthDbFailure"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/overview/latest": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestOverview",
+        "summary": "Get the latest overview summary",
+        "responses": {
+          "200": {
+            "description": "Latest overview payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OverviewResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No overview data is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/baselines/latest": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestBaseline",
+        "summary": "Get the latest baseline snapshot",
+        "responses": {
+          "200": {
+            "description": "Latest baseline snapshot.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BaselineSnapshotResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No baseline data is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recovery/latest": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestRecoveryScore",
+        "summary": "Get the latest recovery score",
+        "responses": {
+          "200": {
+            "description": "Latest recovery score.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryScoreResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No recovery data is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/recovery/latest/detail": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestRecoveryDetail",
+        "summary": "Get the latest detailed recovery summary",
+        "responses": {
+          "200": {
+            "description": "Latest detailed recovery payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecoveryDetailResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No recovery detail is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sleep/latest": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestSleepSummary",
+        "summary": "Get the latest sleep summary",
+        "responses": {
+          "200": {
+            "description": "Latest sleep summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SleepSummaryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No sleep summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/trends": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getTrendSummary",
+        "summary": "Get the latest trend summary",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "7d",
+                "30d"
+              ]
+            },
+            "required": true,
+            "name": "window",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Trend summary for the requested window.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrendSummaryResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The window query parameter is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No trend data is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/anomalies/latest": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestAnomalies",
+        "summary": "Get anomalies for the latest day",
+        "responses": {
+          "200": {
+            "description": "Latest anomaly flags.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomaliesCollectionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/anomalies/recent": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getRecentAnomalies",
+        "summary": "Get recent anomaly flags",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 60
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Recent anomaly flags.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomaliesCollectionResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/anomalies/history": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getAnomalyHistory",
+        "summary": "Get anomaly history grouped by day",
+        "parameters": [
+          {
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 366
+            },
+            "required": false,
+            "name": "limitDays",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false,
+            "name": "cursorDay",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "format": "date"
+            },
+            "required": false,
+            "name": "targetDay",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Paginated anomaly history.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/anomalies/heatmap": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getAnomalyHeatmap",
+        "summary": "Get anomaly heatmap data",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "3m",
+                "6m",
+                "12m"
+              ]
+            },
+            "required": true,
+            "name": "range",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "all",
+                "sleep",
+                "hrv",
+                "resting_hr",
+                "temperature"
+              ]
+            },
+            "required": true,
+            "name": "type",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Anomaly heatmap data.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnomalyHeatmapResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The range or type query parameter is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/daily-brief": {
+      "get": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "getAiDailyBrief",
+        "summary": "Get the latest AI daily brief",
+        "responses": {
+          "200": {
+            "description": "AI daily brief payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiDailyBriefResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No AI daily brief is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/last-night": {
+      "get": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "getAiLastNightSummary",
+        "summary": "Get the latest AI sleep summary",
+        "responses": {
+          "200": {
+            "description": "AI-oriented last-night summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiLastNightResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No AI last-night summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/recovery": {
+      "get": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "getAiRecoverySummary",
+        "summary": "Get the latest AI recovery summary",
+        "responses": {
+          "200": {
+            "description": "AI-oriented recovery summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiRecoveryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No AI recovery summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/anomalies": {
+      "get": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "getAiAnomalySummary",
+        "summary": "Get the latest AI anomaly summary",
+        "responses": {
+          "200": {
+            "description": "AI-oriented anomaly summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiAnomalySummaryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No AI anomaly summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/ai/context": {
+      "get": {
+        "tags": [
+          "AI"
+        ],
+        "operationId": "getAiContext",
+        "summary": "Get AI context for a trend window",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "enum": [
+                "7d",
+                "30d"
+              ]
+            },
+            "required": true,
+            "name": "window",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "AI-oriented context summary.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiContextResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The window query parameter is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No AI context summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/oura/status": {
+      "get": {
+        "tags": [
+          "Oura Integration"
+        ],
+        "operationId": "getOuraConnectionStatus",
+        "summary": "Get Oura connection status",
+        "responses": {
+          "200": {
+            "description": "Current Oura connection state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OuraConnectionStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/oura/connect": {
+      "post": {
+        "tags": [
+          "Oura Integration"
+        ],
+        "operationId": "createOuraConnectUrl",
+        "summary": "Create a new Oura authorization URL",
+        "responses": {
+          "201": {
+            "description": "Created a fresh Oura authorization URL.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OuraConnectResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many connect attempts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Oura OAuth is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OuraConnectUnavailableResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/oura/callback": {
+      "get": {
+        "tags": [
+          "Oura Integration"
+        ],
+        "operationId": "handleOuraCallback",
+        "summary": "Handle the Oura OAuth callback",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": false,
+            "name": "code",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": false,
+            "name": "error",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "required": false,
+            "name": "scope",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "minLength": 1
+            },
+            "required": false,
+            "name": "state",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirects back to the web app after the callback is handled.",
+            "headers": {
+              "Location": {
+                "description": "Redirect target.",
+                "schema": {
+                  "type": "string",
+                  "format": "uri"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many callback attempts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/oura/disconnect": {
+      "post": {
+        "tags": [
+          "Oura Integration"
+        ],
+        "operationId": "disconnectOura",
+        "summary": "Disconnect the local Oura connection",
+        "responses": {
+          "200": {
+            "description": "Disconnected the local Oura connection.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OuraDisconnectResponse"
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Too many disconnect attempts.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sync/oura/run": {
+      "post": {
+        "tags": [
+          "Sync"
+        ],
+        "operationId": "runOuraSync",
+        "summary": "Run a manual Oura sync",
+        "requestBody": {
+          "required": false,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "lookbackDays": {
+                    "type": "integer",
+                    "minimum": 0,
+                    "exclusiveMinimum": true,
+                    "maximum": 365
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Started and completed a manual Oura sync.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunSyncResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The sync request payload is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Oura reauthentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An Oura sync is already running.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The sync failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sync/oura/backfill": {
+      "post": {
+        "tags": [
+          "Sync"
+        ],
+        "operationId": "runOuraBackfill",
+        "summary": "Run an Oura backfill sync",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "startDate": {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date"
+                  }
+                },
+                "required": [
+                  "startDate",
+                  "endDate"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Started and completed an Oura backfill sync.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RunSyncResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The backfill request payload is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Oura reauthentication is required.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorResponse"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "An Oura sync is already running.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorResponse"
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "The sync failed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sync/status": {
+      "get": {
+        "tags": [
+          "Sync"
+        ],
+        "operationId": "getOuraSyncStatus",
+        "summary": "Get the current Oura sync status",
+        "responses": {
+          "200": {
+            "description": "Current Oura sync status.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/sync/history": {
+      "get": {
+        "tags": [
+          "Sync"
+        ],
+        "operationId": "getOuraSyncHistory",
+        "summary": "Get recent Oura sync history",
+        "responses": {
+          "200": {
+            "description": "Recent Oura sync runs.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SyncHistoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -4,6 +4,7 @@ import express from "express";
 import { aiRouter } from "./routes/ai.js";
 import { analyticsRouter } from "./routes/analytics.js";
 import { healthRouter } from "./routes/health.js";
+import { openapiRouter } from "./routes/openapi.js";
 import { ouraIntegrationRouter } from "./routes/oura-integration.js";
 import { syncRouter } from "./routes/sync.js";
 
@@ -16,10 +17,11 @@ app.get("/", (_request, response) => {
   response.json({
     name: "wearable-analytics-api",
     status: "booting",
-    docs: "/health"
+    docs: "/docs"
   });
 });
 
+app.use(openapiRouter);
 app.use("/health", healthRouter);
 app.use("/api/integrations/oura", ouraIntegrationRouter);
 app.use("/api/sync", syncRouter);

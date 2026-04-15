@@ -1,5 +1,6 @@
 import { Router } from "express";
 
+import { trendWindowQuerySchema } from "../contracts/api-contract.js";
 import {
   getAiAnomalySummary,
   getAiContext,
@@ -67,10 +68,9 @@ aiRouter.get("/anomalies", async (_request, response) => {
 });
 
 aiRouter.get("/context", async (request, response) => {
-  const requestedWindow = request.query.window;
-  const window = requestedWindow === "30d" ? "30d" : requestedWindow === "7d" ? "7d" : null;
+  const parsedQuery = trendWindowQuerySchema.safeParse(request.query);
 
-  if (!window) {
+  if (!parsedQuery.success) {
     response.status(400).json({
       error: "Query parameter 'window' must be either '7d' or '30d'."
     });
@@ -78,7 +78,7 @@ aiRouter.get("/context", async (request, response) => {
     return;
   }
 
-  const summary = await getAiContext(window);
+  const summary = await getAiContext(parsedQuery.data.window);
 
   if (!summary) {
     response.status(404).json({

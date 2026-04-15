@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from "./api-base";
+
 export type TrendPoint = {
   anomalyCount: number;
   day: string;
@@ -148,7 +150,7 @@ export type AnomalyHeatmapResponse = {
   };
 };
 
-const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
+const baseUrl = getApiBaseUrl();
 
 async function fetchJson<T>(path: string, fallback: T): Promise<T> {
   try {

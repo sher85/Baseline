@@ -1,3 +1,5 @@
+import { getApiBaseUrl } from "./api-base";
+
 type OverviewMetric = {
   detail: string;
   label: string;
@@ -58,8 +60,7 @@ const fallbackOverview: OverviewResponse = {
 };
 
 export async function getOverviewData(): Promise<OverviewResponse> {
-  const baseUrl =
-    process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:4000";
+  const baseUrl = getApiBaseUrl();
 
   try {
     const response = await fetch(`${baseUrl}/api/overview/latest`, {
