@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/sher85/Baseline/compare/v0.2.3...v0.2.4) (2026-04-24)
+
+
+### Bug Fixes
+
+* standardize Baseline API on port 3001 and align env/config wiring ([bf79eb5](https://github.com/sher85/Baseline/commit/bf79eb51e29504a357c88a975e971de854254376))
+
 ## [0.2.3](https://github.com/sher85/Baseline/compare/v0.2.2...v0.2.3) (2026-04-24)
 
 
