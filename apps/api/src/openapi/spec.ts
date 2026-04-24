@@ -86,6 +86,27 @@ function jsonContent(schema: z.ZodTypeAny) {
 
 registry.registerPath({
   method: "get",
+  path: "/ping",
+  tags: ["General"],
+  operationId: "ping",
+  summary: "Lightweight liveness response",
+  responses: {
+    200: {
+      description: "Plain-text ping response.",
+      content: {
+        "text/plain": {
+          schema: {
+            type: "string",
+            example: "pong"
+          }
+        }
+      }
+    }
+  }
+});
+
+registry.registerPath({
+  method: "get",
   path: "/",
   tags: ["General"],
   operationId: "getApiRoot",

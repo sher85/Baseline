@@ -13,6 +13,10 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
+app.get("/ping", (_request, response) => {
+  response.type("text/plain").send("pong");
+});
+
 app.get("/", (_request, response) => {
   response.json({
     name: "wearable-analytics-api",
