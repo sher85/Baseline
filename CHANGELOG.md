@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/sher85/Baseline/compare/v0.2.2...v0.2.3) (2026-04-24)
+
+
+### Bug Fixes
+
+* now pushes to baseline in shared repo ([d5eeda6](https://github.com/sher85/Baseline/commit/d5eeda6f27d5ab5cafad044a680e59f88a1ad242))
+
 ## [0.2.2](https://github.com/sher85/Baseline/compare/v0.2.1...v0.2.2) (2026-03-15)
 
 
