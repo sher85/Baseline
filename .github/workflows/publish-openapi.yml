@@ -7,21 +7,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish:
+  publish-openapi:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Guard manual publish ref
+      - name: Require main for manual runs
+        if: github.event_name == 'workflow_dispatch' && github.ref != 'refs/heads/main'
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && [ "${{ github.ref }}" != "refs/heads/main" ]; then
-            echo "Manual catalog publishing is only allowed from main."
-            exit 1
-          fi
+          echo "Manual catalog publishing is only allowed from main."
+          exit 1
 
-      - name: Checkout
+      - name: Check out service repo
         uses: actions/checkout@v6
 
-      - name: Setup Node.js
+      - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
           node-version: 22
@@ -36,31 +35,26 @@ jobs:
       - name: Validate OpenAPI spec
         run: npm run openapi:validate
 
-      - name: Publish to API catalog
+      - name: Publish OpenAPI spec into catalog
         env:
           API_CATALOG_TOKEN: ${{ secrets.API_CATALOG_TOKEN }}
         run: |
-          if [ -z "${API_CATALOG_TOKEN}" ]; then
-            echo "API_CATALOG_TOKEN is not configured."
-            exit 1
-          fi
+          test -n "$API_CATALOG_TOKEN"
+          catalog_dir="$(mktemp -d)"
+          trap 'rm -rf "$catalog_dir"' EXIT
 
-          catalog_dir="${RUNNER_TEMP}/openclaw-api-catalog"
-
-          git clone --depth 1 "https://x-access-token:${API_CATALOG_TOKEN}@github.com/sher85/openclaw-api-catalog.git" "${catalog_dir}"
+          git clone "https://x-access-token:${API_CATALOG_TOKEN}@github.com/sher85/openclaw-api-catalog.git" "${catalog_dir}"
 
           mkdir -p "${catalog_dir}/services/baseline"
           cp openapi/openapi.json "${catalog_dir}/services/baseline/openapi.json"
 
-          cd "${catalog_dir}"
-
-          if [ -z "$(git status --porcelain -- services/baseline/openapi.json)" ]; then
-            echo "No OpenAPI catalog changes to publish."
+          if [ -z "$(git -C "${catalog_dir}" status --short --untracked-files=all -- "services/baseline/openapi.json")" ]; then
+            echo "Catalog spec is already up to date."
             exit 0
           fi
 
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add services/baseline/openapi.json
-          git commit -m "Update baseline OpenAPI spec"
-          git push
+          git -C "${catalog_dir}" config user.name "github-actions[bot]"
+          git -C "${catalog_dir}" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git -C "${catalog_dir}" add "services/baseline/openapi.json"
+          git -C "${catalog_dir}" commit -m "chore: update baseline OpenAPI spec"
+          git -C "${catalog_dir}" push
