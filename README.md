@@ -334,7 +334,7 @@ If you want live Oura OAuth through Compose, set `OURA_CLIENT_ID` and `OURA_CLIE
 Recommended API host:
 
 ```text
-baseline.localhost
+baseline-api.localhost
 ```
 
 Real runtime services:
@@ -343,13 +343,15 @@ Real runtime services:
 
 Recommended deployment shape for OpenClaw and API gateway use:
 - expose the `api` service through Kong for the API host
-- target `api:3001` when Kong shares the Docker network with Baseline
+- target `baseline-api:3001` when Kong shares the Docker network with Baseline
+- the Compose stack now publishes a stable Docker DNS alias named `baseline-api`
+- if Kong runs in Docker, join it to the `baseline` network so that alias resolves
 - do not point the API host at the `web` service on port `3000`
 
 Expected Kong API check:
 
 ```bash
-curl -H "Host: baseline.localhost" http://<gateway-host>:8000/ping
+curl -H "Host: baseline-api.localhost" http://<gateway-host>:8000/ping
 ```
 
 Expected response:
@@ -358,7 +360,7 @@ Expected response:
 pong
 ```
 
-If you also want the dashboard through Kong, expose the `web` service separately on a different host such as `baseline-web.localhost` and target `web:3000`.
+If you also want the dashboard through Kong, expose the `web` service separately on a different host such as `baseline-web.localhost` and target `baseline-web:3000`.
 
 Why host-based routing is preferred here:
 - the API and web UI are cleaner to expose on separate hosts than through path rewriting

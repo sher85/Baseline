@@ -2,6 +2,10 @@ services:
   db:
     image: postgres:16-alpine
     restart: unless-stopped
+    networks:
+      default:
+        aliases:
+          - baseline-db
     environment:
       POSTGRES_DB: wearable_analytics
       POSTGRES_PASSWORD: postgres
@@ -21,6 +25,10 @@ services:
       context: .
       dockerfile: apps/api/Dockerfile
       target: builder
+    networks:
+      default:
+        aliases:
+          - baseline-migrate
     depends_on:
       db:
         condition: service_healthy
@@ -33,6 +41,10 @@ services:
     build:
       context: .
       dockerfile: apps/api/Dockerfile
+    networks:
+      default:
+        aliases:
+          - baseline-api
     depends_on:
       db:
         condition: service_healthy
@@ -64,6 +76,10 @@ services:
     build:
       context: .
       dockerfile: apps/web/Dockerfile
+    networks:
+      default:
+        aliases:
+          - baseline-web
     depends_on:
       api:
         condition: service_healthy
@@ -85,3 +101,7 @@ services:
 
 volumes:
   postgres-data:
+
+networks:
+  default:
+    name: baseline
