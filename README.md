@@ -118,19 +118,20 @@ Recommended local URLs:
 - app: `http://localhost:3000`
 - API docs: `http://localhost:3000/docs`
 - OpenAPI JSON: `http://localhost:3000/openapi/openapi.json`
-- direct API health: `http://localhost:4000/health`
+- direct API ping: `http://localhost:3001/ping`
+- direct API health: `http://localhost:3001/health`
 
 ## Environment
 Core local values:
 
 ```env
 DATABASE_URL="postgresql://postgres:postgres@localhost:5432/wearable_analytics"
-API_PORT=4000
+API_PORT=3001
 WEB_PORT=3000
 WEB_APP_URL="http://localhost:3000"
-NEXT_PUBLIC_API_BASE_URL="http://localhost:4000"
-API_INTERNAL_BASE_URL="http://localhost:4000"
-API_PROXY_TARGET="http://localhost:4000"
+NEXT_PUBLIC_API_BASE_URL="http://localhost:3001"
+API_INTERNAL_BASE_URL="http://localhost:3001"
+API_PROXY_TARGET="http://localhost:3001"
 SYNC_SCHEDULE_ENABLED="true"
 SYNC_SCHEDULE_CRON="0 6 * * *"
 SYNC_SCHEDULE_RUN_ON_START="false"
@@ -161,14 +162,14 @@ http://localhost:3000/api/integrations/oura/callback
 6. Generate an auth URL:
 
 ```bash
-curl -s -X POST http://localhost:4000/api/integrations/oura/connect
+curl -s -X POST http://localhost:3001/api/integrations/oura/connect
 ```
 
 7. Open the returned `authorizationUrl` in your browser
 8. Confirm connection:
 
 ```bash
-curl http://localhost:4000/api/integrations/oura/status
+curl http://localhost:3001/api/integrations/oura/status
 ```
 
 Expected result: `connected: true`
@@ -183,10 +184,11 @@ Important notes:
 Health and setup:
 
 ```bash
-curl http://localhost:4000/health
-curl http://localhost:4000/health/db
-curl http://localhost:4000/api/integrations/oura/status
-curl http://localhost:4000/api/sync/status
+curl http://localhost:3001/ping
+curl http://localhost:3001/health
+curl http://localhost:3001/health/db
+curl http://localhost:3001/api/integrations/oura/status
+curl http://localhost:3001/api/sync/status
 ```
 
 Dashboard routes:
@@ -199,19 +201,19 @@ Dashboard routes:
 Analytics routes:
 
 ```bash
-curl http://localhost:4000/api/overview/latest
-curl http://localhost:4000/api/sleep/latest
-curl http://localhost:4000/api/recovery/latest
-curl http://localhost:4000/api/recovery/latest/detail
-curl "http://localhost:4000/api/trends?window=7d"
-curl "http://localhost:4000/api/trends?window=30d"
-curl http://localhost:4000/api/anomalies/recent
+curl http://localhost:3001/api/overview/latest
+curl http://localhost:3001/api/sleep/latest
+curl http://localhost:3001/api/recovery/latest
+curl http://localhost:3001/api/recovery/latest/detail
+curl "http://localhost:3001/api/trends?window=7d"
+curl "http://localhost:3001/api/trends?window=30d"
+curl http://localhost:3001/api/anomalies/recent
 ```
 
 Backfill route:
 
 ```bash
-curl -X POST http://localhost:4000/api/sync/oura/backfill \
+curl -X POST http://localhost:3001/api/sync/oura/backfill \
   -H "Content-Type: application/json" \
   -d '{"startDate":"2026-03-01","endDate":"2026-03-03"}'
 ```
@@ -219,11 +221,11 @@ curl -X POST http://localhost:4000/api/sync/oura/backfill \
 AI routes:
 
 ```bash
-curl http://localhost:4000/api/ai/daily-brief
-curl http://localhost:4000/api/ai/last-night
-curl http://localhost:4000/api/ai/recovery
-curl http://localhost:4000/api/ai/anomalies
-curl "http://localhost:4000/api/ai/context?window=7d"
+curl http://localhost:3001/api/ai/daily-brief
+curl http://localhost:3001/api/ai/last-night
+curl http://localhost:3001/api/ai/recovery
+curl http://localhost:3001/api/ai/anomalies
+curl "http://localhost:3001/api/ai/context?window=7d"
 ```
 
 Tests:
@@ -235,7 +237,7 @@ npm run test --workspace @wearable-analytics/api
 Reconnect check:
 
 ```bash
-curl http://localhost:4000/api/integrations/oura/status
+curl http://localhost:3001/api/integrations/oura/status
 ```
 
 If the response shows `needsReconnect: true`, reconnect Oura locally before running the next sync.
@@ -254,8 +256,8 @@ To test it locally:
 3. Check:
 
 ```bash
-curl http://localhost:4000/api/sync/status
-curl http://localhost:4000/api/sync/history
+curl http://localhost:3001/api/sync/status
+curl http://localhost:3001/api/sync/history
 ```
 
 4. Confirm you see a run with `mode: "scheduled"`
@@ -270,7 +272,7 @@ This repo generates its OpenAPI spec from [apps/api/src/openapi/spec.ts](/Volume
 
 The app now exposes the spec and docs in two convenient ways:
 - web host: `http://localhost:3000/docs` and `http://localhost:3000/openapi/openapi.json`
-- direct API host: `http://localhost:4000/docs` and `http://localhost:4000/openapi/openapi.json`
+- direct API host: `http://localhost:3001/docs` and `http://localhost:3001/openapi/openapi.json`
 
 Regenerate the spec with:
 
@@ -289,7 +291,7 @@ GitHub Actions now runs generation and validation on pushes to `main` and pull r
 ## Docker
 The repo is containerized as a small app stack:
 - `web`: Next.js app on port `3000`
-- `api`: Express API on port `4000`
+- `api`: Express API on port `3001`
 - `db`: PostgreSQL on port `5432`
 
 Build the images manually:
@@ -302,15 +304,15 @@ docker build -f apps/web/Dockerfile -t baseline-web .
 Run them manually if you already have PostgreSQL available:
 
 ```bash
-docker run --rm -p 4000:4000 \
+docker run --rm -p 3001:3001 \
   -e DATABASE_URL="postgresql://postgres:postgres@host.docker.internal:5432/wearable_analytics" \
   -e WEB_APP_URL="http://localhost:3000" \
   -e OURA_REDIRECT_URI="http://localhost:3000/api/integrations/oura/callback" \
   baseline-api
 
 docker run --rm -p 3000:3000 \
-  -e API_INTERNAL_BASE_URL="http://host.docker.internal:4000" \
-  -e API_PROXY_TARGET="http://host.docker.internal:4000" \
+  -e API_INTERNAL_BASE_URL="http://host.docker.internal:3001" \
+  -e API_PROXY_TARGET="http://host.docker.internal:3001" \
   baseline-web
 ```
 
@@ -324,23 +326,42 @@ docker compose up --build
 Compose URLs:
 - app: `http://localhost:3000`
 - docs: `http://localhost:3000/docs`
-- direct API: `http://localhost:4000`
+- direct API: `http://localhost:3001`
 
 If you want live Oura OAuth through Compose, set `OURA_CLIENT_ID` and `OURA_CLIENT_SECRET` in your shell or `.env` before starting the stack.
 
 ## Kong
-Recommended public host:
+Recommended API host:
 
 ```text
 baseline.localhost
 ```
 
-Recommended deployment shape:
-- expose only the `web` service through Kong
-- let the Next.js app proxy `/api/*` and `/openapi/*` to the internal API service
-- keep the API container private to the app network unless you have a separate reason to expose it
+Real runtime services:
+- API: `api` on port `3001`
+- Web UI: `web` on port `3000`
+
+Recommended deployment shape for OpenClaw and API gateway use:
+- expose the `api` service through Kong for the API host
+- target `api:3001` when Kong shares the Docker network with Baseline
+- do not point the API host at the `web` service on port `3000`
+
+Expected Kong API check:
+
+```bash
+curl -H "Host: baseline.localhost" http://<gateway-host>:8000/ping
+```
+
+Expected response:
+
+```text
+pong
+```
+
+If you also want the dashboard through Kong, expose the `web` service separately on a different host such as `baseline-web.localhost` and target `web:3000`.
 
 Why host-based routing is preferred here:
+- the API and web UI are cleaner to expose on separate hosts than through path rewriting
 - the web app expects to live at the root of a host, not under a prefixed subpath
 - Oura OAuth callback URLs are cleaner and safer as `https://baseline.example.com/api/...`
 - Redoc and OpenAPI assets work cleanly from root-relative URLs

@@ -631,7 +631,7 @@ export function createOpenApiDocument() {
     },
     servers: [
       {
-        url: "http://localhost:4000",
+        url: "http://localhost:3001",
         description: "Local development server"
       }
     ],

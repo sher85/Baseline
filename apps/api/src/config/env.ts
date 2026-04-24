@@ -34,9 +34,9 @@ const optionalNonEmptyString = z.preprocess(
 
 const rawEnvSchema = z.object({
   DATABASE_URL: z.string().min(1),
-  API_PORT: z.coerce.number().default(4000),
+  API_PORT: z.coerce.number().default(3001),
   WEB_APP_URL: z.string().url().default("http://localhost:3000"),
-  NEXT_PUBLIC_API_BASE_URL: z.string().url().default("http://localhost:4000"),
+  NEXT_PUBLIC_API_BASE_URL: z.string().url().default("http://localhost:3001"),
   OURA_CLIENT_ID: optionalNonEmptyString,
   OURA_CLIENT_SECRET: optionalNonEmptyString,
   OURA_REDIRECT_URI: z.preprocess(
@@ -63,5 +63,5 @@ export const env = {
   ...parsedEnv,
   OURA_REDIRECT_URI:
     parsedEnv.OURA_REDIRECT_URI ??
-    `${parsedEnv.NEXT_PUBLIC_API_BASE_URL}/api/integrations/oura/callback`
+    `${parsedEnv.WEB_APP_URL}/api/integrations/oura/callback`
 };

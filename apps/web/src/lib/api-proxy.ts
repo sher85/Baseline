@@ -17,7 +17,7 @@ function getApiProxyTarget() {
   return (
     process.env.API_PROXY_TARGET ??
     process.env.API_INTERNAL_BASE_URL ??
-    "http://localhost:4000"
+    "http://localhost:3001"
   ).replace(/\/$/, "");
 }
 
