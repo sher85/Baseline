@@ -2272,6 +2272,28 @@
     "parameters": {}
   },
   "paths": {
+    "/ping": {
+      "get": {
+        "tags": [
+          "General"
+        ],
+        "operationId": "ping",
+        "summary": "Lightweight liveness response",
+        "responses": {
+          "200": {
+            "description": "Plain-text ping response.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "string",
+                  "example": "pong"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/": {
       "get": {
         "tags": [
