@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/sher85/Baseline/compare/v0.2.5...v0.2.6) (2026-04-25)
+
+
+### Bug Fixes
+
+* make release-please use github actions bot token ([68d99d9](https://github.com/sher85/Baseline/commit/68d99d9f2b97d5c570f1e5d91127c70748ccfe85))
+
 ## [0.2.5](https://github.com/sher85/Baseline/compare/v0.2.4...v0.2.5) (2026-04-25)
 
 
