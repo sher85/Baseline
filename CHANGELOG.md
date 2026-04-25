@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.5](https://github.com/sher85/Baseline/compare/v0.2.4...v0.2.5) (2026-04-25)
+
+
+### Bug Fixes
+
+* align node 24 targets and release metadata ([#15](https://github.com/sher85/Baseline/issues/15)) ([847aa9c](https://github.com/sher85/Baseline/commit/847aa9c381d7d70791b9d89ca4cd611a528b91f3))
+
 ## [0.2.4](https://github.com/sher85/Baseline/compare/v0.2.3...v0.2.4) (2026-04-24)
 
 
