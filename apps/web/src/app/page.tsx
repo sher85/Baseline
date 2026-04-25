@@ -1,16 +1,70 @@
 import Link from "next/link";
 
 import { HelpTooltip } from "../components/help-tooltip";
+import { OuraConnectButton } from "../components/oura-connect-button";
 import { PageEmptyState } from "../components/page-empty-state";
 import { SiteHeader } from "../components/site-header";
 import { formatOverviewDate, formatSyncTime } from "../lib/format";
 import { getOverviewData } from "../services/overview";
 
-export default async function HomePage() {
+type HomePageProps = {
+  searchParams?: Promise<{
+    oura?: string;
+    reason?: string;
+  }>;
+};
+
+function getOuraNotice(ouraStatus?: string, reason?: string) {
+  switch (ouraStatus) {
+    case "connected":
+      return {
+        tone: "positive" as const,
+        title: "Oura connected",
+        detail: "Your Oura authorization was saved locally. Fresh syncs can resume with the saved connection."
+      };
+    case "access_denied":
+      return {
+        tone: "warning" as const,
+        title: "Oura connection canceled",
+        detail: "The authorization request was canceled before Oura granted access."
+      };
+    case "invalid_callback":
+      return {
+        tone: "warning" as const,
+        title: "Invalid callback received",
+        detail: "The Oura callback was missing required parameters. Start the connection flow again."
+      };
+    case "invalid_state":
+      return {
+        tone: "warning" as const,
+        title: "Expired connection link",
+        detail:
+          "The Oura callback came back with an expired or unknown state. Start a fresh connect flow from this page and complete it within 10 minutes."
+      };
+    case "token_exchange_failed":
+      return {
+        tone: "warning" as const,
+        title: "Oura token exchange failed",
+        detail: reason
+          ? `Oura rejected the callback during token exchange: ${reason}`
+          : "Oura rejected the callback during token exchange. Confirm the client credentials and redirect URI match the Oura app exactly."
+      };
+    default:
+      return null;
+  }
+}
+
+export default async function HomePage({ searchParams }: HomePageProps) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined;
   const overview = await getOverviewData();
   const leadAnomaly = overview.anomalies[0] ?? null;
   const isFallback = overview.source === "fallback";
   const isEmpty = overview.source === "empty";
+  const isStoredSnapshot = !isFallback && !isEmpty && !overview.connection.connected;
+  const ouraNotice = getOuraNotice(
+    resolvedSearchParams?.oura,
+    resolvedSearchParams?.reason
+  );
   const connectionLabel = overview.connection.needsReconnect
     ? "Reconnect Oura"
     : overview.connection.connected
@@ -23,6 +77,8 @@ export default async function HomePage() {
       : "neutral";
   const connectionDetail = overview.connection.needsReconnect
     ? "The stored Oura authorization is no longer valid. Reconnect locally to resume sync."
+    : isStoredSnapshot
+      ? `Showing the latest stored Oura data from ${formatOverviewDate(overview.day)}. Reconnect locally to resume fresh syncs.`
     : overview.connection.configured
       ? "OAuth is configured locally."
       : "Add local Oura credentials to enable live sync.";
@@ -40,8 +96,18 @@ export default async function HomePage() {
             Baseline brings sleep, recovery, anomalies, and sync state into one readable snapshot.
           </p>
           <div className="hero-meta">
-            <span className={`status-pill ${isFallback || isEmpty ? "warning" : "positive"}`}>
-              {isFallback ? "API offline" : isEmpty ? "Waiting for data" : "Live analytics"}
+            <span
+              className={`status-pill ${
+                isFallback || isEmpty || isStoredSnapshot ? "warning" : "positive"
+              }`}
+            >
+              {isFallback
+                ? "API offline"
+                : isEmpty
+                  ? "Waiting for data"
+                  : isStoredSnapshot
+                    ? "Stored snapshot"
+                    : "Live analytics"}
             </span>
             <span
               className={`status-pill ${connectionTone}`}
@@ -52,6 +118,25 @@ export default async function HomePage() {
               Sync {overview.sync.running ? "running" : overview.sync.latestStatus}
             </span>
           </div>
+          {ouraNotice ? (
+            <div className={`integration-banner ${ouraNotice.tone}`}>
+              <strong>{ouraNotice.title}</strong>
+              <p>{ouraNotice.detail}</p>
+            </div>
+          ) : null}
+          {!isFallback && !overview.connection.connected ? (
+            <div className="hero-actions">
+              <OuraConnectButton
+                disabled={!overview.connection.configured}
+                mode={overview.connection.needsReconnect ? "reconnect" : "connect"}
+              />
+              <p className="hero-action-note">
+                {overview.connection.configured
+                  ? "This opens the Oura OAuth screen in your browser and returns here after approval."
+                  : "Add local Oura credentials first so the app can start the OAuth flow."}
+              </p>
+            </div>
+          ) : null}
         </div>
       </section>
 
@@ -108,10 +193,16 @@ export default async function HomePage() {
         <article className="status-card">
           <p className="eyebrow">Sync Status</p>
           <strong className="status-title">
-            {overview.sync.running ? "Sync in progress" : overview.sync.latestStatus}
+            {overview.sync.running
+              ? "Sync in progress"
+              : isStoredSnapshot
+                ? "Waiting for reconnect"
+                : overview.sync.latestStatus}
           </strong>
           <span className="metric-detail">
-            Last completed sync: {formatSyncTime(overview.sync.lastSyncedAt)}
+            {isStoredSnapshot
+              ? `Latest stored data day: ${formatOverviewDate(overview.day)}`
+              : `Last completed sync: ${formatSyncTime(overview.sync.lastSyncedAt)}`}
           </span>
         </article>
         <article className="status-card">
