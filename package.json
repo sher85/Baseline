@@ -1,13 +1,13 @@
 {
   "name": "wearable-analytics",
-  "version": "0.1.0",
+  "version": "0.2.4",
   "private": true,
   "workspaces": [
     "apps/*",
     "packages/*"
   ],
   "engines": {
-    "node": ">=22.0.0"
+    "node": "24.x"
   },
   "scripts": {
     "dev": "node scripts/dev.mjs",
@@ -27,7 +27,7 @@
   "devDependencies": {
     "@asteasolutions/zod-to-openapi": "^8.5.0",
     "@redocly/cli": "^2.27.1",
-    "@types/node": "^25.5.0",
+    "@types/node": "^24.0.0",
     "prisma": "^7.5.0",
     "tsx": "^4.19.0",
     "typescript": "^5.8.0"

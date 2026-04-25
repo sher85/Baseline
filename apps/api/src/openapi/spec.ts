@@ -622,7 +622,7 @@ export function createOpenApiDocument() {
     openapi: "3.0.0",
     info: {
       title: "wearable-analytics-api",
-      version: "0.1.0",
+      version: "0.2.4",
       description: "OpenAPI specification for the wearable analytics API service.",
       license: {
         name: "MIT",
