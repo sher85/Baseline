@@ -23,7 +23,7 @@ export type OverviewResponse = {
   generatedAt: string;
   metrics: OverviewMetric[];
   notes: string[];
-  source: "fallback" | "live";
+  source: "empty" | "fallback" | "live";
   sync: {
     lastSyncedAt: string | null;
     latestStatus: string;
@@ -59,6 +59,34 @@ const fallbackOverview: OverviewResponse = {
   }
 };
 
+const emptyOverview: OverviewResponse = {
+  generatedAt: new Date(0).toISOString(),
+  day: new Date(0).toISOString(),
+  metrics: [
+    { label: "Recovery", value: "--", detail: "No synced data yet" },
+    { label: "HRV", value: "--", detail: "No synced data yet" },
+    { label: "Resting HR", value: "--", detail: "No synced data yet" },
+    { label: "Sleep", value: "--", detail: "No synced data yet" }
+  ],
+  notes: [
+    "The API is reachable, but no analytics have been stored yet.",
+    "Run the demo seed or sync Oura locally to populate the dashboard.",
+    "Once data lands, this overview will switch from placeholders to live analytics."
+  ],
+  anomalies: [],
+  source: "empty",
+  sync: {
+    running: false,
+    latestStatus: "no-data",
+    lastSyncedAt: null
+  },
+  connection: {
+    connected: false,
+    configured: false,
+    needsReconnect: false
+  }
+};
+
 export async function getOverviewData(): Promise<OverviewResponse> {
   const baseUrl = getApiBaseUrl();
 
@@ -66,6 +94,10 @@ export async function getOverviewData(): Promise<OverviewResponse> {
     const response = await fetch(`${baseUrl}/api/overview/latest`, {
       cache: "no-store"
     });
+
+    if (response.status === 404) {
+      return emptyOverview;
+    }
 
     if (!response.ok) {
       return fallbackOverview;

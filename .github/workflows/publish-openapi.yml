@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  publish-openapi:
+  publish-catalog:
     runs-on: ubuntu-latest
 
     steps:
@@ -35,7 +35,7 @@ jobs:
       - name: Validate OpenAPI spec
         run: npm run openapi:validate
 
-      - name: Publish OpenAPI spec into catalog
+      - name: Publish catalog artifacts
         env:
           API_CATALOG_TOKEN: ${{ secrets.API_CATALOG_TOKEN }}
         run: |
@@ -47,14 +47,15 @@ jobs:
 
           mkdir -p "${catalog_dir}/services/baseline"
           cp openapi/openapi.json "${catalog_dir}/services/baseline/openapi.json"
+          cp catalog.json "${catalog_dir}/services/baseline/catalog.json"
 
-          if [ -z "$(git -C "${catalog_dir}" status --short --untracked-files=all -- "services/baseline/openapi.json")" ]; then
-            echo "Catalog spec is already up to date."
+          if [ -z "$(git -C "${catalog_dir}" status --short --untracked-files=all -- "services/baseline/openapi.json" "services/baseline/catalog.json")" ]; then
+            echo "Catalog artifacts are already up to date."
             exit 0
           fi
 
           git -C "${catalog_dir}" config user.name "github-actions[bot]"
           git -C "${catalog_dir}" config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git -C "${catalog_dir}" add "services/baseline/openapi.json"
-          git -C "${catalog_dir}" commit -m "chore: update baseline OpenAPI spec"
+          git -C "${catalog_dir}" add "services/baseline/openapi.json" "services/baseline/catalog.json"
+          git -C "${catalog_dir}" commit -m "chore: update baseline API catalog artifacts"
           git -C "${catalog_dir}" push
