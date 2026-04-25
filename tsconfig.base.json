@@ -15,9 +15,8 @@
     "resolveJsonModule": true,
     "declaration": true,
     "sourceMap": true,
-    "baseUrl": ".",
     "paths": {
-      "@wearable-analytics/shared/*": ["packages/shared/src/*"]
+      "@wearable-analytics/shared/*": ["./packages/shared/src/*"]
     }
   }
 }
