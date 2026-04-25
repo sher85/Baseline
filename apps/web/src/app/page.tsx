@@ -10,6 +10,7 @@ export default async function HomePage() {
   const overview = await getOverviewData();
   const leadAnomaly = overview.anomalies[0] ?? null;
   const isFallback = overview.source === "fallback";
+  const isEmpty = overview.source === "empty";
   const connectionLabel = overview.connection.needsReconnect
     ? "Reconnect Oura"
     : overview.connection.connected
@@ -39,8 +40,8 @@ export default async function HomePage() {
             Baseline brings sleep, recovery, anomalies, and sync state into one readable snapshot.
           </p>
           <div className="hero-meta">
-            <span className={`status-pill ${isFallback ? "warning" : "positive"}`}>
-              {isFallback ? "Preview mode" : "Live analytics"}
+            <span className={`status-pill ${isFallback || isEmpty ? "warning" : "positive"}`}>
+              {isFallback ? "API offline" : isEmpty ? "Waiting for data" : "Live analytics"}
             </span>
             <span
               className={`status-pill ${connectionTone}`}
@@ -54,11 +55,19 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {isFallback ? (
+      {isFallback || isEmpty ? (
         <PageEmptyState
-          eyebrow="API Status"
-          title="The dashboard is in local fallback mode."
-          description="The web app is running, but the live API data is not available yet. Start the backend or reconnect Oura to replace these placeholders with real analytics."
+          eyebrow={isFallback ? "API Status" : "Data Status"}
+          title={
+            isFallback
+              ? "The dashboard is in local fallback mode."
+              : "The API is up, but the dashboard has no data yet."
+          }
+          description={
+            isFallback
+              ? "The web app is running, but the live API data is not available yet. Start the backend or reconnect Oura to replace these placeholders with real analytics."
+              : "The API is responding, but this database is still empty. Run the demo seed or sync Oura locally to populate the dashboard with real analytics."
+          }
           primaryHref="/sleep"
           primaryLabel="View product surfaces"
         />

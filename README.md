@@ -268,7 +268,7 @@ Verified locally in development:
 - sync history records `mode: "scheduled"`
 
 ## OpenAPI
-This repo generates its OpenAPI spec from [apps/api/src/openapi/spec.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/openapi/spec.ts), backed by shared Zod contracts in [apps/api/src/contracts/api-contract.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/contracts/api-contract.ts). The generated artifact always lives at [openapi/openapi.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/openapi/openapi.json).
+This repo generates its OpenAPI spec from [apps/api/src/openapi/spec.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/openapi/spec.ts), backed by shared Zod contracts in [apps/api/src/contracts/api-contract.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/contracts/api-contract.ts). The generated artifact always lives at [openapi/openapi.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/openapi/openapi.json). This repo also owns the upstream catalog metadata file at [catalog.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/catalog.json).
 
 The app now exposes the spec and docs in two convenient ways:
 - web host: `http://localhost:3000/docs` and `http://localhost:3000/openapi/openapi.json`
@@ -286,7 +286,7 @@ Validate the generated file with:
 npm run openapi:validate
 ```
 
-GitHub Actions now runs generation and validation on pushes to `main` and pull requests targeting `main`. A separate publish workflow also runs on pushes to `main`, regenerates and validates the spec, then copies `openapi/openapi.json` into `services/event-scout/openapi.json` in `sher85/openclaw-api-catalog` using the `API_CATALOG_TOKEN` repository secret and only commits when that file changed.
+GitHub Actions now runs generation and validation on pushes to `main` and pull requests targeting `main`. A separate publish workflow also runs on pushes to `main`, regenerates and validates the spec, then copies both [openapi/openapi.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/openapi/openapi.json) and [catalog.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/catalog.json) into `services/baseline/` in `sher85/openclaw-api-catalog` using the `API_CATALOG_TOKEN` repository secret and only commits when either file changed.
 
 ## Docker
 The repo is containerized as a small app stack:
@@ -337,6 +337,12 @@ Recommended API host:
 baseline-api.localhost
 ```
 
+Recommended UI host:
+
+```text
+baseline.localhost
+```
+
 Real runtime services:
 - API: `api` on port `3001`
 - Web UI: `web` on port `3000`
@@ -360,7 +366,7 @@ Expected response:
 pong
 ```
 
-If you also want the dashboard through Kong, expose the `web` service separately on a different host such as `baseline-web.localhost` and target `baseline-web:3000`.
+If you also want the dashboard through Kong, expose the `web` service on `baseline.localhost` and target `baseline-web:3000`.
 
 Why host-based routing is preferred here:
 - the API and web UI are cleaner to expose on separate hosts than through path rewriting

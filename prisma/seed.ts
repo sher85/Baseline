@@ -57,21 +57,59 @@ const demoSeries: SeedDay[] = [
   }
 ];
 
-const demoUserEmail = "demo@wearable-analytics.local";
+const primaryUserEmail = "local-user@wearable-analytics.local";
+const primaryExternalId = "local-primary-user";
+const legacyDemoUserEmail = "demo@wearable-analytics.local";
+const legacyDemoExternalId = "demo-user";
 
 function asUtcDate(day: string) {
   return new Date(`${day}T00:00:00.000Z`);
 }
 
 async function main() {
-  const user = await prisma.user.upsert({
-    where: { email: demoUserEmail },
-    update: {},
-    create: {
-      email: demoUserEmail,
-      externalIdentifier: "demo-user"
+  const existingPrimaryUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { externalIdentifier: primaryExternalId },
+        { email: primaryUserEmail }
+      ]
     }
   });
+
+  const user = existingPrimaryUser
+    ? await prisma.user.update({
+        where: { id: existingPrimaryUser.id },
+        data: {
+          email: primaryUserEmail,
+          externalIdentifier: primaryExternalId
+        }
+      })
+    : await prisma.user.create({
+        data: {
+          email: primaryUserEmail,
+          externalIdentifier: primaryExternalId
+        }
+      });
+
+  const legacyDemoUser = await prisma.user.findFirst({
+    where: {
+      OR: [
+        { email: legacyDemoUserEmail },
+        { externalIdentifier: legacyDemoExternalId }
+      ]
+    }
+  });
+
+  if (legacyDemoUser && legacyDemoUser.id !== user.id) {
+    await prisma.anomalyFlag.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.recoveryScore.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.baselineSnapshot.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.dailyActivity.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.dailyRecoveryInput.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.dailySleep.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.syncRun.deleteMany({ where: { userId: legacyDemoUser.id } });
+    await prisma.user.delete({ where: { id: legacyDemoUser.id } });
+  }
 
   await prisma.anomalyFlag.deleteMany({ where: { userId: user.id } });
   await prisma.recoveryScore.deleteMany({ where: { userId: user.id } });
@@ -249,7 +287,7 @@ async function main() {
     }
   }
 
-  console.log(`Seeded demo user ${demoUserEmail} with ${demoSeries.length} days of data.`);
+  console.log(`Seeded demo data for ${primaryUserEmail} with ${demoSeries.length} days of data.`);
 }
 
 main().catch((error) => {

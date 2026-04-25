@@ -1,0 +1,8 @@
+{
+  "serviceId": "baseline",
+  "displayName": "Baseline",
+  "description": "Wearable analytics and AI summary endpoints exposed through the Baseline API.",
+  "openclaw": {
+    "enabled": true
+  }
+}
