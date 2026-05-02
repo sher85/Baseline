@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.7](https://github.com/sher85/Baseline/compare/v0.2.6...v0.2.7) (2026-05-02)
+
+
+### Bug Fixes
+
+* route baseline web access through gateway host ([492e55b](https://github.com/sher85/Baseline/commit/492e55b09cc1429fb27c8915085e8a0d4f07b3a4))
+
 ## [0.2.6](https://github.com/sher85/Baseline/compare/v0.2.5...v0.2.6) (2026-04-25)
 
 
