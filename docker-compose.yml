@@ -53,9 +53,9 @@ services:
     environment:
       DATABASE_URL: postgresql://postgres:postgres@db:5432/wearable_analytics
       API_PORT: 3001
-      WEB_APP_URL: http://localhost:3000
+      WEB_APP_URL: http://baseline.localhost:8000
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
-      OURA_REDIRECT_URI: http://localhost:3000/api/integrations/oura/callback
+      OURA_REDIRECT_URI: http://baseline.localhost:8000/api/integrations/oura/callback
       OURA_CLIENT_ID: ${OURA_CLIENT_ID:-}
       OURA_CLIENT_SECRET: ${OURA_CLIENT_SECRET:-}
       OURA_SCOPES: ${OURA_SCOPES:-daily email personal}
@@ -88,9 +88,7 @@ services:
       PORT: 3000
       API_INTERNAL_BASE_URL: http://api:3001
       API_PROXY_TARGET: http://api:3001
-      NEXT_PUBLIC_API_BASE_URL: http://localhost:3000
-    ports:
-      - "3000:3000"
+      NEXT_PUBLIC_API_BASE_URL: http://baseline.localhost:8000
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/health >/dev/null || exit 1"]
