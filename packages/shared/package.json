@@ -11,6 +11,6 @@
     "test": "node -e \"console.log('No shared tests yet')\""
   },
   "dependencies": {
-    "zod": "^4.3.6"
+    "zod": "^4.4.3"
   }
 }
