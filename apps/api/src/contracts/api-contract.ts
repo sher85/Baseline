@@ -69,6 +69,74 @@ export const callbackQuerySchema = z.object({
   state: z.string().min(1).optional()
 });
 
+const metadataValueSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
+
+const appleHealthSourceSchema = z.object({
+  bundleIdentifier: z.string().min(1).optional(),
+  name: z.string().min(1).optional(),
+  productType: z.string().min(1).optional()
+});
+
+const appleHealthRoutePointSchema = z.object({
+  latitude: z.number().min(-90).max(90),
+  longitude: z.number().min(-180).max(180),
+  altitudeMeters: z.number().nullable().optional(),
+  horizontalAccuracyMeters: z.number().nullable().optional(),
+  timestamp: isoDateTimeSchema
+});
+
+const appleHealthWorkoutSchema = z.object({
+  externalId: z.string().min(1).optional(),
+  activityType: z.string().min(1),
+  startTime: isoDateTimeSchema,
+  endTime: isoDateTimeSchema,
+  totalActiveEnergyCalories: z.number().nullable().optional(),
+  totalDistanceMeters: z.number().nullable().optional(),
+  source: appleHealthSourceSchema.optional(),
+  label: z.string().nullable().optional(),
+  metadata: z.record(z.string(), metadataValueSchema).optional(),
+  route: z.array(appleHealthRoutePointSchema).optional()
+});
+
+const appleHealthQuantitySampleSchema = z.object({
+  externalId: z.string().min(1).optional(),
+  sampleType: z.string().min(1),
+  startTime: isoDateTimeSchema,
+  endTime: isoDateTimeSchema.optional(),
+  value: z.number(),
+  unit: z.string().min(1),
+  source: appleHealthSourceSchema.optional(),
+  metadata: z.record(z.string(), metadataValueSchema).optional()
+});
+
+const appleHealthCategorySampleSchema = z.object({
+  externalId: z.string().min(1).optional(),
+  categoryType: z.string().min(1),
+  startTime: isoDateTimeSchema,
+  endTime: isoDateTimeSchema,
+  value: z.string().min(1),
+  source: appleHealthSourceSchema.optional(),
+  metadata: z.record(z.string(), metadataValueSchema).optional()
+});
+
+export const appleHealthIngestBodySchema = z.object({
+  clientSyncedThrough: isoDateTimeSchema.optional(),
+  device: z
+    .object({
+      name: z.string().min(1).optional(),
+      model: z.string().min(1).optional(),
+      systemVersion: z.string().min(1).optional(),
+      bundleIdentifier: z.string().min(1).optional(),
+      appVersion: z.string().min(1).optional()
+    })
+    .optional(),
+  records: z.object({
+    workouts: z.array(appleHealthWorkoutSchema).default([]),
+    quantities: z.array(appleHealthQuantitySampleSchema).default([]),
+    categories: z.array(appleHealthCategorySampleSchema).default([])
+  })
+});
+
 export const trendWindowQuerySchema = z.object({
   window: z.enum(trendWindowValues)
 });
@@ -184,6 +252,13 @@ const overviewMetricSchema = z.object({
   detail: z.string()
 });
 
+const overviewAppleHealthSchema = z.object({
+  configured: z.boolean(),
+  latestStatus: z.union([z.enum(syncStatusValues), z.literal("idle")]),
+  latestSuccessfulSyncAt: nullableDateTimeSchema,
+  lastErrorMessage: z.string().nullable()
+});
+
 const overviewResponseSchema = z.object({
   generatedAt: isoDateTimeSchema,
   day: isoDateTimeSchema,
@@ -199,6 +274,9 @@ const overviewResponseSchema = z.object({
     connected: z.boolean(),
     configured: z.boolean(),
     needsReconnect: z.boolean()
+  }),
+  integrations: z.object({
+    appleHealth: overviewAppleHealthSchema
   })
 });
 
@@ -289,6 +367,85 @@ const trendSummarySchema = z.object({
   )
 });
 
+const activitySummarySchema = z.object({
+  generatedAt: isoDateTimeSchema,
+  latestDay: isoDateSchema,
+  summary: z.object({
+    workoutsThisWeek: z.number().int(),
+    trainingDays30d: z.number().int(),
+    totalTrainingTime30d: z.number().int(),
+    averageSteps7d: nullableNumberSchema,
+    averageActiveCalories7d: nullableNumberSchema,
+    topActivityType: z
+      .object({
+        key: z.string(),
+        label: z.string(),
+        workoutCount: z.number().int()
+      })
+      .nullable()
+  }),
+  syncGuidance: z.object({
+    provider: z.literal("apple_health"),
+    configured: z.boolean(),
+    latestSyncAt: nullableDateTimeSchema,
+    latestSuccessfulSyncAt: nullableDateTimeSchema,
+    latestStatus: z.union([z.enum(syncStatusValues), z.literal("idle")]),
+    lastErrorMessage: z.string().nullable()
+  }),
+  daily: z.array(
+    z.object({
+      day: isoDateSchema,
+      steps: nullableNumberSchema,
+      activeCalories: nullableNumberSchema,
+      workoutCount: z.number().int(),
+      totalWorkoutDurationSeconds: z.number().int()
+    })
+  ),
+  weekly: z.array(
+    z.object({
+      weekStartDay: isoDateSchema,
+      weekEndDay: isoDateSchema,
+      workoutCount: z.number().int(),
+      trainingDays: z.number().int(),
+      totalWorkoutDurationSeconds: z.number().int()
+    })
+  ),
+  breakdown: z.array(
+    z.object({
+      key: z.string(),
+      label: z.string(),
+      workoutCount: z.number().int(),
+      totalDurationSeconds: z.number().int(),
+      totalDistanceMeters: nullableNumberSchema,
+      totalCalories: nullableNumberSchema
+    })
+  ),
+  recentWorkouts: z.array(
+    z.object({
+      id: z.string(),
+      day: isoDateTimeSchema,
+      activityKey: z.string(),
+      activityLabel: z.string(),
+      activityType: z.string(),
+      source: z.enum(["oura", "apple_health"]),
+      sourceType: z.string().nullable(),
+      intensity: z.string().nullable(),
+      label: z.string().nullable(),
+      startTime: nullableDateTimeSchema,
+      endTime: nullableDateTimeSchema,
+      durationSeconds: z.number().int().nullable(),
+      calories: nullableNumberSchema,
+      distanceMeters: nullableNumberSchema
+    })
+  ),
+  totals: z.object({
+    hasDailyActivityData: z.boolean(),
+    hasWorkoutData: z.boolean(),
+    totalDistance30d: nullableNumberSchema,
+    totalCalories30d: nullableNumberSchema
+  })
+});
+
 const anomalyHistoryEntrySchema = z.object({
   type: z.string(),
   title: z.string(),
@@ -372,6 +529,28 @@ const ouraConnectUnavailableSchema = ouraConnectionStatusSchema.extend({
   message: z.string()
 });
 
+const appleHealthStatusSchema = z.object({
+  provider: z.literal("apple_health"),
+  configured: z.boolean(),
+  latestSyncAt: nullableDateTimeSchema,
+  latestSuccessfulSyncAt: nullableDateTimeSchema,
+  latestStatus: z.union([z.enum(syncStatusValues), z.literal("idle")]),
+  lastErrorMessage: z.string().nullable(),
+  latestReceivedRecordCount: z.number().int(),
+  latestStoredRecordCount: z.number().int()
+});
+
+const appleHealthIngestResponseSchema = z.object({
+  success: z.literal(true),
+  batchId: z.string(),
+  receivedRecordCount: z.number().int(),
+  storedRecordCount: z.number().int(),
+  upsertedRecordCount: z.number().int(),
+  duplicateCount: z.number().int(),
+  serverSyncedAt: isoDateTimeSchema,
+  warnings: z.array(z.string())
+});
+
 const ouraDisconnectResponseSchema = z.object({
   provider: z.literal("oura"),
   disconnected: z.literal(true),
@@ -381,7 +560,8 @@ const ouraDisconnectResponseSchema = z.object({
 const syncRunSummarySchema = z.object({
   sleepRecords: z.number().int(),
   readinessRecords: z.number().int(),
-  activityRecords: z.number().int()
+  activityRecords: z.number().int(),
+  workoutRecords: z.number().int()
 });
 
 const syncWindowSchema = z.object({
@@ -528,11 +708,14 @@ export const apiSchemas = {
   aiDailyBrief: aiDailyBriefSchema,
   aiLastNight: aiLastNightSchema,
   aiRecovery: aiRecoverySchema,
+  appleHealthIngest: appleHealthIngestResponseSchema,
+  appleHealthStatus: appleHealthStatusSchema,
   anomalyHeatmap: anomalyHeatmapResponseSchema,
   anomalyHistory: anomalyHistoryResponseSchema,
   anomaliesCollection: z.object({
     items: z.array(storedAnomalySchema)
   }),
+  activitySummary: activitySummarySchema,
   baselineSnapshot: baselineSnapshotSchema,
   health: healthResponseSchema,
   healthDbFailure: healthDbFailureSchema,

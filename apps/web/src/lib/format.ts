@@ -74,3 +74,13 @@ export function formatTemperature(value: number | null) {
 
   return `${sign}${value.toFixed(2)} degC`;
 }
+
+export function formatDistanceMeters(value: number | null) {
+  if (value === null) {
+    return "--";
+  }
+
+  const miles = value / 1609.344;
+
+  return `${miles.toFixed(miles >= 10 ? 0 : 1)} mi`;
+}

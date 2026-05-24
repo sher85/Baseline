@@ -2,7 +2,7 @@
 
 Local-first wearable analytics platform for transparent recovery intelligence.
 
-This repo ingests Oura data through the official API, stores normalized records in PostgreSQL, computes deterministic recovery analytics, exposes AI-friendly endpoints, and renders the results in a premium Next.js dashboard.
+This repo ingests Oura data through the official API, accepts Apple Health bridge data from a small iPhone companion app, stores normalized records in PostgreSQL, computes deterministic recovery analytics, exposes AI-friendly endpoints, and renders the results in a premium Next.js dashboard.
 
 ## Product preview
 
@@ -55,7 +55,7 @@ GitHub renders the Mermaid diagram cleanly. Some local Markdown previewers may n
 - rolling baselines for HRV, resting HR, sleep duration, and temperature deviation
 - recovery score v1 with factor breakdowns
 - deterministic anomaly detection
-- overview, sleep, recovery, trends, and anomalies dashboard pages
+- overview, sleep, activity, recovery, trends, and anomalies dashboard pages
 - AI-facing summary endpoints
 - backend tests for analytics math, anomaly rules, recovery scoring, and sync window logic
 
@@ -70,7 +70,9 @@ GitHub renders the Mermaid diagram cleanly. Some local Markdown previewers may n
 
 ## Architecture at a glance
 - `apps/api`
-  Oura integration, sync orchestration, analytics engine, AI-facing JSON
+  Oura integration, Apple Health ingestion, sync orchestration, analytics engine, AI-facing JSON
+- `apps/ios`
+  SwiftUI iPhone companion app for HealthKit reading and LAN sync
 - `apps/web`
   premium dashboard surface built on backend contracts only
 - `packages/shared`
@@ -84,6 +86,7 @@ More detail:
 - [architecture.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/architecture.md)
 - [api.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/api.md)
 - [analytics.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/analytics.md)
+- [apple-health-bridge.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/docs/apple-health-bridge.md)
 
 ## Quick start
 1. Copy `.env.example` to `.env`
@@ -132,6 +135,7 @@ WEB_APP_URL="http://localhost:3000"
 NEXT_PUBLIC_API_BASE_URL="http://localhost:3001"
 API_INTERNAL_BASE_URL="http://localhost:3001"
 API_PROXY_TARGET="http://localhost:3001"
+API_TOKEN="choose-a-long-random-local-token"
 SYNC_SCHEDULE_ENABLED="true"
 SYNC_SCHEDULE_CRON="0 6 * * *"
 SYNC_SCHEDULE_RUN_ON_START="false"
@@ -143,7 +147,8 @@ Oura OAuth values:
 OURA_CLIENT_ID="your_oura_client_id"
 OURA_CLIENT_SECRET="your_oura_client_secret"
 OURA_REDIRECT_URI="http://localhost:3000/api/integrations/oura/callback"
-OURA_SCOPES="daily email personal"
+OURA_SCOPES="daily email personal workout"
+API_TOKEN="choose-a-long-random-local-token"
 ```
 
 ## Oura setup
@@ -189,11 +194,14 @@ curl http://localhost:3001/health
 curl http://localhost:3001/health/db
 curl http://localhost:3001/api/integrations/oura/status
 curl http://localhost:3001/api/sync/status
+curl -H "Authorization: Bearer $API_TOKEN" \
+  http://localhost:3001/api/integrations/apple-health/status
 ```
 
 Dashboard routes:
 - `http://localhost:3000/`
 - `http://localhost:3000/sleep`
+- `http://localhost:3000/activity`
 - `http://localhost:3000/recovery`
 - `http://localhost:3000/trends`
 - `http://localhost:3000/anomalies`
@@ -203,12 +211,32 @@ Analytics routes:
 ```bash
 curl http://localhost:3001/api/overview/latest
 curl http://localhost:3001/api/sleep/latest
+curl http://localhost:3001/api/activity/latest
 curl http://localhost:3001/api/recovery/latest
 curl http://localhost:3001/api/recovery/latest/detail
 curl "http://localhost:3001/api/trends?window=7d"
 curl "http://localhost:3001/api/trends?window=30d"
 curl http://localhost:3001/api/anomalies/recent
 ```
+
+If you connected Oura before the `workout` scope was added, reconnect once so Baseline can ingest workout sessions in addition to daily summaries.
+
+## Apple Health bridge
+
+For Apple Watch and Apple Health activity, Baseline now includes a small iPhone bridge app in the repo:
+
+- [apps/ios/BaselineHealthBridge](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/ios/BaselineHealthBridge)
+
+The bridge app:
+
+- reads HealthKit locally on the iPhone
+- pushes batched records to the Baseline API over your LAN
+- uses bearer-token auth
+- only advances its local sync cursor after the API confirms durable storage
+
+Setup and sideloading details are documented in:
+
+- [apple-health-bridge.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/docs/apple-health-bridge.md)
 
 Backfill route:
 

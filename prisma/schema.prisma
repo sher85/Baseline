@@ -9,6 +9,7 @@ datasource db {
 
 enum SyncSource {
   oura
+  apple_health
 }
 
 enum SyncMode {
@@ -38,9 +39,12 @@ model User {
   updatedAt          DateTime             @updatedAt
   ouraConnection     OuraConnection?
   syncRuns           SyncRun[]
+  appleHealthSyncBatches AppleHealthSyncBatch[]
+  appleHealthRecords AppleHealthRecord[]
   dailySleep         DailySleep[]
   dailyRecovery      DailyRecoveryInput[]
   dailyActivity      DailyActivity[]
+  workoutSessions    WorkoutSession[]
   baselineSnapshots  BaselineSnapshot[]
   recoveryScores     RecoveryScore[]
   anomalyFlags       AnomalyFlag[]
@@ -130,6 +134,89 @@ model DailyActivity {
 
   @@unique([userId, day])
   @@index([userId, day])
+}
+
+model WorkoutSession {
+  id              String     @id @default(cuid())
+  userId          String
+  source          SyncSource
+  externalId      String
+  day             DateTime
+  activityType    String
+  sourceType      String?
+  intensity       String?
+  label           String?
+  startTime       DateTime?
+  endTime         DateTime?
+  durationSeconds Int?
+  calories        Int?
+  distanceMeters  Float?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([source, externalId])
+  @@index([userId, day])
+  @@index([userId, activityType, day])
+}
+
+model AppleHealthSyncBatch {
+  id                  String     @id @default(cuid())
+  userId              String
+  source              SyncSource @default(apple_health)
+  status              SyncStatus
+  clientSyncedThrough DateTime?
+  deviceName          String?
+  deviceModel         String?
+  deviceSystemVersion String?
+  appVersion          String?
+  bundleIdentifier    String?
+  receivedRecordCount Int
+  storedRecordCount   Int
+  upsertedRecordCount Int
+  warningCount        Int        @default(0)
+  errorMessage        String?
+  warnings            Json?
+  payload             Json
+  createdAt           DateTime   @default(now())
+  updatedAt           DateTime   @updatedAt
+  processedAt         DateTime?
+  user                User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  records             AppleHealthRecord[]
+
+  @@index([userId, createdAt])
+  @@index([status, createdAt])
+}
+
+model AppleHealthRecord {
+  id                String               @id @default(cuid())
+  userId            String
+  syncBatchId       String?
+  source            SyncSource           @default(apple_health)
+  recordType        String
+  externalId        String?
+  fallbackKey       String
+  ingestKey         String               @unique
+  sourceBundleId    String?
+  sourceName        String?
+  sourceProductType String?
+  unit              String?
+  startTime         DateTime
+  endTime           DateTime?
+  day               DateTime
+  numericValue      Float?
+  categoricalValue  String?
+  metadata          Json?
+  routePayload      Json?
+  rawPayload        Json
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+  syncBatch         AppleHealthSyncBatch? @relation(fields: [syncBatchId], references: [id], onDelete: SetNull)
+  user              User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, day])
+  @@index([userId, recordType, day])
+  @@index([recordType, externalId])
 }
 
 model BaselineSnapshot {

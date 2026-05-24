@@ -28,6 +28,75 @@ export type TrendResponse = {
   window: "7d" | "30d";
 };
 
+export type ActivityResponse = {
+  breakdown: Array<{
+    key: string;
+    label: string;
+    totalCalories: number | null;
+    totalDistanceMeters: number | null;
+    totalDurationSeconds: number;
+    workoutCount: number;
+  }>;
+  daily: Array<{
+    activeCalories: number | null;
+    day: string;
+    steps: number | null;
+    totalWorkoutDurationSeconds: number;
+    workoutCount: number;
+  }>;
+  generatedAt: string;
+  latestDay: string;
+  recentWorkouts: Array<{
+    activityKey: string;
+    activityLabel: string;
+    activityType: string;
+    calories: number | null;
+    day: string;
+    distanceMeters: number | null;
+    durationSeconds: number | null;
+    endTime: string | null;
+    id: string;
+    intensity: string | null;
+    label: string | null;
+    source: "oura" | "apple_health";
+    sourceType: string | null;
+    startTime: string | null;
+  }>;
+  summary: {
+    averageActiveCalories7d: number | null;
+    averageSteps7d: number | null;
+    topActivityType: {
+      key: string;
+      label: string;
+      workoutCount: number;
+    } | null;
+    totalTrainingTime30d: number;
+    trainingDays30d: number;
+    workoutsThisWeek: number;
+  };
+  syncGuidance: {
+    configured: boolean;
+    lastErrorMessage: string | null;
+    latestStatus: "pending" | "running" | "succeeded" | "failed" | "idle";
+    latestSuccessfulSyncAt: string | null;
+    latestSyncAt: string | null;
+    provider: "apple_health";
+  };
+  totals: {
+    hasDailyActivityData: boolean;
+    hasWorkoutData: boolean;
+    totalCalories30d: number | null;
+    totalDistance30d: number | null;
+  };
+  weekly: Array<{
+    totalWorkoutDurationSeconds: number;
+    trainingDays: number;
+    weekEndDay: string;
+    weekStartDay: string;
+    workoutCount: number;
+  }>;
+};
+
 export type SleepResponse = {
   baseline: {
     durationDeltaSeconds: number | null;
@@ -188,6 +257,10 @@ export async function getTrendData(window: "7d" | "30d"): Promise<TrendResponse>
 
 export async function getSleepData(): Promise<SleepResponse | null> {
   return fetchJson("/api/sleep/latest", null);
+}
+
+export async function getActivityData(): Promise<ActivityResponse | null> {
+  return fetchJson("/api/activity/latest", null);
 }
 
 export async function getRecoveryDetailData(): Promise<RecoveryDetailResponse | null> {

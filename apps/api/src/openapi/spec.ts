@@ -5,6 +5,7 @@ import {
 import { z } from "../lib/zod-openapi.js";
 
 import {
+  appleHealthIngestBodySchema,
   anomaliesHistoryQuerySchema,
   anomaliesRecentQuerySchema,
   anomalyHeatmapQuerySchema,
@@ -38,6 +39,7 @@ const baselineSnapshotSchema = registry.register(
 const recoveryScoreSchema = registry.register("RecoveryScoreResponse", apiSchemas.recoveryScore);
 const recoveryDetailSchema = registry.register("RecoveryDetailResponse", apiSchemas.recoveryDetail);
 const sleepSummarySchema = registry.register("SleepSummaryResponse", apiSchemas.sleepSummary);
+const activitySummarySchema = registry.register("ActivitySummaryResponse", apiSchemas.activitySummary);
 const trendSummarySchema = registry.register("TrendSummaryResponse", apiSchemas.trendSummary);
 const anomaliesCollectionSchema = registry.register(
   "AnomaliesCollectionResponse",
@@ -59,6 +61,14 @@ const aiAnomalySummarySchema = registry.register(
   apiSchemas.aiAnomalySummary
 );
 const aiContextSchema = registry.register("AiContextResponse", apiSchemas.aiContext);
+const appleHealthStatusSchema = registry.register(
+  "AppleHealthStatusResponse",
+  apiSchemas.appleHealthStatus
+);
+const appleHealthIngestSchema = registry.register(
+  "AppleHealthIngestResponse",
+  apiSchemas.appleHealthIngest
+);
 const ouraConnectionStatusSchema = registry.register(
   "OuraConnectionStatusResponse",
   apiSchemas.ouraConnectionStatus
@@ -236,6 +246,24 @@ registry.registerPath({
     },
     404: {
       description: "No sleep summary is available yet.",
+      content: jsonContent(errorSchema)
+    }
+  }
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/activity/latest",
+  tags: ["Analytics"],
+  operationId: "getLatestActivitySummary",
+  summary: "Get the latest activity summary",
+  responses: {
+    200: {
+      description: "Latest activity summary payload.",
+      content: jsonContent(activitySummarySchema)
+    },
+    404: {
+      description: "No activity summary is available yet.",
       content: jsonContent(errorSchema)
     }
   }
@@ -427,6 +455,60 @@ registry.registerPath({
     },
     404: {
       description: "No AI context summary is available yet.",
+      content: jsonContent(errorSchema)
+    }
+  }
+});
+
+registry.registerPath({
+  method: "get",
+  path: "/api/integrations/apple-health/status",
+  tags: ["Apple Health Integration"],
+  operationId: "getAppleHealthStatus",
+  summary: "Get Apple Health bridge sync status",
+  responses: {
+    200: {
+      description: "Current Apple Health bridge sync state.",
+      content: jsonContent(appleHealthStatusSchema)
+    },
+    401: {
+      description: "Bearer token is missing or invalid.",
+      content: jsonContent(errorSchema)
+    },
+    503: {
+      description: "Protected API token auth is not configured.",
+      content: jsonContent(errorSchema)
+    }
+  }
+});
+
+registry.registerPath({
+  method: "post",
+  path: "/api/integrations/apple-health/ingest",
+  tags: ["Apple Health Integration"],
+  operationId: "ingestAppleHealthBatch",
+  summary: "Ingest a batched Apple Health sync payload",
+  request: {
+    body: {
+      required: true,
+      content: jsonContent(appleHealthIngestBodySchema)
+    }
+  },
+  responses: {
+    201: {
+      description: "Apple Health batch was durably stored and processed.",
+      content: jsonContent(appleHealthIngestSchema)
+    },
+    400: {
+      description: "The Apple Health ingest payload is invalid.",
+      content: jsonContent(validationErrorSchema)
+    },
+    401: {
+      description: "Bearer token is missing or invalid.",
+      content: jsonContent(errorSchema)
+    },
+    503: {
+      description: "Protected API token auth is not configured.",
       content: jsonContent(errorSchema)
     }
   }

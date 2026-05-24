@@ -61,6 +61,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const isFallback = overview.source === "fallback";
   const isEmpty = overview.source === "empty";
   const isStoredSnapshot = !isFallback && !isEmpty && !overview.connection.connected;
+  const appleHealthStatus = overview.integrations.appleHealth;
   const ouraNotice = getOuraNotice(
     resolvedSearchParams?.oura,
     resolvedSearchParams?.reason
@@ -210,6 +211,21 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <strong className="status-title">{connectionLabel}</strong>
           <span className="metric-detail">{connectionDetail}</span>
         </article>
+        <article className="status-card">
+          <p className="eyebrow">Apple Health</p>
+          <strong className="status-title">
+            {appleHealthStatus.configured ? appleHealthStatus.latestStatus : "Not configured"}
+          </strong>
+          <span className="metric-detail">
+            {appleHealthStatus.lastErrorMessage
+              ? appleHealthStatus.lastErrorMessage
+              : appleHealthStatus.latestSuccessfulSyncAt
+                ? `Last successful bridge sync: ${formatSyncTime(appleHealthStatus.latestSuccessfulSyncAt)}`
+                : appleHealthStatus.configured
+                  ? "Waiting for the iPhone bridge to send its first sync."
+                  : "Add API_TOKEN locally, then configure the iPhone bridge app."}
+          </span>
+        </article>
       </section>
 
       <section className="link-grid">
@@ -218,6 +234,13 @@ export default async function HomePage({ searchParams }: HomePageProps) {
           <strong className="status-title">Inspect your nightly pattern</strong>
           <span className="metric-detail">
             Duration, efficiency, bedtime timing, and live 7-day trend context.
+          </span>
+        </Link>
+        <Link href="/activity" className="link-card">
+          <p className="eyebrow">Activity Surface</p>
+          <strong className="status-title">Track workouts and movement</strong>
+          <span className="metric-detail">
+            See workout frequency, training time, steps, active calories, and recent sessions.
           </span>
         </Link>
         <Link href="/recovery" className="link-card">

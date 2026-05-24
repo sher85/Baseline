@@ -288,6 +288,56 @@
               "configured",
               "needsReconnect"
             ]
+          },
+          "integrations": {
+            "type": "object",
+            "properties": {
+              "appleHealth": {
+                "type": "object",
+                "properties": {
+                  "configured": {
+                    "type": "boolean"
+                  },
+                  "latestStatus": {
+                    "anyOf": [
+                      {
+                        "type": "string",
+                        "enum": [
+                          "pending",
+                          "running",
+                          "succeeded",
+                          "failed"
+                        ]
+                      },
+                      {
+                        "type": "string",
+                        "enum": [
+                          "idle"
+                        ]
+                      }
+                    ]
+                  },
+                  "latestSuccessfulSyncAt": {
+                    "type": "string",
+                    "nullable": true,
+                    "format": "date-time"
+                  },
+                  "lastErrorMessage": {
+                    "type": "string",
+                    "nullable": true
+                  }
+                },
+                "required": [
+                  "configured",
+                  "latestStatus",
+                  "latestSuccessfulSyncAt",
+                  "lastErrorMessage"
+                ]
+              }
+            },
+            "required": [
+              "appleHealth"
+            ]
           }
         },
         "required": [
@@ -297,7 +347,8 @@
           "notes",
           "anomalies",
           "sync",
-          "connection"
+          "connection",
+          "integrations"
         ]
       },
       "BaselineSnapshotResponse": {
@@ -711,6 +762,342 @@
           "baseline",
           "consistency",
           "note"
+        ]
+      },
+      "ActivitySummaryResponse": {
+        "type": "object",
+        "properties": {
+          "generatedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "latestDay": {
+            "type": "string",
+            "format": "date"
+          },
+          "summary": {
+            "type": "object",
+            "properties": {
+              "workoutsThisWeek": {
+                "type": "integer"
+              },
+              "trainingDays30d": {
+                "type": "integer"
+              },
+              "totalTrainingTime30d": {
+                "type": "integer"
+              },
+              "averageSteps7d": {
+                "type": "number",
+                "nullable": true
+              },
+              "averageActiveCalories7d": {
+                "type": "number",
+                "nullable": true
+              },
+              "topActivityType": {
+                "type": "object",
+                "nullable": true,
+                "properties": {
+                  "key": {
+                    "type": "string"
+                  },
+                  "label": {
+                    "type": "string"
+                  },
+                  "workoutCount": {
+                    "type": "integer"
+                  }
+                },
+                "required": [
+                  "key",
+                  "label",
+                  "workoutCount"
+                ]
+              }
+            },
+            "required": [
+              "workoutsThisWeek",
+              "trainingDays30d",
+              "totalTrainingTime30d",
+              "averageSteps7d",
+              "averageActiveCalories7d",
+              "topActivityType"
+            ]
+          },
+          "syncGuidance": {
+            "type": "object",
+            "properties": {
+              "provider": {
+                "type": "string",
+                "enum": [
+                  "apple_health"
+                ]
+              },
+              "configured": {
+                "type": "boolean"
+              },
+              "latestSyncAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "latestSuccessfulSyncAt": {
+                "type": "string",
+                "nullable": true,
+                "format": "date-time"
+              },
+              "latestStatus": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "enum": [
+                      "pending",
+                      "running",
+                      "succeeded",
+                      "failed"
+                    ]
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "idle"
+                    ]
+                  }
+                ]
+              },
+              "lastErrorMessage": {
+                "type": "string",
+                "nullable": true
+              }
+            },
+            "required": [
+              "provider",
+              "configured",
+              "latestSyncAt",
+              "latestSuccessfulSyncAt",
+              "latestStatus",
+              "lastErrorMessage"
+            ]
+          },
+          "daily": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "day": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "steps": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "activeCalories": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "workoutCount": {
+                  "type": "integer"
+                },
+                "totalWorkoutDurationSeconds": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "day",
+                "steps",
+                "activeCalories",
+                "workoutCount",
+                "totalWorkoutDurationSeconds"
+              ]
+            }
+          },
+          "weekly": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "weekStartDay": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "weekEndDay": {
+                  "type": "string",
+                  "format": "date"
+                },
+                "workoutCount": {
+                  "type": "integer"
+                },
+                "trainingDays": {
+                  "type": "integer"
+                },
+                "totalWorkoutDurationSeconds": {
+                  "type": "integer"
+                }
+              },
+              "required": [
+                "weekStartDay",
+                "weekEndDay",
+                "workoutCount",
+                "trainingDays",
+                "totalWorkoutDurationSeconds"
+              ]
+            }
+          },
+          "breakdown": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "key": {
+                  "type": "string"
+                },
+                "label": {
+                  "type": "string"
+                },
+                "workoutCount": {
+                  "type": "integer"
+                },
+                "totalDurationSeconds": {
+                  "type": "integer"
+                },
+                "totalDistanceMeters": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "totalCalories": {
+                  "type": "number",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "key",
+                "label",
+                "workoutCount",
+                "totalDurationSeconds",
+                "totalDistanceMeters",
+                "totalCalories"
+              ]
+            }
+          },
+          "recentWorkouts": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": {
+                  "type": "string"
+                },
+                "day": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "activityKey": {
+                  "type": "string"
+                },
+                "activityLabel": {
+                  "type": "string"
+                },
+                "activityType": {
+                  "type": "string"
+                },
+                "source": {
+                  "type": "string",
+                  "enum": [
+                    "oura",
+                    "apple_health"
+                  ]
+                },
+                "sourceType": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "intensity": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "label": {
+                  "type": "string",
+                  "nullable": true
+                },
+                "startTime": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date-time"
+                },
+                "endTime": {
+                  "type": "string",
+                  "nullable": true,
+                  "format": "date-time"
+                },
+                "durationSeconds": {
+                  "type": "integer",
+                  "nullable": true
+                },
+                "calories": {
+                  "type": "number",
+                  "nullable": true
+                },
+                "distanceMeters": {
+                  "type": "number",
+                  "nullable": true
+                }
+              },
+              "required": [
+                "id",
+                "day",
+                "activityKey",
+                "activityLabel",
+                "activityType",
+                "source",
+                "sourceType",
+                "intensity",
+                "label",
+                "startTime",
+                "endTime",
+                "durationSeconds",
+                "calories",
+                "distanceMeters"
+              ]
+            }
+          },
+          "totals": {
+            "type": "object",
+            "properties": {
+              "hasDailyActivityData": {
+                "type": "boolean"
+              },
+              "hasWorkoutData": {
+                "type": "boolean"
+              },
+              "totalDistance30d": {
+                "type": "number",
+                "nullable": true
+              },
+              "totalCalories30d": {
+                "type": "number",
+                "nullable": true
+              }
+            },
+            "required": [
+              "hasDailyActivityData",
+              "hasWorkoutData",
+              "totalDistance30d",
+              "totalCalories30d"
+            ]
+          }
+        },
+        "required": [
+          "generatedAt",
+          "latestDay",
+          "summary",
+          "syncGuidance",
+          "daily",
+          "weekly",
+          "breakdown",
+          "recentWorkouts",
+          "totals"
         ]
       },
       "TrendSummaryResponse": {
@@ -1663,6 +2050,115 @@
           "series"
         ]
       },
+      "AppleHealthStatusResponse": {
+        "type": "object",
+        "properties": {
+          "provider": {
+            "type": "string",
+            "enum": [
+              "apple_health"
+            ]
+          },
+          "configured": {
+            "type": "boolean"
+          },
+          "latestSyncAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "latestSuccessfulSyncAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "latestStatus": {
+            "anyOf": [
+              {
+                "type": "string",
+                "enum": [
+                  "pending",
+                  "running",
+                  "succeeded",
+                  "failed"
+                ]
+              },
+              {
+                "type": "string",
+                "enum": [
+                  "idle"
+                ]
+              }
+            ]
+          },
+          "lastErrorMessage": {
+            "type": "string",
+            "nullable": true
+          },
+          "latestReceivedRecordCount": {
+            "type": "integer"
+          },
+          "latestStoredRecordCount": {
+            "type": "integer"
+          }
+        },
+        "required": [
+          "provider",
+          "configured",
+          "latestSyncAt",
+          "latestSuccessfulSyncAt",
+          "latestStatus",
+          "lastErrorMessage",
+          "latestReceivedRecordCount",
+          "latestStoredRecordCount"
+        ]
+      },
+      "AppleHealthIngestResponse": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "batchId": {
+            "type": "string"
+          },
+          "receivedRecordCount": {
+            "type": "integer"
+          },
+          "storedRecordCount": {
+            "type": "integer"
+          },
+          "upsertedRecordCount": {
+            "type": "integer"
+          },
+          "duplicateCount": {
+            "type": "integer"
+          },
+          "serverSyncedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "warnings": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "required": [
+          "success",
+          "batchId",
+          "receivedRecordCount",
+          "storedRecordCount",
+          "upsertedRecordCount",
+          "duplicateCount",
+          "serverSyncedAt",
+          "warnings"
+        ]
+      },
       "OuraConnectionStatusResponse": {
         "type": "object",
         "properties": {
@@ -1956,12 +2452,16 @@
               },
               "activityRecords": {
                 "type": "integer"
+              },
+              "workoutRecords": {
+                "type": "integer"
               }
             },
             "required": [
               "sleepRecords",
               "readinessRecords",
-              "activityRecords"
+              "activityRecords",
+              "workoutRecords"
             ]
           },
           "window": {
@@ -2522,6 +3022,37 @@
         }
       }
     },
+    "/api/activity/latest": {
+      "get": {
+        "tags": [
+          "Analytics"
+        ],
+        "operationId": "getLatestActivitySummary",
+        "summary": "Get the latest activity summary",
+        "responses": {
+          "200": {
+            "description": "Latest activity summary payload.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ActivitySummaryResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "No activity summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/trends": {
       "get": {
         "tags": [
@@ -2911,6 +3442,405 @@
           },
           "404": {
             "description": "No AI context summary is available yet.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/apple-health/status": {
+      "get": {
+        "tags": [
+          "Apple Health Integration"
+        ],
+        "operationId": "getAppleHealthStatus",
+        "summary": "Get Apple Health bridge sync status",
+        "responses": {
+          "200": {
+            "description": "Current Apple Health bridge sync state.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleHealthStatusResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Protected API token auth is not configured.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/integrations/apple-health/ingest": {
+      "post": {
+        "tags": [
+          "Apple Health Integration"
+        ],
+        "operationId": "ingestAppleHealthBatch",
+        "summary": "Ingest a batched Apple Health sync payload",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "clientSyncedThrough": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "device": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "model": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "systemVersion": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "bundleIdentifier": {
+                        "type": "string",
+                        "minLength": 1
+                      },
+                      "appVersion": {
+                        "type": "string",
+                        "minLength": 1
+                      }
+                    }
+                  },
+                  "records": {
+                    "type": "object",
+                    "properties": {
+                      "workouts": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "externalId": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "activityType": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "startTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "endTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "totalActiveEnergyCalories": {
+                              "type": "number",
+                              "nullable": true
+                            },
+                            "totalDistanceMeters": {
+                              "type": "number",
+                              "nullable": true
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "bundleIdentifier": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "productType": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "label": {
+                              "type": "string",
+                              "nullable": true
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "boolean"
+                                  },
+                                  {
+                                    "nullable": true
+                                  }
+                                ]
+                              }
+                            },
+                            "route": {
+                              "type": "array",
+                              "items": {
+                                "type": "object",
+                                "properties": {
+                                  "latitude": {
+                                    "type": "number",
+                                    "minimum": -90,
+                                    "maximum": 90
+                                  },
+                                  "longitude": {
+                                    "type": "number",
+                                    "minimum": -180,
+                                    "maximum": 180
+                                  },
+                                  "altitudeMeters": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "horizontalAccuracyMeters": {
+                                    "type": "number",
+                                    "nullable": true
+                                  },
+                                  "timestamp": {
+                                    "type": "string",
+                                    "format": "date-time"
+                                  }
+                                },
+                                "required": [
+                                  "latitude",
+                                  "longitude",
+                                  "timestamp"
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "activityType",
+                            "startTime",
+                            "endTime"
+                          ]
+                        },
+                        "default": []
+                      },
+                      "quantities": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "externalId": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "sampleType": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "startTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "endTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "value": {
+                              "type": "number"
+                            },
+                            "unit": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "bundleIdentifier": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "productType": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "boolean"
+                                  },
+                                  {
+                                    "nullable": true
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "sampleType",
+                            "startTime",
+                            "value",
+                            "unit"
+                          ]
+                        },
+                        "default": []
+                      },
+                      "categories": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "externalId": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "categoryType": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "startTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "endTime": {
+                              "type": "string",
+                              "format": "date-time"
+                            },
+                            "value": {
+                              "type": "string",
+                              "minLength": 1
+                            },
+                            "source": {
+                              "type": "object",
+                              "properties": {
+                                "bundleIdentifier": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "name": {
+                                  "type": "string",
+                                  "minLength": 1
+                                },
+                                "productType": {
+                                  "type": "string",
+                                  "minLength": 1
+                                }
+                              }
+                            },
+                            "metadata": {
+                              "type": "object",
+                              "additionalProperties": {
+                                "anyOf": [
+                                  {
+                                    "type": "string"
+                                  },
+                                  {
+                                    "type": "number"
+                                  },
+                                  {
+                                    "type": "boolean"
+                                  },
+                                  {
+                                    "nullable": true
+                                  }
+                                ]
+                              }
+                            }
+                          },
+                          "required": [
+                            "categoryType",
+                            "startTime",
+                            "endTime",
+                            "value"
+                          ]
+                        },
+                        "default": []
+                      }
+                    }
+                  }
+                },
+                "required": [
+                  "records"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Apple Health batch was durably stored and processed.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AppleHealthIngestResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "The Apple Health ingest payload is invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ValidationErrorResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Bearer token is missing or invalid.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            }
+          },
+          "503": {
+            "description": "Protected API token auth is not configured.",
             "content": {
               "application/json": {
                 "schema": {

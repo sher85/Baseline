@@ -9,6 +9,7 @@
 ### Dashboard
 - `GET /api/overview/latest`
 - `GET /api/sleep/latest`
+- `GET /api/activity/latest`
 - `GET /api/recovery/latest`
 - `GET /api/recovery/latest/detail`
 - `GET /api/trends?window=7d`
@@ -28,6 +29,8 @@
 - `GET /api/ai/context?window=30d`
 
 ### Integration and sync
+- `GET /api/integrations/apple-health/status`
+- `POST /api/integrations/apple-health/ingest`
 - `GET /api/integrations/oura/status`
 - `POST /api/integrations/oura/connect`
 - `GET /api/integrations/oura/callback`
@@ -37,6 +40,12 @@
 - `GET /api/sync/history`
 - `GET /api/sync/status`
 
+## Apple Health bridge behavior
+- `GET /api/integrations/apple-health/status`: requires the shared `API_TOKEN` bearer token and returns whether Apple Health ingestion is configured plus the latest bridge sync outcome
+- `POST /api/integrations/apple-health/ingest`: requires the shared `API_TOKEN` bearer token, validates a batched iPhone bridge payload, stores the raw batch, upserts generic Apple Health records, and updates normalized workout visibility
+- the endpoint returns success only after the batch and normalized upserts are durably stored
+- replaying recent Apple Health data is safe because ingestion is idempotent by external ID or deterministic fallback key
+
 ## Oura auth behavior
 - `GET /api/integrations/oura/status`: returns local configuration state, whether a connection is currently active, and whether the local user needs to reconnect
 - `POST /api/integrations/oura/connect`: creates a fresh stateful authorization URL for the current API process
@@ -45,7 +54,7 @@
 - if Oura rejects a stored token during refresh or API access, the connection is marked inactive so the next status check can surface `needsReconnect: true`
 
 ## Sync behavior
-- `POST /api/sync/oura/run`: runs an immediate manual sync against Oura and stores normalized sleep, readiness, and activity data
+- `POST /api/sync/oura/run`: runs an immediate manual sync against Oura and stores normalized sleep, readiness, activity, and workout-session data when the workout scope is granted
 - request body accepts optional `startDate`, `endDate`, and `lookbackDays`
 - if no date range is supplied, the sync defaults to an incremental window
 - `POST /api/sync/oura/backfill`: runs an explicit historical backfill and requires `startDate` plus `endDate`
@@ -57,6 +66,7 @@
 ## Analytics behavior
 - `GET /api/overview/latest`: returns the latest dashboard-ready recovery summary, anomaly notes, sync state, and connection state
 - `GET /api/sleep/latest`: returns the latest sleep summary with baseline delta, timing, nightly vitals, and bedtime consistency metrics
+- `GET /api/activity/latest`: returns a page-oriented activity summary with 30-day daily movement, 12-week workout cadence, recent sessions, activity mix, and workout-sync guidance
 - `GET /api/baselines/latest`: computes or returns the latest rolling baseline snapshot
 - `GET /api/recovery/latest`: computes or returns the latest recovery score and explanation
 - `GET /api/recovery/latest/detail`: returns the latest recovery score plus factor breakdowns, current values, baselines, and anomalies

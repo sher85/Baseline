@@ -1,12 +1,13 @@
 import Link from "next/link";
 
 type SiteHeaderProps = {
-  currentPath: "/" | "/sleep" | "/recovery" | "/trends" | "/anomalies";
+  currentPath: "/" | "/sleep" | "/activity" | "/recovery" | "/trends" | "/anomalies";
 };
 
 const links: Array<{ href: SiteHeaderProps["currentPath"]; label: string }> = [
   { href: "/", label: "Overview" },
   { href: "/sleep", label: "Sleep" },
+  { href: "/activity", label: "Activity" },
   { href: "/recovery", label: "Recovery" },
   { href: "/trends", label: "Trends" },
   { href: "/anomalies", label: "Anomalies" }

@@ -838,6 +838,76 @@ h2 {
   gap: 12px;
 }
 
+.activity-breakdown-list,
+.workout-list {
+  display: grid;
+  gap: 14px;
+}
+
+.activity-breakdown-row,
+.workout-row {
+  display: flex;
+  gap: 16px;
+  justify-content: space-between;
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(220, 241, 251, 0.82);
+}
+
+.activity-breakdown-copy,
+.workout-row-copy {
+  min-width: 0;
+}
+
+.activity-breakdown-heading,
+.workout-row-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  align-items: flex-end;
+}
+
+.activity-breakdown-heading {
+  align-items: flex-start;
+  margin-bottom: 10px;
+}
+
+.activity-breakdown-bar {
+  width: min(320px, 100%);
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(103, 132, 156, 0.12);
+  overflow: hidden;
+}
+
+.activity-breakdown-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, rgba(11, 122, 134, 0.72), rgba(90, 191, 224, 0.88));
+}
+
+.activity-breakdown-stats,
+.workout-row-copy p {
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.activity-breakdown-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  text-align: right;
+}
+
+.workout-row-copy strong {
+  display: block;
+}
+
+.workout-row-copy p {
+  margin: 6px 0 0;
+}
+
 .factor-row {
   gap: 18px;
   padding: 18px;
@@ -1340,6 +1410,8 @@ h2 {
   .insight-list p,
   .detail-list div,
   .factor-row,
+  .activity-breakdown-row,
+  .workout-row,
   .anomaly-card,
   .anomaly-card.empty {
     background: rgba(18, 45, 65, 0.72);
@@ -1489,7 +1561,9 @@ h2 {
 
   .page-intro,
   .site-header,
-  .factor-row {
+  .factor-row,
+  .activity-breakdown-row,
+  .workout-row {
     flex-direction: column;
     align-items: flex-start;
   }
@@ -1523,6 +1597,14 @@ h2 {
 
   .factor-values {
     width: 100%;
+    text-align: left;
+  }
+
+  .activity-breakdown-heading,
+  .activity-breakdown-stats,
+  .workout-row-meta {
+    width: 100%;
+    align-items: flex-start;
     text-align: left;
   }
 

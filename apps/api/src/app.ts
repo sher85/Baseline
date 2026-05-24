@@ -3,6 +3,7 @@ import express from "express";
 
 import { aiRouter } from "./routes/ai.js";
 import { analyticsRouter } from "./routes/analytics.js";
+import { appleHealthRouter } from "./routes/apple-health.js";
 import { healthRouter } from "./routes/health.js";
 import { openapiRouter } from "./routes/openapi.js";
 import { ouraIntegrationRouter } from "./routes/oura-integration.js";
@@ -27,6 +28,7 @@ app.get("/", (_request, response) => {
 
 app.use(openapiRouter);
 app.use("/health", healthRouter);
+app.use("/api/integrations/apple-health", appleHealthRouter);
 app.use("/api/integrations/oura", ouraIntegrationRouter);
 app.use("/api/sync", syncRouter);
 app.use("/api/ai", aiRouter);

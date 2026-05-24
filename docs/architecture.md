@@ -5,11 +5,13 @@ The product is deliberately split into four layers:
 
 1. Oura integration
    OAuth, token storage, refresh, and API fetches
-2. Normalized storage
+2. Apple Health bridge ingestion
+   bearer-token auth, raw batch storage, generic record upserts
+3. Normalized storage
    app-owned daily tables in PostgreSQL
-3. Analytics engine
+4. Analytics engine
    baselines, recovery score, anomaly rules, summary shaping
-4. Presentation and AI interfaces
+5. Presentation and AI interfaces
    dashboard pages and compact JSON endpoints
 
 That split is the core architectural choice in the repo. It keeps vendor coupling low and keeps the backend as the deterministic source of truth.
@@ -36,18 +38,22 @@ That split is the core architectural choice in the repo. It keeps vendor couplin
 
 ## Data flow
 1. User connects Oura through OAuth
-2. API stores local Oura tokens
-3. Manual or scheduled sync fetches Oura daily data
-4. Integration code maps vendor responses into normalized tables:
+2. iPhone bridge reads Apple Health locally and pushes batched records to the API
+3. API stores local Oura tokens plus Apple Health raw batches and generic records
+4. Manual or scheduled sync fetches Oura daily data
+5. Integration code maps vendor responses into normalized tables:
    - `DailySleep`
    - `DailyRecoveryInput`
    - `DailyActivity`
+   - `WorkoutSession`
+   - `AppleHealthSyncBatch`
+   - `AppleHealthRecord`
    - `SyncRun`
-5. Analytics services compute:
+6. Analytics services compute:
    - `BaselineSnapshot`
    - `RecoveryScore`
    - `AnomalyFlag`
-6. Summary services shape data for:
+7. Summary services shape data for:
    - dashboard endpoints
    - AI-facing endpoints
 
@@ -74,7 +80,8 @@ This makes the product more credible than a black-box score imitation.
 ## Current boundaries
 - single-user MVP
 - Oura as first vendor
-- no raw payload persistence
+- Apple Health bridge as first local-device companion
+- raw payload persistence for Apple Health bridge troubleshooting
 - no medical claims
 - local-first runtime
 
@@ -82,4 +89,5 @@ This makes the product more credible than a black-box score imitation.
 - route-level integration tests
 - stronger scheduler observability
 - deployment guidance
-- vendor adapters beyond Oura
+- richer Apple Health normalization
+- vendor adapters beyond Oura and Apple Health

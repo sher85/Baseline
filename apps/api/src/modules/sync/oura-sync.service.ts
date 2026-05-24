@@ -2,11 +2,13 @@ import { SyncMode, SyncSource, SyncStatus } from "../../lib/prisma-client.js";
 
 import { prisma } from "../../lib/prisma.js";
 import { getOrCreatePrimaryUser } from "../auth/single-user.service.js";
+import { hasGrantedOuraScope } from "../oura/oura-connection.service.js";
 import {
   OuraApiClient,
   type OuraDailyActivityItem,
   type OuraDailyReadinessItem,
-  type OuraSleepItem
+  type OuraSleepItem,
+  type OuraWorkoutItem
 } from "../oura/oura-client.js";
 import { resolveSyncWindowFromState } from "./sync-window.js";
 
@@ -27,6 +29,7 @@ type SyncSummary = {
   activityRecords: number;
   readinessRecords: number;
   sleepRecords: number;
+  workoutRecords: number;
 };
 
 type RunOuraSyncOptions = {
@@ -48,6 +51,23 @@ function truncateErrorMessage(error: unknown) {
   return message.slice(0, 500);
 }
 
+function differenceInSeconds(startTime: string | null | undefined, endTime: string | null | undefined) {
+  if (!startTime || !endTime) {
+    return null;
+  }
+
+  const start = new Date(startTime);
+  const end = new Date(endTime);
+
+  if (Number.isNaN(start.getTime()) || Number.isNaN(end.getTime())) {
+    return null;
+  }
+
+  const seconds = Math.round((end.getTime() - start.getTime()) / 1000);
+
+  return seconds >= 0 ? seconds : null;
+}
+
 function selectPrimarySleepByDay(items: OuraSleepItem[]) {
   const byDay = new Map<string, OuraSleepItem>();
 
@@ -65,7 +85,7 @@ function selectPrimarySleepByDay(items: OuraSleepItem[]) {
 }
 
 async function getLatestSyncedDayForUser(userId: string) {
-  const [latestSleep, latestReadiness, latestActivity] = await Promise.all([
+  const [latestSleep, latestReadiness, latestActivity, latestWorkout] = await Promise.all([
     prisma.dailySleep.findFirst({
       where: { userId },
       orderBy: { day: "desc" },
@@ -80,10 +100,15 @@ async function getLatestSyncedDayForUser(userId: string) {
       where: { userId },
       orderBy: { day: "desc" },
       select: { day: true }
+    }),
+    prisma.workoutSession.findFirst({
+      where: { userId },
+      orderBy: { day: "desc" },
+      select: { day: true }
     })
   ]);
 
-  const latest = [latestSleep?.day, latestReadiness?.day, latestActivity?.day]
+  const latest = [latestSleep?.day, latestReadiness?.day, latestActivity?.day, latestWorkout?.day]
     .filter((day): day is Date => Boolean(day))
     .sort((left, right) => right.getTime() - left.getTime())[0];
 
@@ -210,6 +235,48 @@ async function persistActivityRecords(userId: string, items: OuraDailyActivityIt
   );
 }
 
+async function persistWorkoutRecords(userId: string, items: OuraWorkoutItem[]) {
+  await Promise.all(
+    items.map((item) =>
+      prisma.workoutSession.upsert({
+        where: {
+          source_externalId: {
+            source: SyncSource.oura,
+            externalId: item.id
+          }
+        },
+        update: {
+          day: asUtcDate(item.day),
+          activityType: item.activity,
+          sourceType: item.source ?? null,
+          intensity: item.intensity ?? null,
+          label: item.label ?? null,
+          startTime: new Date(item.start_datetime),
+          endTime: new Date(item.end_datetime),
+          durationSeconds: differenceInSeconds(item.start_datetime, item.end_datetime),
+          calories: item.calories === null ? null : Math.round(item.calories),
+          distanceMeters: item.distance ?? null
+        },
+        create: {
+          userId,
+          source: SyncSource.oura,
+          externalId: item.id,
+          day: asUtcDate(item.day),
+          activityType: item.activity,
+          sourceType: item.source ?? null,
+          intensity: item.intensity ?? null,
+          label: item.label ?? null,
+          startTime: new Date(item.start_datetime),
+          endTime: new Date(item.end_datetime),
+          durationSeconds: differenceInSeconds(item.start_datetime, item.end_datetime),
+          calories: item.calories === null ? null : Math.round(item.calories),
+          distanceMeters: item.distance ?? null
+        }
+      })
+    )
+  );
+}
+
 async function createRunningSyncRun(userId: string, mode: SyncMode, window: SyncWindow) {
   const existingRunningSync = await prisma.syncRun.findFirst({
     where: {
@@ -244,25 +311,31 @@ async function runOuraSync(options: RunOuraSyncOptions) {
   const syncWindow = await resolveSyncWindow(user.id, options.windowInput ?? {});
   const syncRun = await createRunningSyncRun(user.id, options.mode, syncWindow);
   const client = new OuraApiClient();
+  const canSyncWorkouts = await hasGrantedOuraScope("workout");
 
   try {
-    const [sleepItems, readinessItems, activityItems] = await Promise.all([
+    const [sleepItems, readinessItems, activityItems, workoutItems] = await Promise.all([
       client.fetchSleep(syncWindow.startDate, syncWindow.endDate),
       client.fetchDailyReadiness(syncWindow.startDate, syncWindow.endDate),
-      client.fetchDailyActivity(syncWindow.startDate, syncWindow.endDate)
+      client.fetchDailyActivity(syncWindow.startDate, syncWindow.endDate),
+      canSyncWorkouts
+        ? client.fetchWorkout(syncWindow.startDate, syncWindow.endDate)
+        : Promise.resolve([])
     ]);
 
     const primarySleepByDay = await persistSleepRecords(user.id, sleepItems);
 
     await Promise.all([
       persistReadinessRecords(user.id, readinessItems, primarySleepByDay),
-      persistActivityRecords(user.id, activityItems)
+      persistActivityRecords(user.id, activityItems),
+      persistWorkoutRecords(user.id, workoutItems)
     ]);
 
     const summary: SyncSummary = {
       sleepRecords: primarySleepByDay.size,
       readinessRecords: readinessItems.length,
-      activityRecords: activityItems.length
+      activityRecords: activityItems.length,
+      workoutRecords: workoutItems.length
     };
 
     const completedRun = await prisma.syncRun.update({

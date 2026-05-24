@@ -53,9 +53,23 @@ const dailyActivityItemSchema = z.object({
   equivalent_walking_distance: z.number().nullable()
 });
 
+const workoutItemSchema = z.object({
+  id: z.string(),
+  activity: z.string(),
+  calories: z.number().nullable(),
+  day: z.string(),
+  distance: z.number().nullable(),
+  end_datetime: z.string(),
+  intensity: z.string().nullable().optional(),
+  label: z.string().nullable().optional(),
+  source: z.string().nullable().optional(),
+  start_datetime: z.string()
+});
+
 export type OuraSleepItem = z.infer<typeof sleepItemSchema>;
 export type OuraDailyReadinessItem = z.infer<typeof dailyReadinessItemSchema>;
 export type OuraDailyActivityItem = z.infer<typeof dailyActivityItemSchema>;
+export type OuraWorkoutItem = z.infer<typeof workoutItemSchema>;
 
 export class OuraApiClient {
   async fetchSleep(startDate: string, endDate: string) {
@@ -80,6 +94,15 @@ export class OuraApiClient {
     return this.fetchCollection(
       "/usercollection/daily_activity",
       dailyActivityItemSchema,
+      startDate,
+      endDate
+    );
+  }
+
+  async fetchWorkout(startDate: string, endDate: string) {
+    return this.fetchCollection(
+      "/usercollection/workout",
+      workoutItemSchema,
       startDate,
       endDate
     );

@@ -3,6 +3,7 @@ import { getOrCreatePrimaryUser } from "../auth/single-user.service.js";
 import { getLatestAnomalies } from "../analytics/anomaly.service.js";
 import { getLatestBaselineSnapshot } from "../analytics/baseline.service.js";
 import { getLatestRecoveryScore } from "../recovery/recovery-score.service.js";
+import { getAppleHealthStatus } from "../apple-health/apple-health-ingestion.service.js";
 import { getOuraConnectionStatus } from "../oura/oura-connection.service.js";
 import { getOuraSyncStatus } from "../sync/oura-sync.service.js";
 
@@ -32,11 +33,12 @@ function createMetric(label: string, value: string, detail: string) {
 export async function getLatestOverview() {
   const user = await getOrCreatePrimaryUser();
 
-  const [recovery, anomalies, syncStatus, connection] = await Promise.all([
+  const [recovery, anomalies, syncStatus, connection, appleHealth] = await Promise.all([
     getLatestRecoveryScore(),
     getLatestAnomalies(),
     getOuraSyncStatus(),
-    getOuraConnectionStatus()
+    getOuraConnectionStatus(),
+    getAppleHealthStatus()
   ]);
 
   if (!recovery) {
@@ -143,6 +145,14 @@ export async function getLatestOverview() {
       connected: connection.connected,
       configured: connection.configured,
       needsReconnect: connection.needsReconnect
+    },
+    integrations: {
+      appleHealth: {
+        configured: appleHealth.configured,
+        latestStatus: appleHealth.latestStatus,
+        latestSuccessfulSyncAt: appleHealth.latestSuccessfulSyncAt,
+        lastErrorMessage: appleHealth.lastErrorMessage
+      }
     }
   };
 }

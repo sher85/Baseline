@@ -20,6 +20,10 @@ function parseScopes(scope?: string | null) {
   return scope ? scope.split(/\s+/).filter(Boolean) : [];
 }
 
+export function parseOuraScopes(scope?: string | null) {
+  return parseScopes(scope);
+}
+
 function toExpirationDate(expiresInSeconds: number) {
   return new Date(Date.now() + expiresInSeconds * 1000);
 }
@@ -152,4 +156,18 @@ export async function getValidOuraConnection() {
 
     throw error;
   }
+}
+
+export async function hasGrantedOuraScope(scope: string) {
+  const user = await getOrCreatePrimaryUser();
+  const connection = await prisma.ouraConnection.findUnique({
+    where: {
+      userId: user.id
+    },
+    select: {
+      scope: true
+    }
+  });
+
+  return parseScopes(connection?.scope).includes(scope);
 }

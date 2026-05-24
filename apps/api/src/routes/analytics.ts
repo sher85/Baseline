@@ -14,6 +14,7 @@ import {
 import { getLatestBaselineSnapshot } from "../modules/analytics/baseline.service.js";
 import { getLatestRecoveryScore } from "../modules/recovery/recovery-score.service.js";
 import { getLatestOverview } from "../modules/summaries/overview.service.js";
+import { getLatestActivitySummary } from "../modules/summaries/activity.service.js";
 import { getLatestRecoveryDetail } from "../modules/summaries/recovery-detail.service.js";
 import { getLatestSleepSummary } from "../modules/summaries/sleep.service.js";
 import { getTrendSummary } from "../modules/summaries/trends.service.js";
@@ -88,6 +89,20 @@ analyticsRouter.get("/sleep/latest", async (_request, response) => {
   }
 
   response.json(sleep);
+});
+
+analyticsRouter.get("/activity/latest", async (_request, response) => {
+  const activity = await getLatestActivitySummary();
+
+  if (!activity) {
+    response.status(404).json({
+      error: "No activity summary is available yet."
+    });
+
+    return;
+  }
+
+  response.json(activity);
 });
 
 analyticsRouter.get("/trends", async (request, response) => {

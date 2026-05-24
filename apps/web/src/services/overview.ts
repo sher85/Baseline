@@ -19,6 +19,14 @@ export type OverviewResponse = {
     connected: boolean;
     needsReconnect?: boolean;
   };
+  integrations: {
+    appleHealth: {
+      configured: boolean;
+      latestStatus: "pending" | "running" | "succeeded" | "failed" | "idle";
+      latestSuccessfulSyncAt: string | null;
+      lastErrorMessage: string | null;
+    };
+  };
   day: string;
   generatedAt: string;
   metrics: OverviewMetric[];
@@ -56,6 +64,14 @@ const fallbackOverview: OverviewResponse = {
     connected: false,
     configured: false,
     needsReconnect: false
+  },
+  integrations: {
+    appleHealth: {
+      configured: false,
+      latestStatus: "idle",
+      latestSuccessfulSyncAt: null,
+      lastErrorMessage: null
+    }
   }
 };
 
@@ -84,6 +100,14 @@ const emptyOverview: OverviewResponse = {
     connected: false,
     configured: false,
     needsReconnect: false
+  },
+  integrations: {
+    appleHealth: {
+      configured: false,
+      latestStatus: "idle",
+      latestSuccessfulSyncAt: null,
+      lastErrorMessage: null
+    }
   }
 };
 
