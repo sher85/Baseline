@@ -1,0 +1,337 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05563D2F7C7FF034D162AD3F /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8CA347358BC482F3D375F84 /* ContentView.swift */; };
+		07A5ACB01A584A58FCF4A375 /* HealthBridgeModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AE7328C58B6C73D6B498E66 /* HealthBridgeModels.swift */; };
+		52CCDB8CF3C2C28BAED9ACA1 /* BridgeSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 971BE9B71FBF9047D1E08592 /* BridgeSettingsStore.swift */; };
+		715569B615128F96B801B67E /* BackgroundSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 42E46CDFFCBF23E543041E76 /* BackgroundSyncManager.swift */; };
+		837C8801F8467CD28D8175CA /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = B70298A48CC9CCB5F6AAB855 /* HealthKitManager.swift */; };
+		AB815E06C09991C58C5E0B03 /* AppleHealthSyncEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = F0D865AE9FA4C7E7ACB39A1E /* AppleHealthSyncEngine.swift */; };
+		C4D5790EDC2A9CC7A11732A6 /* AppleHealthAPIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CDC087704DD4A32819E5569A /* AppleHealthAPIClient.swift */; };
+		DED8A6F7AE7BD34188B944BD /* BaselineHealthBridgeApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4E2BD0B9D2C269FBCE8283D /* BaselineHealthBridgeApp.swift */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		42E46CDFFCBF23E543041E76 /* BackgroundSyncManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundSyncManager.swift; sourceTree = "<group>"; };
+		8AE7328C58B6C73D6B498E66 /* HealthBridgeModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthBridgeModels.swift; sourceTree = "<group>"; };
+		971BE9B71FBF9047D1E08592 /* BridgeSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BridgeSettingsStore.swift; sourceTree = "<group>"; };
+		B4E2BD0B9D2C269FBCE8283D /* BaselineHealthBridgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineHealthBridgeApp.swift; sourceTree = "<group>"; };
+		B70298A48CC9CCB5F6AAB855 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
+		CDC087704DD4A32819E5569A /* AppleHealthAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHealthAPIClient.swift; sourceTree = "<group>"; };
+		D4BE346006C62A80BBF687E2 /* BaselineHealthBridge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BaselineHealthBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E8CA347358BC482F3D375F84 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		F0D865AE9FA4C7E7ACB39A1E /* AppleHealthSyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHealthSyncEngine.swift; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		04548735A0F0415ABC034576 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				D4BE346006C62A80BBF687E2 /* BaselineHealthBridge.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		299B5A044A3667F11044033C = {
+			isa = PBXGroup;
+			children = (
+				706E72CF0C38F89EC49CA218 /* Sources */,
+				04548735A0F0415ABC034576 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		706E72CF0C38F89EC49CA218 /* Sources */ = {
+			isa = PBXGroup;
+			children = (
+				CDC087704DD4A32819E5569A /* AppleHealthAPIClient.swift */,
+				F0D865AE9FA4C7E7ACB39A1E /* AppleHealthSyncEngine.swift */,
+				42E46CDFFCBF23E543041E76 /* BackgroundSyncManager.swift */,
+				B4E2BD0B9D2C269FBCE8283D /* BaselineHealthBridgeApp.swift */,
+				971BE9B71FBF9047D1E08592 /* BridgeSettingsStore.swift */,
+				E8CA347358BC482F3D375F84 /* ContentView.swift */,
+				8AE7328C58B6C73D6B498E66 /* HealthBridgeModels.swift */,
+				B70298A48CC9CCB5F6AAB855 /* HealthKitManager.swift */,
+			);
+			path = Sources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		118D3DE9D473C164D609906B /* BaselineHealthBridge */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 43C5FB8EAF064FC965B5809E /* Build configuration list for PBXNativeTarget "BaselineHealthBridge" */;
+			buildPhases = (
+				FC42882EEDB8624A9985B44E /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = BaselineHealthBridge;
+			packageProductDependencies = (
+			);
+			productName = BaselineHealthBridge;
+			productReference = D4BE346006C62A80BBF687E2 /* BaselineHealthBridge.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		DF0F2817DC79510EBA9683F8 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1430;
+				TargetAttributes = {
+					118D3DE9D473C164D609906B = {
+						DevelopmentTeam = "";
+					};
+				};
+			};
+			buildConfigurationList = 089E68D8683AC13B53DF41C2 /* Build configuration list for PBXProject "BaselineHealthBridge" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 299B5A044A3667F11044033C;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 04548735A0F0415ABC034576 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				118D3DE9D473C164D609906B /* BaselineHealthBridge */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FC42882EEDB8624A9985B44E /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C4D5790EDC2A9CC7A11732A6 /* AppleHealthAPIClient.swift in Sources */,
+				AB815E06C09991C58C5E0B03 /* AppleHealthSyncEngine.swift in Sources */,
+				715569B615128F96B801B67E /* BackgroundSyncManager.swift in Sources */,
+				DED8A6F7AE7BD34188B944BD /* BaselineHealthBridgeApp.swift in Sources */,
+				52CCDB8CF3C2C28BAED9ACA1 /* BridgeSettingsStore.swift in Sources */,
+				05563D2F7C7FF034D162AD3F /* ContentView.swift in Sources */,
+				07A5ACB01A584A58FCF4A375 /* HealthBridgeModels.swift in Sources */,
+				837C8801F8467CD28D8175CA /* HealthKitManager.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		214C1962D52E11417DCFA30F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = "";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.baseline.HealthBridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.1;
+			};
+			name = Release;
+		};
+		49798195D8CBCE307308B865 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Support/BaselineHealthBridge.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Support/Info.plist;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = (
+					com.baseline.HealthBridge.refresh,
+				);
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Baseline reads your Apple Health workouts, activity, sleep, and vital summaries so it can sync them into your local Baseline analytics app.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Baseline does not write into Health, but this placeholder keeps the entitlement setup explicit for local builds.";
+				INFOPLIST_KEY_UIBackgroundModes = (
+					fetch,
+					processing,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = "Baseline Health Bridge";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		91E470E7F95C442FA9E4D988 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = com.baseline.HealthBridge;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.1;
+			};
+			name = Debug;
+		};
+		D93B2A32C90F3003D0D9B90F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_ENTITLEMENTS = Support/BaselineHealthBridge.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				INFOPLIST_FILE = Support/Info.plist;
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = (
+					com.baseline.HealthBridge.refresh,
+				);
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Baseline reads your Apple Health workouts, activity, sleep, and vital summaries so it can sync them into your local Baseline analytics app.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Baseline does not write into Health, but this placeholder keeps the entitlement setup explicit for local builds.";
+				INFOPLIST_KEY_UIBackgroundModes = (
+					fetch,
+					processing,
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				PRODUCT_NAME = "Baseline Health Bridge";
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		089E68D8683AC13B53DF41C2 /* Build configuration list for PBXProject "BaselineHealthBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				91E470E7F95C442FA9E4D988 /* Debug */,
+				214C1962D52E11417DCFA30F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		43C5FB8EAF064FC965B5809E /* Build configuration list for PBXNativeTarget "BaselineHealthBridge" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D93B2A32C90F3003D0D9B90F /* Debug */,
+				49798195D8CBCE307308B865 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = DF0F2817DC79510EBA9683F8 /* Project object */;
+}

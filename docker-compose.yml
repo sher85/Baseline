@@ -55,10 +55,11 @@ services:
       API_PORT: 3001
       WEB_APP_URL: http://baseline.localhost:8000
       NEXT_PUBLIC_API_BASE_URL: http://localhost:3001
+      API_TOKEN: ${API_TOKEN:-}
       OURA_REDIRECT_URI: http://baseline.localhost:8000/api/integrations/oura/callback
       OURA_CLIENT_ID: ${OURA_CLIENT_ID:-}
       OURA_CLIENT_SECRET: ${OURA_CLIENT_SECRET:-}
-      OURA_SCOPES: ${OURA_SCOPES:-daily email personal}
+      OURA_SCOPES: ${OURA_SCOPES:-daily email personal workout}
       SYNC_SCHEDULE_ENABLED: ${SYNC_SCHEDULE_ENABLED:-true}
       SYNC_SCHEDULE_CRON: ${SYNC_SCHEDULE_CRON:-0 6 * * *}
       SYNC_SCHEDULE_RUN_ON_START: ${SYNC_SCHEDULE_RUN_ON_START:-false}
@@ -89,6 +90,8 @@ services:
       API_INTERNAL_BASE_URL: http://api:3001
       API_PROXY_TARGET: http://api:3001
       NEXT_PUBLIC_API_BASE_URL: http://baseline.localhost:8000
+    ports:
+      - "3000:3000"
     restart: unless-stopped
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:3000/health >/dev/null || exit 1"]
