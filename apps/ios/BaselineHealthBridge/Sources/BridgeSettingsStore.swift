@@ -5,7 +5,7 @@ import SwiftUI
 final class BridgeSettingsStore: ObservableObject {
     @AppStorage("baseline.apiURL") var apiURL = "http://192.168.1.10:3001"
     @AppStorage("baseline.authToken") var authToken = ""
-    @AppStorage("baseline.syncFrequency") private var syncFrequencyRawValue = SyncFrequency.manual.rawValue
+    @AppStorage(BackgroundSyncManager.syncFrequencyDefaultsKey) private var syncFrequencyRawValue = SyncFrequency.manual.rawValue
     @AppStorage("baseline.lastSuccessfulSyncAt") private var lastSuccessfulSyncAtValue = ""
     @AppStorage("baseline.lastStatus") var lastStatus = "Idle"
     @AppStorage("baseline.lastError") var lastError = ""
@@ -67,9 +67,9 @@ final class BridgeSettingsStore: ObservableObject {
 
         do {
           let engine = AppleHealthSyncEngine(
-              settingsProvider: self,
               healthKitManager: HealthKitManager(),
-              apiClient: AppleHealthAPIClient(baseURL: apiURL, token: authToken)
+              apiClient: AppleHealthAPIClient(baseURL: apiURL, token: authToken),
+              lastSuccessfulSyncAt: lastSuccessfulSyncAt
           )
           let receipt = try await engine.runSync(trigger: trigger)
           lastSuccessfulSyncAt = ISO8601DateFormatter.shared.date(from: receipt.serverSyncedAt)

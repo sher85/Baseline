@@ -55,9 +55,11 @@ final class HealthKitManager {
             predicate: HKQuery.predicateForSamples(withStart: date, end: nil, options: [])
         )
 
-        return try await samples.compactMap { sample in
+        var results: [HealthBridgeWorkout] = []
+
+        for sample in samples {
             guard let workout = sample as? HKWorkout else {
-                return nil
+                continue
             }
 
             let heartRateSummary = try await workoutHeartRateSummary(for: workout)
@@ -68,7 +70,8 @@ final class HealthKitManager {
                 "maximumHeartRateBpm": heartRateSummary.maximum.map { String(format: "%.1f", $0) } ?? ""
             ].filter { !$0.value.isEmpty }
 
-            return HealthBridgeWorkout(
+            results.append(
+                HealthBridgeWorkout(
                 externalId: workout.uuid.uuidString,
                 activityType: workout.workoutActivityType.displayName,
                 startTime: ISO8601DateFormatter.shared.string(from: workout.startDate),
@@ -80,7 +83,10 @@ final class HealthKitManager {
                 metadata: metadata,
                 route: []
             )
+            )
         }
+
+        return results
     }
 
     private func fetchQuantitySamples(since date: Date) async throws -> [HealthBridgeQuantitySample] {
@@ -220,7 +226,7 @@ private extension HKWorkoutActivityType {
             return "running"
         case .traditionalStrengthTraining, .functionalStrengthTraining:
             return "weight_lifting"
-        case .paddling:
+        case .paddleSports:
             return "kayaking"
         default:
             return String(describing: self)

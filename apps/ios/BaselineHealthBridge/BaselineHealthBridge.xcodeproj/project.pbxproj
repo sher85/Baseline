@@ -24,7 +24,7 @@
 		B4E2BD0B9D2C269FBCE8283D /* BaselineHealthBridgeApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaselineHealthBridgeApp.swift; sourceTree = "<group>"; };
 		B70298A48CC9CCB5F6AAB855 /* HealthKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManager.swift; sourceTree = "<group>"; };
 		CDC087704DD4A32819E5569A /* AppleHealthAPIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHealthAPIClient.swift; sourceTree = "<group>"; };
-		D4BE346006C62A80BBF687E2 /* BaselineHealthBridge.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = BaselineHealthBridge.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		D4BE346006C62A80BBF687E2 /* Baseline Health Bridge.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Baseline Health Bridge.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E8CA347358BC482F3D375F84 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		F0D865AE9FA4C7E7ACB39A1E /* AppleHealthSyncEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppleHealthSyncEngine.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -33,7 +33,7 @@
 		04548735A0F0415ABC034576 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				D4BE346006C62A80BBF687E2 /* BaselineHealthBridge.app */,
+				D4BE346006C62A80BBF687E2 /* Baseline Health Bridge.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -78,7 +78,7 @@
 			packageProductDependencies = (
 			);
 			productName = BaselineHealthBridge;
-			productReference = D4BE346006C62A80BBF687E2 /* BaselineHealthBridge.app */;
+			productReference = D4BE346006C62A80BBF687E2 /* Baseline Health Bridge.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -88,12 +88,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = YES;
-				LastUpgradeCheck = 1430;
-				TargetAttributes = {
-					118D3DE9D473C164D609906B = {
-						DevelopmentTeam = "";
-					};
-				};
+				LastUpgradeCheck = 2650;
 			};
 			buildConfigurationList = 089E68D8683AC13B53DF41C2 /* Build configuration list for PBXProject "BaselineHealthBridge" */;
 			developmentRegion = en;
@@ -168,9 +163,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6MM96ZR9HK;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_NO_COMMON_BLOCKS = YES;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
@@ -185,6 +181,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.baseline.HealthBridge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.1;
@@ -198,15 +195,10 @@
 				CODE_SIGN_ENTITLEMENTS = Support/BaselineHealthBridge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Support/Info.plist;
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = (
-					com.baseline.HealthBridge.refresh,
-				);
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.baseline.HealthBridge.refresh;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Baseline reads your Apple Health workouts, activity, sleep, and vital summaries so it can sync them into your local Baseline analytics app.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Baseline does not write into Health, but this placeholder keeps the entitlement setup explicit for local builds.";
-				INFOPLIST_KEY_UIBackgroundModes = (
-					fetch,
-					processing,
-				);
+				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -253,9 +245,10 @@
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 6MM96ZR9HK;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_NO_COMMON_BLOCKS = YES;
@@ -277,6 +270,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.baseline.HealthBridge;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.1;
@@ -290,15 +284,10 @@
 				CODE_SIGN_ENTITLEMENTS = Support/BaselineHealthBridge.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				INFOPLIST_FILE = Support/Info.plist;
-				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = (
-					com.baseline.HealthBridge.refresh,
-				);
+				INFOPLIST_KEY_BGTaskSchedulerPermittedIdentifiers = com.baseline.HealthBridge.refresh;
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "Baseline reads your Apple Health workouts, activity, sleep, and vital summaries so it can sync them into your local Baseline analytics app.";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Baseline does not write into Health, but this placeholder keeps the entitlement setup explicit for local builds.";
-				INFOPLIST_KEY_UIBackgroundModes = (
-					fetch,
-					processing,
-				);
+				INFOPLIST_KEY_UIBackgroundModes = "fetch processing";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",

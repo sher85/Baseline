@@ -4,6 +4,8 @@ import Foundation
 final class BackgroundSyncManager {
     static let shared = BackgroundSyncManager()
 
+    static let syncFrequencyDefaultsKey = "baseline.syncFrequency"
+
     private let taskIdentifier = "com.baseline.HealthBridge.refresh"
 
     private init() {}
@@ -35,7 +37,7 @@ final class BackgroundSyncManager {
     }
 
     private func handle(task: BGAppRefreshTask) {
-        schedule(using: BridgeSettingsStore().syncFrequency)
+        schedule(using: currentSyncFrequency())
 
         task.expirationHandler = {
             task.setTaskCompleted(success: false)
@@ -46,5 +48,11 @@ final class BackgroundSyncManager {
             await settings.syncNow(trigger: .background)
             task.setTaskCompleted(success: true)
         }
+    }
+
+    private func currentSyncFrequency() -> SyncFrequency {
+        let rawValue = UserDefaults.standard.string(forKey: Self.syncFrequencyDefaultsKey)
+
+        return rawValue.flatMap(SyncFrequency.init(rawValue:)) ?? .manual
     }
 }
