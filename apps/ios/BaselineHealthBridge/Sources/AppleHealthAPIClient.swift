@@ -44,6 +44,15 @@ struct AppleHealthAPIClient {
     let baseURL: String
     let token: String
 
+    private var session: URLSession {
+        let configuration = URLSessionConfiguration.ephemeral
+        configuration.timeoutIntervalForRequest = 10
+        configuration.timeoutIntervalForResource = 15
+        configuration.waitsForConnectivity = false
+
+        return URLSession(configuration: configuration)
+    }
+
     func testConnection() async throws -> AppleHealthStatusResponse {
         try await request(path: "/api/integrations/apple-health/status", method: "GET", body: Optional<String>.none)
     }
@@ -74,7 +83,7 @@ struct AppleHealthAPIClient {
             request.httpBody = try encoder.encode(body)
         }
 
-        let (data, response) = try await URLSession.shared.data(for: request)
+        let (data, response) = try await session.data(for: request)
         guard let httpResponse = response as? HTTPURLResponse else {
             throw BridgeError.invalidResponse
         }

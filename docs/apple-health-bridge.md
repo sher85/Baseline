@@ -66,7 +66,7 @@ Authorization: Bearer <API_TOKEN>
 
 The bridge app lives in:
 
-- [apps/ios/BaselineHealthBridge](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/ios/BaselineHealthBridge)
+- [apps/ios/BaselineHealthBridge](../apps/ios/BaselineHealthBridge)
 
 This repo currently ships the Swift sources plus an `XcodeGen` project spec:
 

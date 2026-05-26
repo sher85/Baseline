@@ -83,10 +83,10 @@ GitHub renders the Mermaid diagram cleanly. Some local Markdown previewers may n
   architecture, API, analytics, and scoped build brief
 
 More detail:
-- [architecture.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/architecture.md)
-- [api.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/api.md)
-- [analytics.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Untitled/Baseline/docs/analytics.md)
-- [apple-health-bridge.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/docs/apple-health-bridge.md)
+- [architecture.md](docs/architecture.md)
+- [api.md](docs/api.md)
+- [analytics.md](docs/analytics.md)
+- [apple-health-bridge.md](docs/apple-health-bridge.md)
 
 ## Quick start
 1. Copy `.env.example` to `.env`
@@ -225,7 +225,7 @@ If you connected Oura before the `workout` scope was added, reconnect once so Ba
 
 For Apple Watch and Apple Health activity, Baseline now includes a small iPhone bridge app in the repo:
 
-- [apps/ios/BaselineHealthBridge](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/ios/BaselineHealthBridge)
+- [apps/ios/BaselineHealthBridge](apps/ios/BaselineHealthBridge)
 
 The bridge app:
 
@@ -236,7 +236,7 @@ The bridge app:
 
 Setup and sideloading details are documented in:
 
-- [apple-health-bridge.md](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/docs/apple-health-bridge.md)
+- [apple-health-bridge.md](docs/apple-health-bridge.md)
 
 Backfill route:
 
@@ -296,7 +296,7 @@ Verified locally in development:
 - sync history records `mode: "scheduled"`
 
 ## OpenAPI
-This repo generates its OpenAPI spec from [apps/api/src/openapi/spec.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/openapi/spec.ts), backed by shared Zod contracts in [apps/api/src/contracts/api-contract.ts](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/apps/api/src/contracts/api-contract.ts). The generated artifact always lives at [openapi/openapi.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/openapi/openapi.json). This repo also owns the upstream catalog metadata file at [catalog.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/catalog.json).
+This repo generates its OpenAPI spec from [apps/api/src/openapi/spec.ts](apps/api/src/openapi/spec.ts), backed by shared Zod contracts in [apps/api/src/contracts/api-contract.ts](apps/api/src/contracts/api-contract.ts). The generated artifact always lives at [openapi/openapi.json](openapi/openapi.json). This repo also owns the upstream catalog metadata file at [catalog.json](catalog.json).
 
 The app now exposes the spec and docs in two convenient ways:
 - web host: `http://localhost:3000/docs` and `http://localhost:3000/openapi/openapi.json`
@@ -314,7 +314,7 @@ Validate the generated file with:
 npm run openapi:validate
 ```
 
-GitHub Actions now runs generation and validation on pushes to `main` and pull requests targeting `main`. A separate publish workflow also runs on pushes to `main`, regenerates and validates the spec, then copies both [openapi/openapi.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/openapi/openapi.json) and [catalog.json](/Volumes/Sage%204%20TB/Users/mauriciocastro/Documents/GitHub/Baseline/catalog.json) into `services/baseline/` in `sher85/openclaw-api-catalog` using the `API_CATALOG_TOKEN` repository secret and only commits when either file changed.
+GitHub Actions now runs generation and validation on pushes to `main` and pull requests targeting `main`. A separate publish workflow also runs on pushes to `main`, regenerates and validates the spec, then copies both [openapi/openapi.json](openapi/openapi.json) and [catalog.json](catalog.json) into `services/baseline/` in `sher85/openclaw-api-catalog` using the `API_CATALOG_TOKEN` repository secret and only commits when either file changed.
 
 ## Docker
 The repo is containerized as a small app stack:
