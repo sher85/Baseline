@@ -18,12 +18,27 @@
 	<string>1.0</string>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.baseline.HealthBridge.refresh</string>
+	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Baseline reads your Apple Health workouts, activity, sleep, and vital summaries so it can sync them into your local Baseline analytics app.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Baseline does not write into Health.</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
 	<key>NSLocalNetworkUsageDescription</key>
 	<string>Baseline connects to your Mac on the local network so the iPhone bridge can sync Apple Health data into your local Baseline API.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>processing</string>
+	</array>
 </dict>
 </plist>

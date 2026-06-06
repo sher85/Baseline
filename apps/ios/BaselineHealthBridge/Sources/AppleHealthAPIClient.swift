@@ -66,7 +66,10 @@ struct AppleHealthAPIClient {
         method: String,
         body: Body?
     ) async throws -> T {
-        guard let url = URL(string: baseURL.trimmingCharacters(in: .whitespacesAndNewlines) + path) else {
+        let normalizedBaseURL = baseURL.trimmingCharacters(in: .whitespacesAndNewlines)
+            .trimmingCharacters(in: CharacterSet(charactersIn: "/"))
+
+        guard let url = URL(string: normalizedBaseURL + path) else {
             throw BridgeError.invalidBaseURL
         }
 

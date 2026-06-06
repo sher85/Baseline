@@ -33,21 +33,65 @@ final class BridgeSettingsStore: ObservableObject {
     }
 
     func performLaunchSyncIfNeeded() async {
-        guard !isSyncing else {
+        guard syncFrequency != .manual else {
             return
         }
 
-        if lastStatus == "Idle" || syncFrequency != .manual {
-            await syncNow(trigger: .appLaunch)
+        guard !isSyncing, !isTestingConnection else {
+            return
         }
+
+        await syncNow(trigger: .appLaunch)
+    }
+
+    private func trimmedAPIURL() -> String {
+        apiURL.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func trimmedAuthToken() -> String {
+        authToken.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private func validateConnectionSettings() -> Bool {
+        if trimmedAPIURL().isEmpty {
+            lastStatus = "Missing API URL"
+            lastError = "Enter the Baseline API URL first."
+
+            return false
+        }
+
+        if trimmedAuthToken().isEmpty {
+            lastStatus = "Missing Token"
+            lastError = "Enter the API_TOKEN first."
+
+            return false
+        }
+
+        return true
     }
 
     func testConnection() async {
+        guard !isSyncing else {
+            lastStatus = "Sync Running"
+            lastError = "Wait for the current sync to finish before testing the connection."
+
+            return
+        }
+
+        guard validateConnectionSettings() else {
+            return
+        }
+
         isTestingConnection = true
+        lastStatus = "Testing Connection"
+        lastError = ""
         defer { isTestingConnection = false }
 
         do {
-            _ = try await AppleHealthAPIClient(baseURL: apiURL, token: authToken).testConnection()
+            _ = try await AppleHealthAPIClient(
+                baseURL: trimmedAPIURL(),
+                token: trimmedAuthToken()
+            ).testConnection()
             lastStatus = "Connection OK"
             lastError = ""
         } catch {
@@ -61,6 +105,10 @@ final class BridgeSettingsStore: ObservableObject {
             return
         }
 
+        guard validateConnectionSettings() else {
+            return
+        }
+
         isSyncing = true
         lastStatus = "Sync Running"
         defer { isSyncing = false }
@@ -68,7 +116,10 @@ final class BridgeSettingsStore: ObservableObject {
         do {
           let engine = AppleHealthSyncEngine(
               healthKitManager: HealthKitManager(),
-              apiClient: AppleHealthAPIClient(baseURL: apiURL, token: authToken),
+              apiClient: AppleHealthAPIClient(
+                  baseURL: trimmedAPIURL(),
+                  token: trimmedAuthToken()
+              ),
               lastSuccessfulSyncAt: lastSuccessfulSyncAt
           )
           let receipt = try await engine.runSync(trigger: trigger)

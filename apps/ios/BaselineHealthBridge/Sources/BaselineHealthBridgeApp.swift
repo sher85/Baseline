@@ -1,14 +1,9 @@
-import BackgroundTasks
 import SwiftUI
 import UIKit
 
 @main
 struct BaselineHealthBridgeApp: App {
     @StateObject private var settings = BridgeSettingsStore()
-
-    init() {
-        BackgroundSyncManager.shared.register()
-    }
 
     var body: some Scene {
         WindowGroup {

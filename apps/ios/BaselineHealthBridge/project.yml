@@ -21,11 +21,12 @@ targets:
       path: Support/BaselineHealthBridge.entitlements
     settings:
       base:
-      PRODUCT_NAME: Baseline Health Bridge
+        PRODUCT_NAME: Baseline Health Bridge
         INFOPLIST_KEY_NSHealthShareUsageDescription: Baseline reads your Apple Health workouts, activity, sleep, and vital summaries so it can sync them into your local Baseline analytics app.
-        INFOPLIST_KEY_NSHealthUpdateUsageDescription: Baseline does not write into Health, but this placeholder keeps the entitlement setup explicit for local builds.
+        INFOPLIST_KEY_NSHealthUpdateUsageDescription: Baseline does not write into Health.
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: Baseline connects to your Mac on the local network so the iPhone bridge can sync Apple Health data into your local Baseline API.
         INFOPLIST_KEY_NSAppTransportSecurity:
+          NSAllowsArbitraryLoads: true
           NSAllowsLocalNetworking: true
         INFOPLIST_KEY_UIBackgroundModes:
           - fetch
