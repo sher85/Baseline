@@ -37,6 +37,16 @@ struct ContentView: View {
                         }
                     }
 
+                    if let backfillCursor = settings.backfillCursorAt {
+                        LabeledContent("Backfilled Through") {
+                            Text(backfillCursor.formatted(date: .abbreviated, time: .shortened))
+                        }
+                    } else {
+                        LabeledContent("Backfilled Through") {
+                            Text("Not started")
+                        }
+                    }
+
                     LabeledContent("Last Status") {
                         Text(settings.lastStatus)
                     }
@@ -54,18 +64,31 @@ struct ContentView: View {
                             await settings.testConnection()
                         }
                     }
-                    .disabled(settings.isTestingConnection)
+                    .disabled(settings.isTestingConnection || settings.isSyncing || settings.isBackfilling)
 
                     Button(settings.isSyncing ? "Syncing..." : "Sync Now") {
                         Task {
                             await settings.syncNow(trigger: .manual)
                         }
                     }
-                    .disabled(settings.isSyncing)
+                    .disabled(settings.isSyncing || settings.isBackfilling)
+
+                    Button(settings.isBackfilling ? "Backfilling..." : "Backfill History") {
+                        Task {
+                            await settings.backfillHistory()
+                        }
+                    }
+                    .disabled(settings.isSyncing || settings.isBackfilling || settings.isTestingConnection)
                 }
 
                 Section("What Baseline Reads") {
                     Text("Workouts, routes when available, steps, active energy, sleep, resting heart rate, HRV, VO2 max, body weight, and body fat percentage.")
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                }
+
+                Section("Backfill") {
+                    Text("Backfill History pulls older Health data in 14-day chunks. If the app closes or the network drops, it resumes from the last successful chunk.")
                         .font(.footnote)
                         .foregroundStyle(.secondary)
                 }

@@ -3,6 +3,7 @@ import HealthKit
 final class HealthKitManager {
     private let store = HKHealthStore()
     private let initialLookbackDays = 14
+    static let backfillChunkDays = 14
 
     private var readTypes: Set<HKObjectType> {
         var types: Set<HKObjectType> = [
@@ -43,9 +44,13 @@ final class HealthKitManager {
             $0.addingTimeInterval(-overlapSeconds)
         } ?? Date().addingTimeInterval(-initialLookbackSeconds)
 
-        async let workouts = fetchWorkouts(since: queryStart)
-        async let quantities = fetchQuantitySamples(since: queryStart)
-        async let categories = fetchCategorySamples(since: queryStart)
+        return try await fetchPayloadBundle(from: queryStart, to: nil)
+    }
+
+    func fetchPayloadBundle(from startDate: Date, to endDate: Date?) async throws -> AppleHealthPayloadBundle {
+        async let workouts = fetchWorkouts(from: startDate, to: endDate)
+        async let quantities = fetchQuantitySamples(from: startDate, to: endDate)
+        async let categories = fetchCategorySamples(from: startDate, to: endDate)
 
         return try await AppleHealthPayloadBundle(
             workouts: workouts,
@@ -54,10 +59,10 @@ final class HealthKitManager {
         )
     }
 
-    private func fetchWorkouts(since date: Date) async throws -> [HealthBridgeWorkout] {
+    private func fetchWorkouts(from startDate: Date, to endDate: Date?) async throws -> [HealthBridgeWorkout] {
         let samples = try await fetchSamples(
             sampleType: HKObjectType.workoutType(),
-            predicate: HKQuery.predicateForSamples(withStart: date, end: nil, options: [])
+            predicate: HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
         )
 
         var results: [HealthBridgeWorkout] = []
@@ -94,7 +99,7 @@ final class HealthKitManager {
         return results
     }
 
-    private func fetchQuantitySamples(since date: Date) async throws -> [HealthBridgeQuantitySample] {
+    private func fetchQuantitySamples(from startDate: Date, to endDate: Date?) async throws -> [HealthBridgeQuantitySample] {
         let identifiers: [(HKQuantityTypeIdentifier, String, HKUnit)] = [
             (.stepCount, "step_count", .count()),
             (.activeEnergyBurned, "active_energy_burned", .kilocalorie()),
@@ -115,7 +120,7 @@ final class HealthKitManager {
 
             let samples = try await fetchSamples(
                 sampleType: quantityType,
-                predicate: HKQuery.predicateForSamples(withStart: date, end: nil, options: [])
+                predicate: HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
             )
 
             for sample in samples {
@@ -141,14 +146,14 @@ final class HealthKitManager {
         return results
     }
 
-    private func fetchCategorySamples(since date: Date) async throws -> [HealthBridgeCategorySample] {
+    private func fetchCategorySamples(from startDate: Date, to endDate: Date?) async throws -> [HealthBridgeCategorySample] {
         guard let sleepType = HKCategoryType.categoryType(forIdentifier: .sleepAnalysis) else {
             return []
         }
 
         let samples = try await fetchSamples(
             sampleType: sleepType,
-            predicate: HKQuery.predicateForSamples(withStart: date, end: nil, options: [])
+            predicate: HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: [])
         )
 
         return samples.compactMap { sample in

@@ -7,11 +7,13 @@ final class BridgeSettingsStore: ObservableObject {
     @AppStorage("baseline.authToken") var authToken = ""
     @AppStorage(BackgroundSyncManager.syncFrequencyDefaultsKey) private var syncFrequencyRawValue = SyncFrequency.manual.rawValue
     @AppStorage("baseline.lastSuccessfulSyncAt") private var lastSuccessfulSyncAtValue = ""
+    @AppStorage("baseline.backfillCursorAt") private var backfillCursorAtValue = ""
     @AppStorage("baseline.lastStatus") var lastStatus = "Idle"
     @AppStorage("baseline.lastError") var lastError = ""
 
     @Published var isSyncing = false
     @Published var isTestingConnection = false
+    @Published var isBackfilling = false
 
     var syncFrequency: SyncFrequency {
         get {
@@ -32,12 +34,21 @@ final class BridgeSettingsStore: ObservableObject {
         }
     }
 
+    var backfillCursorAt: Date? {
+        get {
+            ISO8601DateFormatter.shared.date(from: backfillCursorAtValue)
+        }
+        set {
+            backfillCursorAtValue = newValue.map { ISO8601DateFormatter.shared.string(from: $0) } ?? ""
+        }
+    }
+
     func performLaunchSyncIfNeeded() async {
         guard syncFrequency != .manual else {
             return
         }
 
-        guard !isSyncing, !isTestingConnection else {
+        guard !isSyncing, !isTestingConnection, !isBackfilling else {
             return
         }
 
@@ -71,7 +82,7 @@ final class BridgeSettingsStore: ObservableObject {
     }
 
     func testConnection() async {
-        guard !isSyncing else {
+        guard !isSyncing, !isBackfilling else {
             lastStatus = "Sync Running"
             lastError = "Wait for the current sync to finish before testing the connection."
 
@@ -134,6 +145,69 @@ final class BridgeSettingsStore: ObservableObject {
           lastError = error.localizedDescription
         }
     }
+
+    func backfillHistory() async {
+        guard !isSyncing, !isBackfilling else {
+            return
+        }
+
+        guard validateConnectionSettings() else {
+            return
+        }
+
+        isBackfilling = true
+        lastStatus = "Backfill Running"
+        lastError = ""
+        defer { isBackfilling = false }
+
+        let chunkSeconds = TimeInterval(HealthKitManager.backfillChunkDays * 24 * 60 * 60)
+        let targetDate = Date().addingTimeInterval(-365 * 24 * 60 * 60)
+        var chunkEnd = backfillCursorAt ?? Date().addingTimeInterval(-chunkSeconds)
+        var completedChunks = 0
+        var storedRecords = 0
+        var upsertedRecords = 0
+
+        do {
+            let engine = AppleHealthSyncEngine(
+                healthKitManager: HealthKitManager(),
+                apiClient: AppleHealthAPIClient(
+                    baseURL: trimmedAPIURL(),
+                    token: trimmedAuthToken()
+                ),
+                lastSuccessfulSyncAt: lastSuccessfulSyncAt,
+                progress: { [weak self] status in
+                    self?.lastStatus = status
+                }
+            )
+
+            while chunkEnd > targetDate {
+                let chunkStart = maxDate(chunkEnd.addingTimeInterval(-chunkSeconds), targetDate)
+                let chunkNumber = completedChunks + 1
+                lastStatus = "Backfilling Chunk \(chunkNumber)"
+
+                let receipt = try await engine.runBackfillChunk(
+                    from: chunkStart,
+                    to: chunkEnd
+                )
+
+                completedChunks += 1
+                storedRecords += receipt.storedRecordCount
+                upsertedRecords += receipt.upsertedRecordCount
+                backfillCursorAt = chunkStart
+                chunkEnd = chunkStart
+            }
+
+            lastStatus = "Backfill Succeeded"
+            lastError = "Backfilled \(completedChunks) chunks. Stored \(storedRecords) new records and updated \(upsertedRecords)."
+        } catch {
+            lastStatus = "Backfill Paused"
+            lastError = "\(error.localizedDescription)\n\nProgress was saved through the last successful chunk. Tap Backfill History to continue."
+        }
+    }
+}
+
+private func maxDate(_ first: Date, _ second: Date) -> Date {
+    first > second ? first : second
 }
 
 enum SyncFrequency: String, CaseIterable, Identifiable {

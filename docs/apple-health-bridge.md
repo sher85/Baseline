@@ -127,12 +127,15 @@ Recovery behavior:
 - the app stores `lastSuccessfulSyncAt` locally
 - it does not advance that timestamp unless the server confirms durable storage
 - the first sync reads the latest 14 days, then later syncs resume from the last successful cursor with a built-in overlap window
+- historical backfill uses a separate `backfillCursorAt` cursor and walks backward in 14-day chunks
+- the backfill cursor only moves after the API confirms a chunk was stored, so a dropped connection can resume without starting over
 - server ingestion is idempotent, so replaying recent records is safe
 
 ## Sync behavior
 
 - sync runs on app open
 - sync can be triggered manually with `Sync Now`
+- older history can be imported with `Backfill History`
 - background sync is best-effort only
 - frequency options are:
   - manual only
@@ -141,6 +144,8 @@ Recovery behavior:
   - every 24 hours
 
 The iOS scheduler is intentionally opportunistic, not cron-like. If background execution is skipped, the app catches up the next time it is opened.
+
+Backfill History imports up to one year of older Apple Health data. It sends one 14-day chunk per request, waits for the API receipt, saves progress locally, and then continues with the next older chunk. If the app closes, the phone sleeps, or the network drops, open the app and tap `Backfill History` again to continue from the last successful chunk.
 
 ## Data storage model
 

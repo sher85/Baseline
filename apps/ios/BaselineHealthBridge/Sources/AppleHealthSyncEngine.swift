@@ -38,4 +38,34 @@ struct AppleHealthSyncEngine {
 
         return receipt
     }
+
+    func runBackfillChunk(from startDate: Date, to endDate: Date) async throws -> AppleHealthIngestReceipt {
+        await MainActor.run {
+            progress("Requesting Health Access")
+        }
+        try await healthKitManager.requestAuthorization()
+        await MainActor.run {
+            progress("Reading Backfill Data")
+        }
+        let payloadBundle = try await healthKitManager.fetchPayloadBundle(
+            from: startDate,
+            to: endDate
+        )
+        await MainActor.run {
+            progress("Uploading Backfill Data")
+        }
+        let payload = AppleHealthIngestRequest(
+            clientSyncedThrough: ISO8601DateFormatter.shared.string(from: endDate),
+            device: .init(
+                name: UIDevice.current.name,
+                model: UIDevice.current.model,
+                systemVersion: UIDevice.current.systemVersion,
+                bundleIdentifier: Bundle.main.bundleIdentifier,
+                appVersion: Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String
+            ),
+            records: payloadBundle
+        )
+
+        return try await apiClient.ingest(payload)
+    }
 }
