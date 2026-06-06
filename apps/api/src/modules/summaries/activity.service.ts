@@ -72,7 +72,7 @@ export async function getLatestActivitySummary() {
         select: { day: true, source: true }
       }),
       getAppleHealthStatus(),
-      getAppleHealthActivitySnapshots()
+      getAppleHealthActivitySnapshots(WEEKLY_WINDOW_WEEKS * 7)
     ]);
 
   const latestDate = getLatestDate(
@@ -108,7 +108,7 @@ export async function getLatestActivitySummary() {
         where: {
           userId: user.id,
           day: {
-            gte: asUtcDate(dailyStartDay),
+            gte: asUtcDate(weeklyStartDay),
             lt: asUtcDate(addDays(latestDay, 1))
           }
         },
@@ -184,6 +184,8 @@ export async function getLatestActivitySummary() {
   const weeklyBuckets = buildWeekRange(latestDay, WEEKLY_WINDOW_WEEKS).map((bucket) => ({
     ...bucket,
     workoutCount: 0,
+    activeCalories: null as number | null,
+    steps: null as number | null,
     workoutTypes: new Map<string, { key: string; label: string; workoutCount: number }>(),
     trainingDays: 0,
     totalWorkoutDurationSeconds: 0
@@ -218,9 +220,7 @@ export async function getLatestActivitySummary() {
   }
 
   const weekly = weeklyBuckets.map((bucket) => ({
-    weekStartDay: bucket.weekStartDay,
-    weekEndDay: bucket.weekEndDay,
-    workoutCount: bucket.workoutCount,
+    ...bucket,
     workoutTypes: Array.from(bucket.workoutTypes.values()).sort((left, right) => {
       if (right.workoutCount !== left.workoutCount) {
         return right.workoutCount - left.workoutCount;
@@ -228,9 +228,41 @@ export async function getLatestActivitySummary() {
 
       return left.label.localeCompare(right.label);
     }),
-    trainingDays: trainingDaysByWeek.get(bucket.weekStartDay)?.size ?? 0,
-    totalWorkoutDurationSeconds: bucket.totalWorkoutDurationSeconds
+    trainingDays: trainingDaysByWeek.get(bucket.weekStartDay)?.size ?? 0
   }));
+
+  for (const bucket of weekly) {
+    let activeCaloriesTotal = 0;
+    let stepsTotal = 0;
+    let hasActiveCalories = false;
+    let hasSteps = false;
+
+    for (
+      let day = bucket.weekStartDay;
+      day <= bucket.weekEndDay && day <= latestDay;
+      day = addDays(day, 1)
+    ) {
+      const activity = dailyActivityByDay.get(day);
+      const appleHealthDay = appleHealthSnapshots?.days.get(day);
+      const steps = appleHealthDay ? appleHealthDay.steps : activity?.steps ?? null;
+      const activeCalories = appleHealthDay
+        ? appleHealthDay.activeCalories
+        : activity?.activeCalories ?? null;
+
+      if (steps !== null) {
+        stepsTotal += steps;
+        hasSteps = true;
+      }
+
+      if (activeCalories !== null) {
+        activeCaloriesTotal += activeCalories;
+        hasActiveCalories = true;
+      }
+    }
+
+    bucket.steps = hasSteps ? stepsTotal : null;
+    bucket.activeCalories = hasActiveCalories ? activeCaloriesTotal : null;
+  }
 
   const breakdownMap = new Map<
     string,

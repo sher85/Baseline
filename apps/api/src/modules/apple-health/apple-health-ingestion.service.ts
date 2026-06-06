@@ -470,7 +470,7 @@ export async function getAppleHealthStatus() {
   };
 }
 
-export async function getAppleHealthActivitySnapshots() {
+export async function getAppleHealthActivitySnapshots(dayCount = 30) {
   const user = await getOrCreatePrimaryUser();
   const latestDayRecord = await prisma.appleHealthRecord.findFirst({
     where: {
@@ -489,7 +489,7 @@ export async function getAppleHealthActivitySnapshots() {
   }
 
   const latestDay = formatDate(latestDayRecord.day);
-  const startDay = addDays(latestDay, -29);
+  const startDay = addDays(latestDay, -(dayCount - 1));
   const records = await prisma.appleHealthRecord.findMany({
     where: {
       userId: user.id,

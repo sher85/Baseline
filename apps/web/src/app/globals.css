@@ -843,6 +843,32 @@ h2 {
   box-shadow: 0 0 0 4px rgba(11, 122, 134, 0.08);
 }
 
+.chart-tooltip {
+  display: grid;
+  gap: 8px;
+  min-width: 180px;
+  padding: 12px 14px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: var(--panel-strong);
+  box-shadow: var(--shadow);
+  color: var(--foreground);
+}
+
+.chart-tooltip-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+.chart-tooltip-muted {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+}
+
 .chart-empty {
   display: grid;
   place-items: center;

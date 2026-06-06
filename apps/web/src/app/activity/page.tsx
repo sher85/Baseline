@@ -1,6 +1,6 @@
 import { PageEmptyState } from "../../components/page-empty-state";
 import { SiteHeader } from "../../components/site-header";
-import { TrendChart } from "../../components/trend-chart";
+import { WeeklyBarTrendChart } from "../../components/weekly-bar-trend-chart";
 import { WorkoutFrequencyChart } from "../../components/workout-frequency-chart";
 import {
   formatDistanceMeters,
@@ -13,6 +13,29 @@ import { getActivityData } from "../../services/analytics";
 
 function toTitleCase(value: string) {
   return value.replace(/\b\w/g, (match) => match.toUpperCase());
+}
+
+function withMovingAverage<T extends { value: number | null }>(data: T[], alpha = 0.4) {
+  let previousAverage: number | null = null;
+
+  return data.map((entry) => {
+    if (entry.value === null) {
+      return {
+        ...entry,
+        ema: previousAverage
+      };
+    }
+
+    previousAverage =
+      previousAverage === null
+        ? entry.value
+        : alpha * entry.value + (1 - alpha) * previousAverage;
+
+    return {
+      ...entry,
+      ema: Number(previousAverage.toFixed(2))
+    };
+  });
 }
 
 function formatWorkoutIntensity(value: string | null) {
@@ -86,14 +109,19 @@ export default async function ActivityPage() {
     );
   }
 
-  const stepsChartData = activity.daily.map((entry) => ({
-    label: formatShortDate(entry.day),
-    value: entry.steps
-  }));
-  const activeCaloriesChartData = activity.daily.map((entry) => ({
-    label: formatShortDate(entry.day),
-    value: entry.activeCalories
-  }));
+  const chartSyncId = "activity-weekly-charts";
+  const weeklyStepsChartData = withMovingAverage(
+    activity.weekly.map((entry) => ({
+      label: formatShortDate(entry.weekStartDay),
+      value: entry.steps
+    }))
+  );
+  const weeklyActiveCaloriesChartData = withMovingAverage(
+    activity.weekly.map((entry) => ({
+      label: formatShortDate(entry.weekStartDay),
+      value: entry.activeCalories
+    }))
+  );
   const workoutFrequencySeries = Array.from(
     activity.weekly
       .flatMap((entry) => entry.workoutTypes)
@@ -115,11 +143,11 @@ export default async function ActivityPage() {
       .values()
   )
     .sort((left, right) => {
-      if (left.key === "other") {
+      if (left.key === "unmapped" || left.key === "other") {
         return 1;
       }
 
-      if (right.key === "other") {
+      if (right.key === "unmapped" || right.key === "other") {
         return -1;
       }
 
@@ -130,20 +158,29 @@ export default async function ActivityPage() {
     const workoutTypes = Object.fromEntries(
       entry.workoutTypes.map((workoutType) => [workoutType.key, workoutType.workoutCount])
     );
+    const emptyWorkoutTypes = Object.fromEntries(
+      workoutFrequencySeries.map((workoutType) => [workoutType.key, 0])
+    );
 
     return {
       label: formatShortDate(entry.weekStartDay),
       total: entry.workoutCount,
+      ...emptyWorkoutTypes,
       ...workoutTypes
     };
   });
-  const weeklyWorkoutAverage =
-    activity.weekly.reduce((sum, entry) => sum + entry.workoutCount, 0) /
-    Math.max(activity.weekly.length, 1);
-  const weeklyTrainingTimeData = activity.weekly.map((entry) => ({
-    label: formatShortDate(entry.weekStartDay),
-    value: Number((entry.totalWorkoutDurationSeconds / 3600).toFixed(1))
-  }));
+  const weeklyWorkoutFrequencyWithAverage = withMovingAverage(
+    weeklyWorkoutFrequencyData.map((entry) => ({
+      ...entry,
+      value: entry.total
+    }))
+  );
+  const weeklyTrainingTimeData = withMovingAverage(
+    activity.weekly.map((entry) => ({
+      label: formatShortDate(entry.weekStartDay),
+      value: Number((entry.totalWorkoutDurationSeconds / 3600).toFixed(1))
+    }))
+  );
 
   return (
     <main className="page-shell">
@@ -248,16 +285,16 @@ export default async function ActivityPage() {
         <article className="chart-card">
           <div className="card-header">
             <div>
-              <p className="eyebrow">30-Day</p>
-              <h2>Daily Steps</h2>
+              <p className="eyebrow">12-Week</p>
+              <h2>Weekly Steps</h2>
             </div>
-            <span className="chart-caption">Movement Volume</span>
+            <span className="chart-caption">Weekly Total With Moving Average</span>
           </div>
-          <TrendChart
-            data={stepsChartData}
-            dataKey="value"
+          <WeeklyBarTrendChart
+            data={weeklyStepsChartData}
             decimals={0}
             label="Steps"
+            syncId={chartSyncId}
           />
         </article>
 
@@ -270,31 +307,27 @@ export default async function ActivityPage() {
             <span className="chart-caption">Sessions Per Week</span>
           </div>
           <WorkoutFrequencyChart
-            average={weeklyWorkoutAverage}
-            data={weeklyWorkoutFrequencyData}
+            data={weeklyWorkoutFrequencyWithAverage}
             series={workoutFrequencySeries}
+            syncId={chartSyncId}
           />
         </article>
 
         <article className="chart-card">
           <div className="card-header">
             <div>
-              <p className="eyebrow">30-Day</p>
+              <p className="eyebrow">12-Week</p>
               <h2>Active Calories</h2>
             </div>
-            <span className="chart-caption">
-              7-Day Avg{" "}
-              {activity.summary.averageActiveCalories7d !== null
-                ? `${formatNumber(activity.summary.averageActiveCalories7d)} kcal`
-                : "--"}
-            </span>
+            <span className="chart-caption">Weekly Total With Moving Average</span>
           </div>
-          <TrendChart
-            data={activeCaloriesChartData}
-            dataKey="value"
+          <WeeklyBarTrendChart
+            barColor="#4f8f70"
+            data={weeklyActiveCaloriesChartData}
             decimals={0}
             label="Active Calories"
             suffix=" kcal"
+            syncId={chartSyncId}
           />
         </article>
 
@@ -306,12 +339,13 @@ export default async function ActivityPage() {
             </div>
             <span className="chart-caption">Hours Per Week</span>
           </div>
-          <TrendChart
+          <WeeklyBarTrendChart
+            barColor="#d4815f"
             data={weeklyTrainingTimeData}
-            dataKey="value"
             decimals={1}
             label="Training Time"
             suffix=" h"
+            syncId={chartSyncId}
           />
         </article>
       </section>

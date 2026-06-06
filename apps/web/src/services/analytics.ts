@@ -89,6 +89,8 @@ export type ActivityResponse = {
     totalDistance30d: number | null;
   };
   weekly: Array<{
+    activeCalories: number | null;
+    steps: number | null;
     totalWorkoutDurationSeconds: number;
     trainingDays: number;
     weekEndDay: string;

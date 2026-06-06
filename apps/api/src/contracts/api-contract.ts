@@ -405,6 +405,8 @@ const activitySummarySchema = z.object({
     z.object({
       weekStartDay: isoDateSchema,
       weekEndDay: isoDateSchema,
+      activeCalories: nullableNumberSchema,
+      steps: nullableNumberSchema,
       workoutCount: z.number().int(),
       workoutTypes: z.array(
         z.object({

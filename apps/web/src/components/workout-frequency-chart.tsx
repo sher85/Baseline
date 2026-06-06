@@ -2,9 +2,9 @@
 
 import {
   Bar,
-  BarChart,
   CartesianGrid,
-  ReferenceLine,
+  Line,
+  ComposedChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -17,9 +17,9 @@ type WorkoutFrequencySeries = {
 };
 
 type WorkoutFrequencyChartProps = {
-  average: number;
-  data: Array<Record<string, number | string>>;
+  data: Array<Record<string, number | string | null>>;
   series: WorkoutFrequencySeries[];
+  syncId?: string;
 };
 
 const SERIES_COLORS = [
@@ -44,9 +44,9 @@ function getSeriesColor(entry: WorkoutFrequencySeries, index: number) {
 }
 
 export function WorkoutFrequencyChart({
-  average,
   data,
-  series
+  series,
+  syncId
 }: WorkoutFrequencyChartProps) {
   const hasData = data.some((item) => typeof item.total === "number" && item.total > 0);
 
@@ -76,7 +76,11 @@ export function WorkoutFrequencyChart({
         ))}
       </div>
       <ResponsiveContainer width="100%" height={280}>
-        <BarChart data={data} margin={{ top: 18, right: 8, left: -18, bottom: 0 }}>
+        <ComposedChart
+          data={data}
+          margin={{ top: 18, right: 8, left: -18, bottom: 0 }}
+          {...(syncId ? { syncId } : {})}
+        >
           <CartesianGrid stroke="var(--border-strong)" strokeDasharray="3 3" vertical={false} />
           <XAxis
             dataKey="label"
@@ -99,23 +103,51 @@ export function WorkoutFrequencyChart({
               color: "var(--foreground)",
               boxShadow: "var(--shadow)"
             }}
-            formatter={(value, name) => [
-              typeof value === "number" ? value.toFixed(0) : value,
-              name
-            ]}
-            labelFormatter={(value) => `Workout Frequency • ${value}`}
+            content={({ active, label, payload }) => {
+              if (!active || !payload?.length) {
+                return null;
+              }
+
+              const values = new Map(
+                payload.map((entry) => [entry.dataKey, Number(entry.value ?? 0)])
+              );
+              const orderedSeries = [...series].reverse().filter((entry) => {
+                const value = values.get(entry.key);
+
+                return value !== undefined && value > 0;
+              });
+              const movingAverage = values.get("ema");
+
+              return (
+                <div className="chart-tooltip">
+                  <strong>Workout Frequency • {label}</strong>
+                  {orderedSeries.map((entry) => (
+                    <span key={entry.key} className="chart-tooltip-row">
+                      <span
+                        className="chart-legend-swatch"
+                        style={{ background: getSeriesColor(entry, series.indexOf(entry)) }}
+                      />
+                      {entry.label}: {values.get(entry.key)?.toFixed(0)}
+                    </span>
+                  ))}
+                  {movingAverage !== undefined && Number.isFinite(movingAverage) ? (
+                    <span className="chart-tooltip-row chart-tooltip-muted">
+                      Moving Average: {movingAverage.toFixed(1)}
+                    </span>
+                  ) : null}
+                </div>
+              );
+            }}
           />
-          <ReferenceLine
-            y={average}
+          <Line
+            type="monotone"
+            dataKey="ema"
+            name="Moving Average"
             stroke="var(--foreground)"
             strokeDasharray="6 5"
-            strokeOpacity={0.72}
-            label={{
-              value: `Avg ${average.toFixed(1)}`,
-              fill: "var(--foreground)",
-              fontSize: 12,
-              position: "insideTopRight"
-            }}
+            strokeWidth={2}
+            dot={false}
+            connectNulls
           />
           {series.map((entry, index) => (
             <Bar
@@ -127,7 +159,7 @@ export function WorkoutFrequencyChart({
               radius={index === series.length - 1 ? [8, 8, 0, 0] : [0, 0, 0, 0]}
             />
           ))}
-        </BarChart>
+        </ComposedChart>
       </ResponsiveContainer>
     </div>
   );
