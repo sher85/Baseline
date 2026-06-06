@@ -13,12 +13,16 @@ test("normalizeActivityType groups common workout labels into consistent buckets
     label: "Rowing"
   });
   assert.deepEqual(normalizeActivityType("strength_training"), {
-    key: "workout",
-    label: "Workout"
+    key: "weight_lifting",
+    label: "Weight Lifting"
   });
   assert.deepEqual(normalizeActivityType("kayak"), {
     key: "kayaking",
     label: "Kayaking"
+  });
+  assert.deepEqual(normalizeActivityType("(rawvalue: 52)"), {
+    key: "other",
+    label: "Other"
   });
 });
 

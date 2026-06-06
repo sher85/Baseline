@@ -1,6 +1,7 @@
 import { PageEmptyState } from "../../components/page-empty-state";
 import { SiteHeader } from "../../components/site-header";
 import { TrendChart } from "../../components/trend-chart";
+import { WorkoutFrequencyChart } from "../../components/workout-frequency-chart";
 import {
   formatDistanceMeters,
   formatDuration,
@@ -10,12 +11,16 @@ import {
 } from "../../lib/format";
 import { getActivityData } from "../../services/analytics";
 
+function toTitleCase(value: string) {
+  return value.replace(/\b\w/g, (match) => match.toUpperCase());
+}
+
 function formatWorkoutIntensity(value: string | null) {
   if (!value) {
     return "Recorded";
   }
 
-  return value.replace(/\b\w/g, (match) => match.toUpperCase());
+  return toTitleCase(value);
 }
 
 function formatWorkoutSource(value: string | null) {
@@ -38,7 +43,7 @@ export default async function ActivityPage() {
         <section className="page-intro">
           <div>
             <p className="eyebrow">Activity</p>
-            <h1>See how often you actually get out and train.</h1>
+            <h1>See How Often You Actually Get Out And Train.</h1>
           </div>
           <p className="hero-text">
             This page comes alive once the local API has synced movement totals or workout sessions.
@@ -46,10 +51,10 @@ export default async function ActivityPage() {
         </section>
         <PageEmptyState
           eyebrow="Activity Data"
-          title="No activity summary is available yet."
+          title="No Activity Summary Is Available Yet."
           description="Point the iPhone bridge at this Baseline instance and run a sync so workouts, steps, and active calories start landing here."
           primaryHref="/"
-          primaryLabel="Back to overview"
+          primaryLabel="Back To Overview"
         />
       </main>
     );
@@ -64,7 +69,7 @@ export default async function ActivityPage() {
         <section className="page-intro">
           <div>
             <p className="eyebrow">Activity</p>
-            <h1>See how often you actually get out and train.</h1>
+            <h1>See How Often You Actually Get Out And Train.</h1>
           </div>
           <p className="hero-text">
             This page comes alive once the local API has synced movement totals or workout sessions.
@@ -72,10 +77,10 @@ export default async function ActivityPage() {
         </section>
         <PageEmptyState
           eyebrow="Activity Data"
-          title="No activity summary is available yet."
+          title="No Activity Summary Is Available Yet."
           description="Point the iPhone bridge at this Baseline instance and run a sync so workouts, steps, and active calories start landing here."
           primaryHref="/"
-          primaryLabel="Back to overview"
+          primaryLabel="Back To Overview"
         />
       </main>
     );
@@ -89,10 +94,52 @@ export default async function ActivityPage() {
     label: formatShortDate(entry.day),
     value: entry.activeCalories
   }));
-  const weeklyWorkoutCountData = activity.weekly.map((entry) => ({
-    label: formatShortDate(entry.weekStartDay),
-    value: entry.workoutCount
-  }));
+  const workoutFrequencySeries = Array.from(
+    activity.weekly
+      .flatMap((entry) => entry.workoutTypes)
+      .reduce(
+        (map, entry) => {
+          const existing = map.get(entry.key) ?? {
+            key: entry.key,
+            label: entry.label,
+            total: 0
+          };
+
+          existing.total += entry.workoutCount;
+          map.set(entry.key, existing);
+
+          return map;
+        },
+        new Map<string, { key: string; label: string; total: number }>()
+      )
+      .values()
+  )
+    .sort((left, right) => {
+      if (left.key === "other") {
+        return 1;
+      }
+
+      if (right.key === "other") {
+        return -1;
+      }
+
+      return right.total - left.total;
+    })
+    .map(({ key, label }) => ({ key, label }));
+  const weeklyWorkoutFrequencyData = activity.weekly.map((entry) => {
+    const workoutTypes = Object.fromEntries(
+      entry.workoutTypes.map((workoutType) => [workoutType.key, workoutType.workoutCount])
+    );
+
+    return {
+      label: formatShortDate(entry.weekStartDay),
+      total: entry.workoutCount,
+      ...workoutTypes
+    };
+  });
+  const weeklyWorkoutAverage =
+    activity.weekly.reduce((sum, entry) => sum + entry.workoutCount, 0) /
+    Math.max(activity.weekly.length, 1);
   const weeklyTrainingTimeData = activity.weekly.map((entry) => ({
     label: formatShortDate(entry.weekStartDay),
     value: Number((entry.totalWorkoutDurationSeconds / 3600).toFixed(1))
@@ -105,7 +152,7 @@ export default async function ActivityPage() {
       <section className="page-intro">
         <div>
           <p className="eyebrow">Activity</p>
-          <h1>See how often you actually get out and train.</h1>
+          <h1>See How Often You Actually Get Out And Train.</h1>
         </div>
         <p className="hero-text">
           {`${formatOverviewDate(activity.latestDay)} closes the latest 30-day activity window. ${
@@ -116,7 +163,7 @@ export default async function ActivityPage() {
         </p>
         {!activity.syncGuidance.configured ? (
           <div className="integration-banner warning">
-            <strong>Apple Health ingestion is not configured yet</strong>
+            <strong>Apple Health Ingestion Is Not Configured Yet</strong>
             <p>
               Add an `API_TOKEN` to the API environment and point the iPhone bridge app at this
               Baseline instance to start syncing workouts, calories, and steps.
@@ -125,7 +172,7 @@ export default async function ActivityPage() {
         ) : null}
         {activity.syncGuidance.lastErrorMessage ? (
           <div className="integration-banner warning">
-            <strong>Latest Apple Health sync needs attention</strong>
+            <strong>Latest Apple Health Sync Needs Attention</strong>
             <p>
               {activity.syncGuidance.lastErrorMessage}
             </p>
@@ -177,7 +224,9 @@ export default async function ActivityPage() {
       <section className="status-grid">
         <article className="status-card">
           <p className="eyebrow">Training Cadence</p>
-          <strong className="status-title">{activity.summary.trainingDays30d} active days</strong>
+          <strong className="status-title">
+            {activity.summary.trainingDays30d} Active Days
+          </strong>
           <span className="metric-detail">
             Days in the latest 30-day window with at least one recorded workout session.
           </span>
@@ -200,9 +249,9 @@ export default async function ActivityPage() {
           <div className="card-header">
             <div>
               <p className="eyebrow">30-Day</p>
-              <h2>Daily steps</h2>
+              <h2>Daily Steps</h2>
             </div>
-            <span className="chart-caption">Movement volume</span>
+            <span className="chart-caption">Movement Volume</span>
           </div>
           <TrendChart
             data={stepsChartData}
@@ -216,15 +265,14 @@ export default async function ActivityPage() {
           <div className="card-header">
             <div>
               <p className="eyebrow">12-Week</p>
-              <h2>Workout frequency</h2>
+              <h2>Workout Frequency</h2>
             </div>
-            <span className="chart-caption">Sessions per week</span>
+            <span className="chart-caption">Sessions Per Week</span>
           </div>
-          <TrendChart
-            data={weeklyWorkoutCountData}
-            dataKey="value"
-            decimals={0}
-            label="Workout Count"
+          <WorkoutFrequencyChart
+            average={weeklyWorkoutAverage}
+            data={weeklyWorkoutFrequencyData}
+            series={workoutFrequencySeries}
           />
         </article>
 
@@ -232,10 +280,10 @@ export default async function ActivityPage() {
           <div className="card-header">
             <div>
               <p className="eyebrow">30-Day</p>
-              <h2>Active calories</h2>
+              <h2>Active Calories</h2>
             </div>
             <span className="chart-caption">
-              7-day avg{" "}
+              7-Day Avg{" "}
               {activity.summary.averageActiveCalories7d !== null
                 ? `${formatNumber(activity.summary.averageActiveCalories7d)} kcal`
                 : "--"}
@@ -254,9 +302,9 @@ export default async function ActivityPage() {
           <div className="card-header">
             <div>
               <p className="eyebrow">12-Week</p>
-              <h2>Training time</h2>
+              <h2>Training Time</h2>
             </div>
-            <span className="chart-caption">Hours per week</span>
+            <span className="chart-caption">Hours Per Week</span>
           </div>
           <TrendChart
             data={weeklyTrainingTimeData}
@@ -273,7 +321,7 @@ export default async function ActivityPage() {
           <div className="card-header">
             <div>
               <p className="eyebrow">30-Day Mix</p>
-              <h2>What you are doing most</h2>
+              <h2>What You Are Doing Most</h2>
             </div>
           </div>
           <div className="activity-breakdown-list">
@@ -315,7 +363,7 @@ export default async function ActivityPage() {
               })
             ) : (
               <div className="chart-empty">
-                <strong>Workout mix will appear after sessions have synced.</strong>
+                <strong>Workout Mix Will Appear After Sessions Have Synced.</strong>
                 <span className="metric-detail">
                   Daily activity totals are already available, but no workout sessions are stored yet.
                 </span>
@@ -328,7 +376,7 @@ export default async function ActivityPage() {
           <div className="card-header">
             <div>
               <p className="eyebrow">Recent Workouts</p>
-              <h2>The latest recorded sessions</h2>
+              <h2>The Latest Recorded Sessions</h2>
             </div>
           </div>
           <div className="workout-list">
@@ -364,7 +412,7 @@ export default async function ActivityPage() {
               ))
             ) : (
               <div className="chart-empty">
-                <strong>Recent workouts will land here after sync.</strong>
+                <strong>Recent Workouts Will Land Here After Sync.</strong>
                 <span className="metric-detail">
                   Once the iPhone bridge sends its first workout batch, this feed will list runs,
                   gym sessions, rows, paddles, and other training records.

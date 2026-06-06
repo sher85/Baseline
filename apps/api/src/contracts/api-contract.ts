@@ -406,6 +406,13 @@ const activitySummarySchema = z.object({
       weekStartDay: isoDateSchema,
       weekEndDay: isoDateSchema,
       workoutCount: z.number().int(),
+      workoutTypes: z.array(
+        z.object({
+          key: z.string(),
+          label: z.string(),
+          workoutCount: z.number().int()
+        })
+      ),
       trainingDays: z.number().int(),
       totalWorkoutDurationSeconds: z.number().int()
     })

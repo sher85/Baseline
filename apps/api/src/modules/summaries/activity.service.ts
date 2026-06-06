@@ -184,6 +184,7 @@ export async function getLatestActivitySummary() {
   const weeklyBuckets = buildWeekRange(latestDay, WEEKLY_WINDOW_WEEKS).map((bucket) => ({
     ...bucket,
     workoutCount: 0,
+    workoutTypes: new Map<string, { key: string; label: string; workoutCount: number }>(),
     trainingDays: 0,
     totalWorkoutDurationSeconds: 0
   }));
@@ -202,6 +203,14 @@ export async function getLatestActivitySummary() {
 
     bucket.workoutCount += 1;
     bucket.totalWorkoutDurationSeconds += row.durationSeconds ?? 0;
+    const normalized = normalizeActivityType(row.activityType);
+    const workoutType = bucket.workoutTypes.get(normalized.key) ?? {
+      key: normalized.key,
+      label: normalized.label,
+      workoutCount: 0
+    };
+    workoutType.workoutCount += 1;
+    bucket.workoutTypes.set(normalized.key, workoutType);
 
     const trainingDays = trainingDaysByWeek.get(weekStartDay) ?? new Set<string>();
     trainingDays.add(formatDate(row.day));
@@ -212,6 +221,13 @@ export async function getLatestActivitySummary() {
     weekStartDay: bucket.weekStartDay,
     weekEndDay: bucket.weekEndDay,
     workoutCount: bucket.workoutCount,
+    workoutTypes: Array.from(bucket.workoutTypes.values()).sort((left, right) => {
+      if (right.workoutCount !== left.workoutCount) {
+        return right.workoutCount - left.workoutCount;
+      }
+
+      return left.label.localeCompare(right.label);
+    }),
     trainingDays: trainingDaysByWeek.get(bucket.weekStartDay)?.size ?? 0,
     totalWorkoutDurationSeconds: bucket.totalWorkoutDurationSeconds
   }));

@@ -94,6 +94,11 @@ export type ActivityResponse = {
     weekEndDay: string;
     weekStartDay: string;
     workoutCount: number;
+    workoutTypes: Array<{
+      key: string;
+      label: string;
+      workoutCount: number;
+    }>;
   }>;
 };
 

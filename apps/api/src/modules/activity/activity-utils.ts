@@ -70,6 +70,10 @@ export function normalizeActivityType(activityType: string | null | undefined) {
     return fallback;
   }
 
+  if (/^\(?rawvalue:?\s*\d+\)?$/.test(words)) {
+    return fallback;
+  }
+
   const mappings: Array<{ includes: string[]; key: string; label: string }> = [
     { includes: ["run", "running", "jog"], key: "running", label: "Running" },
     { includes: ["row", "rowing", "erg"], key: "rowing", label: "Rowing" },
@@ -78,7 +82,12 @@ export function normalizeActivityType(activityType: string | null | undefined) {
     { includes: ["cycle", "cycling", "bike", "biking", "spin"], key: "cycling", label: "Cycling" },
     { includes: ["swim", "swimming"], key: "swimming", label: "Swimming" },
     {
-      includes: ["strength", "weights", "weightlifting", "gym", "workout", "training", "crossfit"],
+      includes: ["weight lifting", "weightlifting", "strength", "weights", "gym"],
+      key: "weight_lifting",
+      label: "Weight Lifting"
+    },
+    {
+      includes: ["workout", "training", "crossfit"],
       key: "workout",
       label: "Workout"
     },
