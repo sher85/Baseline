@@ -2,6 +2,7 @@ import HealthKit
 
 final class HealthKitManager {
     private let store = HKHealthStore()
+    private let initialLookbackDays = 90
 
     private var readTypes: Set<HKObjectType> {
         var types: Set<HKObjectType> = [
@@ -36,7 +37,11 @@ final class HealthKitManager {
     }
 
     func fetchPayloadBundle(since lastSuccessfulSyncAt: Date?) async throws -> AppleHealthPayloadBundle {
-        let queryStart = (lastSuccessfulSyncAt ?? .distantPast).addingTimeInterval(-(7 * 24 * 60 * 60))
+        let overlapSeconds: TimeInterval = 7 * 24 * 60 * 60
+        let initialLookbackSeconds = TimeInterval(initialLookbackDays * 24 * 60 * 60)
+        let queryStart = lastSuccessfulSyncAt.map {
+            $0.addingTimeInterval(-overlapSeconds)
+        } ?? Date().addingTimeInterval(-initialLookbackSeconds)
 
         async let workouts = fetchWorkouts(since: queryStart)
         async let quantities = fetchQuantitySamples(since: queryStart)

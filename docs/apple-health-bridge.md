@@ -107,7 +107,7 @@ Use your Mac mini or development Mac’s local network IP in the iPhone app, not
 Example:
 
 ```text
-http://192.168.1.10:3001
+http://192.168.1.166:3001
 ```
 
 `localhost` on the iPhone points to the phone itself, not your Mac.
@@ -126,7 +126,7 @@ Recovery behavior:
 
 - the app stores `lastSuccessfulSyncAt` locally
 - it does not advance that timestamp unless the server confirms durable storage
-- when the app is reinstalled or reopened later, it syncs again from the last successful cursor with a built-in overlap window
+- the first sync reads the latest 90 days, then later syncs resume from the last successful cursor with a built-in overlap window
 - server ingestion is idempotent, so replaying recent records is safe
 
 ## Sync behavior

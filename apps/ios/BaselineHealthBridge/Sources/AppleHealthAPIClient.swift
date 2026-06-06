@@ -46,8 +46,8 @@ struct AppleHealthAPIClient {
 
     private var session: URLSession {
         let configuration = URLSessionConfiguration.ephemeral
-        configuration.timeoutIntervalForRequest = 10
-        configuration.timeoutIntervalForResource = 15
+        configuration.timeoutIntervalForRequest = 30
+        configuration.timeoutIntervalForResource = 180
         configuration.waitsForConnectivity = false
 
         return URLSession(configuration: configuration)

@@ -3,7 +3,7 @@ import SwiftUI
 
 @MainActor
 final class BridgeSettingsStore: ObservableObject {
-    @AppStorage("baseline.apiURL") var apiURL = "http://192.168.1.10:3001"
+    @AppStorage("baseline.apiURL") var apiURL = "http://192.168.1.166:3001"
     @AppStorage("baseline.authToken") var authToken = ""
     @AppStorage(BackgroundSyncManager.syncFrequencyDefaultsKey) private var syncFrequencyRawValue = SyncFrequency.manual.rawValue
     @AppStorage("baseline.lastSuccessfulSyncAt") private var lastSuccessfulSyncAtValue = ""

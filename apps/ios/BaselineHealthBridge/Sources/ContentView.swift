@@ -7,7 +7,7 @@ struct ContentView: View {
         NavigationStack {
             Form {
                 Section("Baseline API") {
-                    TextField("http://192.168.1.10:3001", text: $settings.apiURL)
+                    TextField("http://192.168.1.166:3001", text: $settings.apiURL)
                         .keyboardType(.URL)
                         .textInputAutocapitalization(.never)
                         .autocorrectionDisabled()
