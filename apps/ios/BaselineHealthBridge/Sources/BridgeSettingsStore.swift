@@ -120,7 +120,10 @@ final class BridgeSettingsStore: ObservableObject {
                   baseURL: trimmedAPIURL(),
                   token: trimmedAuthToken()
               ),
-              lastSuccessfulSyncAt: lastSuccessfulSyncAt
+              lastSuccessfulSyncAt: lastSuccessfulSyncAt,
+              progress: { [weak self] status in
+                  self?.lastStatus = status
+              }
           )
           let receipt = try await engine.runSync(trigger: trigger)
           lastSuccessfulSyncAt = ISO8601DateFormatter.shared.date(from: receipt.serverSyncedAt)
