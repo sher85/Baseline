@@ -71,7 +71,10 @@ export function normalizeActivityType(activityType: string | null | undefined) {
   }
 
   if (/^\(?rawvalue:?\s*\d+\)?$/.test(words)) {
-    return fallback;
+    return {
+      key: "unmapped",
+      label: "Unmapped Activity"
+    };
   }
 
   const mappings: Array<{ includes: string[]; key: string; label: string }> = [

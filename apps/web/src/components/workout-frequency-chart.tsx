@@ -31,6 +31,18 @@ const SERIES_COLORS = [
   "var(--muted)"
 ];
 
+const SERIES_COLOR_BY_KEY: Record<string, string> = {
+  kayaking: "#6f89c9",
+  other: "var(--muted)",
+  running: "var(--accent)",
+  unmapped: "var(--muted)",
+  weight_lifting: "#d4815f"
+};
+
+function getSeriesColor(entry: WorkoutFrequencySeries, index: number) {
+  return SERIES_COLOR_BY_KEY[entry.key] ?? SERIES_COLORS[index % SERIES_COLORS.length];
+}
+
 export function WorkoutFrequencyChart({
   average,
   data,
@@ -51,6 +63,18 @@ export function WorkoutFrequencyChart({
 
   return (
     <div className="chart-frame chart-frame-with-legend">
+      <div className="chart-legend chart-legend-prominent" aria-label="Workout Frequency Legend">
+        <span className="chart-legend-title">Legend</span>
+        {series.map((entry, index) => (
+          <span key={entry.key} className="chart-legend-item chart-legend-pill">
+            <span
+              className="chart-legend-swatch"
+              style={{ background: getSeriesColor(entry, index) }}
+            />
+            {entry.label}
+          </span>
+        ))}
+      </div>
       <ResponsiveContainer width="100%" height={280}>
         <BarChart data={data} margin={{ top: 18, right: 8, left: -18, bottom: 0 }}>
           <CartesianGrid stroke="var(--border-strong)" strokeDasharray="3 3" vertical={false} />
@@ -99,23 +123,12 @@ export function WorkoutFrequencyChart({
               dataKey={entry.key}
               name={entry.label}
               stackId="workouts"
-              fill={SERIES_COLORS[index % SERIES_COLORS.length]}
+              fill={getSeriesColor(entry, index)}
               radius={index === series.length - 1 ? [8, 8, 0, 0] : [0, 0, 0, 0]}
             />
           ))}
         </BarChart>
       </ResponsiveContainer>
-      <div className="chart-legend">
-        {series.map((entry, index) => (
-          <span key={entry.key} className="chart-legend-item">
-            <span
-              className="chart-legend-swatch"
-              style={{ background: SERIES_COLORS[index % SERIES_COLORS.length] }}
-            />
-            {entry.label}
-          </span>
-        ))}
-      </div>
     </div>
   );
 }

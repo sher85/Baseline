@@ -21,8 +21,8 @@ test("normalizeActivityType groups common workout labels into consistent buckets
     label: "Kayaking"
   });
   assert.deepEqual(normalizeActivityType("(rawvalue: 52)"), {
-    key: "other",
-    label: "Other"
+    key: "unmapped",
+    label: "Unmapped Activity"
   });
 });
 

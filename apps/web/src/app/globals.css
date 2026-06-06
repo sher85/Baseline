@@ -805,6 +805,22 @@ h2 {
   gap: 10px 14px;
 }
 
+.chart-legend-prominent {
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.56);
+}
+
+.chart-legend-title {
+  color: var(--foreground);
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
 .chart-legend-item {
   display: inline-flex;
   align-items: center;
@@ -812,6 +828,12 @@ h2 {
   color: var(--muted);
   font-size: 0.88rem;
   font-weight: 700;
+}
+
+.chart-legend-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: var(--panel-strong);
 }
 
 .chart-legend-swatch {
