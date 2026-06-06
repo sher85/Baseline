@@ -6,6 +6,7 @@ import {
   requireApiToken
 } from "../modules/auth/api-token-auth.js";
 import {
+  AppleHealthIngestError,
   getAppleHealthStatus,
   ingestAppleHealthBatch
 } from "../modules/apple-health/apple-health-ingestion.service.js";
@@ -40,6 +41,16 @@ appleHealthRouter.post("/ingest", requireApiToken, async (request, response) => 
 
     response.status(201).json(result);
   } catch (error) {
+    if (error instanceof AppleHealthIngestError) {
+      response.status(500).json({
+        error: "Apple Health ingest failed",
+        batchId: error.batchId,
+        message: error.message
+      });
+
+      return;
+    }
+
     response.status(500).json({
       error: error instanceof Error ? error.message : "Unknown Apple Health ingest error"
     });

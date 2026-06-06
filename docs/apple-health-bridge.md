@@ -126,7 +126,7 @@ Recovery behavior:
 
 - the app stores `lastSuccessfulSyncAt` locally
 - it does not advance that timestamp unless the server confirms durable storage
-- the first sync reads the latest 90 days, then later syncs resume from the last successful cursor with a built-in overlap window
+- the first sync reads the latest 14 days, then later syncs resume from the last successful cursor with a built-in overlap window
 - server ingestion is idempotent, so replaying recent records is safe
 
 ## Sync behavior

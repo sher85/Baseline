@@ -72,6 +72,16 @@ type AppleHealthIngestPayload = {
   };
 };
 
+export class AppleHealthIngestError extends Error {
+  constructor(
+    message: string,
+    readonly batchId: string
+  ) {
+    super(message);
+    this.name = "AppleHealthIngestError";
+  }
+}
+
 type AppleHealthFlatRecord = {
   rawPayload: Record<string, unknown>;
   recordType: string;
@@ -373,6 +383,9 @@ export async function ingestAppleHealthBatch(payload: AppleHealthIngestPayload) 
         storedRecordCount,
         upsertedRecordCount
       };
+    }, {
+      maxWait: 10_000,
+      timeout: 120_000
     });
 
     const completedBatch = await prisma.appleHealthSyncBatch.update({
@@ -403,20 +416,22 @@ export async function ingestAppleHealthBatch(payload: AppleHealthIngestPayload) 
       warnings
     };
   } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown ingest error";
+
     await prisma.appleHealthSyncBatch.update({
       where: {
         id: batch.id
       },
       data: {
         status: SyncStatus.failed,
-        errorMessage: error instanceof Error ? error.message.slice(0, 500) : "Unknown ingest error",
+        errorMessage: message.slice(0, 1_000),
         warningCount: warnings.length,
         warnings,
         processedAt: new Date()
       }
     });
 
-    throw error;
+    throw new AppleHealthIngestError(message, batch.id);
   }
 }
 

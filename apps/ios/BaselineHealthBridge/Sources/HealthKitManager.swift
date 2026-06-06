@@ -2,7 +2,7 @@ import HealthKit
 
 final class HealthKitManager {
     private let store = HKHealthStore()
-    private let initialLookbackDays = 90
+    private let initialLookbackDays = 14
 
     private var readTypes: Set<HKObjectType> {
         var types: Set<HKObjectType> = [
