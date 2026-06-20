@@ -236,8 +236,16 @@ private extension HKWorkoutActivityType {
             return "running"
         case .traditionalStrengthTraining, .functionalStrengthTraining:
             return "weight_lifting"
+        case .cycling:
+            return "cycling"
+        case .rowing:
+            return "rowing"
+        case .walking:
+            return "walking"
         case .paddleSports:
             return "kayaking"
+        case .pickleball:
+            return "pickleball"
         default:
             return String(describing: self)
                 .replacingOccurrences(of: "HKWorkoutActivityType", with: "")

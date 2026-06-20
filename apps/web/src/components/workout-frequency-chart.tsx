@@ -34,6 +34,7 @@ const SERIES_COLORS = [
 const SERIES_COLOR_BY_KEY: Record<string, string> = {
   kayaking: "#6f89c9",
   other: "var(--muted)",
+  pickleball: "#a981ce",
   running: "var(--accent)",
   unmapped: "var(--muted)",
   weight_lifting: "#d4815f"
@@ -156,7 +157,7 @@ export function WorkoutFrequencyChart({
               name={entry.label}
               stackId="workouts"
               fill={getSeriesColor(entry, index)}
-              radius={index === series.length - 1 ? [8, 8, 0, 0] : [0, 0, 0, 0]}
+              radius={[0, 0, 0, 0]}
             />
           ))}
         </ComposedChart>

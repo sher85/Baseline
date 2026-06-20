@@ -38,6 +38,19 @@ function withMovingAverage<T extends { value: number | null }>(data: T[], alpha 
   });
 }
 
+const WORKOUT_SERIES_PRIORITY: Record<string, number> = {
+  running: 0,
+  weight_lifting: 1,
+  kayaking: 2,
+  rowing: 3,
+  cycling: 4,
+  walking: 5,
+  pickleball: 6,
+  workout: 7,
+  unmapped: 98,
+  other: 99
+};
+
 function formatWorkoutIntensity(value: string | null) {
   if (!value) {
     return "Recorded";
@@ -143,15 +156,14 @@ export default async function ActivityPage() {
       .values()
   )
     .sort((left, right) => {
-      if (left.key === "unmapped" || left.key === "other") {
-        return 1;
+      const leftPriority = WORKOUT_SERIES_PRIORITY[left.key] ?? 50;
+      const rightPriority = WORKOUT_SERIES_PRIORITY[right.key] ?? 50;
+
+      if (leftPriority !== rightPriority) {
+        return leftPriority - rightPriority;
       }
 
-      if (right.key === "unmapped" || right.key === "other") {
-        return -1;
-      }
-
-      return right.total - left.total;
+      return left.label.localeCompare(right.label);
     })
     .map(({ key, label }) => ({ key, label }));
   const weeklyWorkoutFrequencyData = activity.weekly.map((entry) => {

@@ -10,6 +10,13 @@ function titleCase(value: string) {
   return value.replace(/\b\w/g, (match) => match.toUpperCase());
 }
 
+const HEALTHKIT_RAW_ACTIVITY_TYPES: Record<string, { key: string; label: string }> = {
+  "13": { key: "cycling", label: "Cycling" },
+  "35": { key: "rowing", label: "Rowing" },
+  "52": { key: "walking", label: "Walking" },
+  "79": { key: "pickleball", label: "Pickleball" }
+};
+
 export function asUtcDate(day: string) {
   return new Date(`${day}T00:00:00.000Z`);
 }
@@ -70,8 +77,12 @@ export function normalizeActivityType(activityType: string | null | undefined) {
     return fallback;
   }
 
-  if (/^\(?rawvalue:?\s*\d+\)?$/.test(words)) {
-    return {
+  const rawValueMatch = words.match(/^\(?rawvalue:?\s*(\d+)\)?$/);
+
+  if (rawValueMatch) {
+    const rawValue = rawValueMatch[1];
+
+    return (rawValue ? HEALTHKIT_RAW_ACTIVITY_TYPES[rawValue] : null) ?? {
       key: "unmapped",
       label: "Unmapped Activity"
     };
