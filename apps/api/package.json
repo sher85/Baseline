@@ -13,14 +13,14 @@
     "test": "tsx --test src/**/*.test.ts"
   },
   "dependencies": {
-    "@asteasolutions/zod-to-openapi": "^8.5.0",
-    "@prisma/adapter-pg": "^7.8.0",
-    "@prisma/client": "^7.8.0",
+    "@asteasolutions/zod-to-openapi": "^9.1.0",
+    "@prisma/adapter-pg": "^7.9.0",
+    "@prisma/client": "^7.9.0",
     "cors": "^2.8.5",
     "dotenv": "^17.3.1",
     "express": "^5.1.0",
-    "pg": "^8.16.3",
-    "zod": "^4.3.6"
+    "pg": "^8.22.0",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@types/cors": "^2.8.17",
